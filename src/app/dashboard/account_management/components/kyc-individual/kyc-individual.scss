@@ -1,0 +1,231 @@
+input::placeholder {
+  font-size: 12px;
+  color: grey;
+}
+
+.container-fluid {
+  color: black !important;
+  overflow-y: auto;
+  height: 90vh;
+}
+
+.container {
+  width: 50%;
+  margin-left: 25%;
+  margin-top: 20px;
+}
+
+.progress {
+  width: 100%;
+  font-size: 7px;
+  height: 10px;
+}
+
+.progress-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border-radius: 50%;
+  background-color: lightgrey;
+}
+.progress-0 {
+  background-color: transparent;
+  width: 0%;
+  transition: width 2s;
+}
+
+.progress-25 {
+  background-color: #ff2929;
+  width: 25%;
+  transition: width 2s;
+}
+
+.progress-50 {
+  background-color: #fd6701;
+  width: 50%;
+  transition: width 2s;
+}
+
+.progress-75 {
+  background-color: orange;
+  width: 75%;
+  transition: width 2s;
+}
+
+.progress-100 {
+  background-color: green;
+  width: 100%;
+  transition: width 2s;
+}
+
+.active-step-icon {
+  background-color: #65a3cc;
+  color: white;
+}
+
+.active-step {
+  color: #65a3cc;
+}
+
+.formContent-light {
+  margin-top: 15px;
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0px 0px 8px lightblue;
+}
+
+.formContent-dark {
+  margin-top: 15px;
+  border-radius: 15px;
+  padding: 40px;
+  background-color: #38444d;
+}
+
+.KycComplte {
+  border: 1px solid grey;
+  margin-top: 30px;
+  border-radius: 20px;
+  box-shadow: 0px 0px 8px solid grey;
+}
+
+.marginBottom {
+  margin-bottom: 80px;
+}
+
+//selfie-css
+.profileImage {
+  max-width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: center;
+  object-position: center;
+  box-shadow: 0 5px 60px rgb(218, 229, 255);
+  border: 1px solid rgb(171, 202, 255);
+}
+
+.editImgBtn {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  background-color: white;
+  color: blue;
+  box-shadow: 0 10px 60px rgb(218, 229, 255);
+  border: 2px solid rgb(171, 202, 255);
+  border-radius: 50%;
+  position: absolute;
+  top: 75%;
+  left: 80%;
+}
+
+.deleteImgBtn {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  background-color: red;
+  color: white;
+  box-shadow: 0 10px 60px rgb(218, 229, 255);
+  border: 2px solid red;
+  border-radius: 50%;
+  position: absolute;
+  top: 75%;
+  left: 80%;
+}
+
+.success-background {
+  -webkit-animation-name: fadeOutSuccess;
+  -webkit-animation-duration: 3s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: ease-in;
+  animation-name: fadeOutSuccess;
+  animation-duration: 3s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+}
+
+@-webkit-keyframes fadeOutSuccess {
+  0% {
+    background-color: rgba(0, 128, 0, 0.8);
+    /* opacity: 0.8; */
+  }
+  50% {
+    background-color: rgba(0, 128, 0, 0.5);
+    /* opacity: 0.5; */
+  }
+  100% {
+    background-color: rgba(0, 128, 0, 0);
+    /* opacity: 0; */
+  }
+}
+
+@keyframes fadeOutSuccess {
+  0% {
+    background-color: rgba(0, 128, 0, 0.8);
+    /* opacity: 0.8; */
+  }
+  50% {
+    background-color: rgba(0, 128, 0, 0.5);
+    /* opacity: 0.5; */
+  }
+  100% {
+    background-color: rgba(0, 128, 0, 0);
+    /* opacity: 0; */
+  }
+}
+
+//related to webcam
+video {
+  border-radius: 12px;
+  object-fit: 'cover';
+  //margin-bottom: 10px;
+}
+
+.video_conatiner {
+  width: 70%;
+  height: 350px;
+  background-color: black;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.preview img {
+  width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: center;
+  object-position: center;
+  box-shadow: 0 5px 60px rgb(218, 229, 255);
+  border: 1px solid rgb(171, 202, 255);
+}
+
+.uploaded_image img {
+  width: 60%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: center;
+  object-position: center;
+  box-shadow: 0 5px 60px rgb(218, 229, 255);
+  border: 1px solid rgb(171, 202, 255);
+}
+
+.h-50vh {
+  height: 50vh;
+}
+
+.light-grey {
+  color: lightgray;
+}

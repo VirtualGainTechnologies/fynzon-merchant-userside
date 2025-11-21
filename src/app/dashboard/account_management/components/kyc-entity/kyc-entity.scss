@@ -1,0 +1,140 @@
+input::placeholder {
+  font-size: 12px;
+  color: grey;
+}
+
+.container-fluid {
+  color: black !important;
+  overflow-y: auto;
+  height: 90vh;
+}
+
+.container {
+  width: 50%;
+  margin-left: 25%;
+  margin-top: 20px;
+}
+
+.progress {
+  width: 100%;
+  font-size: 7px;
+  height: 10px;
+}
+
+.progress-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border-radius: 50%;
+  background-color: lightgrey;
+}
+
+.progress-0 {
+  background-color: transparent;
+  width: 0%;
+  transition: width 2s;
+}
+
+.progress-33 {
+  background-color: #fd6701;
+  width: 33%;
+  transition: width 2s;
+}
+
+.progress-66 {
+  background-color: orange;
+  width: 66%;
+  transition: width 2s;
+}
+
+.progress-100 {
+  background-color: green;
+  width: 100%;
+  transition: width 2s;
+}
+
+.active-step-icon {
+  background-color: #65a3cc;
+  color: white;
+}
+
+.active-step {
+  color: #65a3cc;
+}
+
+.formContent-light {
+  margin-top: 15px;
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0px 0px 8px lightblue;
+}
+
+.formContent-dark {
+  margin-top: 15px;
+  border-radius: 15px;
+  padding: 40px;
+  background-color: #38444d;
+}
+
+.KycComplte {
+  border: 1px solid grey;
+  margin-top: 20px;
+  border-radius: 20px;
+  box-shadow: 0px 0px 8px solid grey;
+}
+
+.marginBottom {
+  margin-bottom: 80px;
+}
+
+.success-background {
+  -webkit-animation-name: fadeOutSuccess;
+  -webkit-animation-duration: 3s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: ease-in;
+  animation-name: fadeOutSuccess;
+  animation-duration: 3s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+}
+
+@-webkit-keyframes fadeOutSuccess {
+  0% {
+    background-color: rgba(0, 128, 0, 0.8);
+    /* opacity: 0.8; */
+  }
+  50% {
+    background-color: rgba(0, 128, 0, 0.5);
+    /* opacity: 0.5; */
+  }
+  100% {
+    background-color: rgba(0, 128, 0, 0);
+    /* opacity: 0; */
+  }
+}
+
+@keyframes fadeOutSuccess {
+  0% {
+    background-color: rgba(0, 128, 0, 0.8);
+    /* opacity: 0.8; */
+  }
+  50% {
+    background-color: rgba(0, 128, 0, 0.5);
+    /* opacity: 0.5; */
+  }
+  100% {
+    background-color: rgba(0, 128, 0, 0);
+    /* opacity: 0; */
+  }
+}
+
+.h-50vh {
+  height: 50vh;
+}
+
+.light-grey {
+  color: lightgray;
+}

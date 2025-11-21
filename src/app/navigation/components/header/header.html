@@ -1,0 +1,16 @@
+<div class="headerBar">
+  <div class="d-flex justify-content-between">
+    <div class="headerLogo">
+      <img [src]="headerLogo" alt="fynzon_logo" [routerLink]="''" />
+    </div>
+    <div class="loginSection">
+      @if(!token){
+      <div class="buttonGroup padding-block-12">
+        <button class="btn-signup mx-5 px-3" [routerLink]="''">Login</button>
+      </div>
+      }@else {
+      <div class="circularAvtar"></div>
+      }
+    </div>
+  </div>
+</div>

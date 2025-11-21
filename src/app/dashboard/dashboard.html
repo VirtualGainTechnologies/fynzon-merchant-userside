@@ -1,0 +1,254 @@
+<div class="section darkMode" [ngStyle]="sectionStyles">
+  <!--sidebar menu-->
+  <div
+    class="menu darkMode"
+    [ngStyle]="{ width: menubarWidth }"
+    (mouseover)="expandMenuBar('expandwithnobutton')"
+    (mouseleave)="collapseMenuBar('nocollapse')"
+  >
+    <ul>
+      <div class="cursor-pointer">
+        <div class="ps-2 py-2" routerLink="/">
+          <img src="assets/icons/fynzon-logo.svg" alt="fynzon_logo" width="160px" class="ps-1" />
+        </div>
+      </div>
+
+      <div class="p-2 business d-flex mt-2">
+        @if (userData?.merchantType === "INDIVIDUAL") {
+        <img [src]="business_img" alt="individual_img" />
+        <div class="text-decoration-none text-white ms-3">Individual Account</div>
+        } @else {
+        <img [src]="business_img" alt="business_img" />
+        <div class="text-decoration-none text-white ms-3">Business Account</div>
+        }
+      </div>
+
+      <!-- <li class="cursor-pointer">
+          <div
+            routerLink="/dashboard/home"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="openMainMenuComponent('get-started')"
+          >
+            <i class="bi bi-house fs-20"></i>
+            <span class="fw-bold">GET STARTED</span>
+          </div>
+        </li> -->
+
+      <li class="cursor-pointer">
+        <div
+          routerLink="account/account-setting"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: isOtherMenuActive }"
+          (click)="openMainMenuComponent('account-setting')"
+        >
+          <i class="bi bi-gear fs-5"></i>
+          <p class="fw-bold">ACCOUNT SETTING</p>
+        </div>
+      </li>
+
+      <!-- <li class="cursor-pointer">
+            <div
+              routerLink="account/security"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: isOtherMenuActive }"
+              (click)="openMainMenuComponent('security')"
+            >
+              <i class="bi bi-shield-check fs-20"></i>
+              <p class="fw-bold">SECURITY</p>
+            </div>
+          </li> -->
+
+      <li class="cursor-pointer">
+        <div
+          routerLink="account/kyc"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: isOtherMenuActive }"
+          (click)="openMainMenuComponent('kyc')"
+        >
+          <i class="bi bi-person-vcard fs-5"></i>
+          <p class="fw-bold">KYC</p>
+        </div>
+      </li>
+
+      <!-- <li class="cursor-pointer">
+            <div
+              routerLink="developer/api-setting"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: isOtherMenuActive }"
+              (click)="openMainMenuComponent('apiSetting')"
+            >
+              <i class="bi bi-code-square fs-20"></i>
+              <p class="fw-bold">DEVELOPER CONTROL</p>
+            </div>
+          </li> -->
+
+      <!-- <li class="cursor-pointer">
+            <div
+              routerLink="transactions"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: isTxnDetailsActive }"
+              (click)="isParentActive('TXN-DETAILS')"
+              (click)="renderSubMenuBar('txnDetails')"
+            >
+              <i class="bi bi-arrow-left-right fs-18"></i>
+              <span class="fw-bold">TXN-DETAILS</span>
+            </div>
+          </li> -->
+    </ul>
+  </div>
+
+  <!--sidebar sub menu-->
+  @if(render){ @switch (render) { @case ("dashboard") {
+  <div class="content" [ngStyle]="{ width: subMenubarWidth }">
+    <div
+      class="nav-item cursor-pointer margin-top mx-2"
+      (click)="openSubMenuComponent('dashboard')"
+    >
+      <a
+        class="nav-link p-2 text-white fw-bold"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <i class="bi bi-list me-2 text-white"></i>DASHBOARD
+      </a>
+    </div>
+
+    <div class="nav-item cursor-pointer mx-2">
+      <a
+        class="nav-link p-2 text-white fw-bold mt-2"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        data-bs-toggle="collapse"
+        data-bs-target="#blog"
+      >
+        <i class="bi bi-list me-2 text-white"></i>BLOGS</a
+      >
+      <div
+        [ngClass]="
+          activeComponent == 'postBlog' || activeComponent == 'viewBlog' ? '!collapse' : 'collapse'
+        "
+        id="blog"
+      >
+        <div class="flex-column nav">
+          <li class="nav-item cursor-pointer">
+            <a
+              class="nav-link p-2 text-white fw-bold"
+              (click)="openSubMenuComponent('postBlog')"
+              [ngClass]="activeComponent == 'postBlog' ? 'actived' : 'not-active'"
+            >
+              <i class="bi bi-list text-white"></i> POST BLOG</a
+            >
+          </li>
+
+          <li class="nav-item cursor-pointer">
+            <a
+              class="nav-link p-2 text-white fw-bold"
+              (click)="openSubMenuComponent('viewBlog')"
+              [ngClass]="activeComponent == 'viewBlog' ? 'actived' : 'not-active'"
+            >
+              <i class="bi bi-list text-white"></i> VIEW BLOG</a
+            >
+          </li>
+        </div>
+      </div>
+    </div>
+  </div>
+  } @case ("txnDetails") {
+  <div class="content" [ngStyle]="{ width: subMenubarWidth }">
+    <div
+      class="nav-item cursor-pointer margin-top mx-2"
+      (click)="openSubMenuComponent('rblConnect')"
+    >
+      <a
+        class="nav-link p-2 text-white fw-bold"
+        routerLink="transactions"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >
+        <i class="bi bi-bank me-2 text-white fs-13"></i>
+        <span class="fs-12">RBL-CONNECT</span>
+      </a>
+    </div>
+  </div>
+  } } }
+
+  <!--header-->
+  <div class="width" [ngStyle]="render ? { 'margin-left': '0px' } : { 'margin-left': '50px' }">
+    <div class="headerBar mb-0 p-2 darkMode">
+      @if (!isMenubarExpanded && !render) {
+      <i
+        class="bi bi-list content3 cursor-pointer"
+        [ngStyle]="{ 'margin-left': leftMargin }"
+        (click)="expandMenuBar('expandwithbutton')"
+      ></i>
+      } @else {
+      <i
+        class="bi bi-x content3 cursor-pointer"
+        (click)="collapseMenuBar('collapse')"
+        [ngStyle]="{ 'margin-left': leftMargin }"
+      ></i>
+      }
+      <div class="d-flex ms-auto align-items-center">
+        <div class="mt-1 mx-3">
+          <button
+            class="btn btn-sm p-1 px-3"
+            [ngClass]="userData?.onboardingMode === 'TEST' ? 'btn-warning' : 'btn-success'"
+          >
+            {{ userData?.onboardingMode === 'TEST' ? 'Test Mode' : 'Live Mode' }}
+          </button>
+          <!-- <mat-menu #mode="matMenu" class="mt-2" xPosition="before">
+                <button mat-menu-item (click)="changeOnboardingMode('TEST')">
+                  Test Mode
+                </button>
+                <button
+                  mat-menu-item
+                  [disabled]="!data?.userData?.liveOnboardingEnabled"
+                  (click)="changeOnboardingMode('LIVE')"
+                >
+                  Live Mode
+                </button>
+              </mat-menu> -->
+        </div>
+
+        <!-- Profile Icon Trigger -->
+        <div class="profile cursor-pointer me-4 p-2 mt-1" [matMenuTriggerFor]="profile_menu">
+          <img
+            [src]="imageUrl ? imageUrl : 'assets/icons/admin.png'"
+            alt="profile"
+            width="22px"
+            height="22px"
+          />
+        </div>
+      </div>
+
+      <!-- Angular Material Menu -->
+      <mat-menu #profile_menu="matMenu" class="mt-2 p-1" xPosition="before">
+        <button mat-menu-item>
+          @if (userData?.fullName) { @if (userData?.fullName.length > 17) {
+          <p
+            [appTruncateText]="userData?.fullName | titlecase"
+            [limit]="17"
+            [matTooltip]="userData?.fullName | titlecase"
+          ></p>
+          } @else {
+          {{ userData?.fullName | titlecase }}
+          } } @else { @if (userData?.businessName.length > 17) {
+          <p
+            [appTruncateText]="userData?.businessName | titlecase"
+            [limit]="17"
+            [matTooltip]="userData?.businessName | titlecase"
+          ></p>
+          } @else {
+          {{ userData?.businessName | titlecase }}
+          } }
+        </button>
+        <button mat-menu-item (click)="onLogout()">Logout</button>
+      </mat-menu>
+    </div>
+
+    <div class="viewContainer">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

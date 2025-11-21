@@ -1,0 +1,277 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.nav-link[data-bs-toggle].collapsed:after {
+  content: "▾";
+  font-size: 15px !important;
+  margin-left: 10px;
+}
+
+.nav-link[data-bs-toggle]:not(.collapsed):after {
+  content: "▴";
+  font-size: 15px !important;
+  margin-left: 10px;
+}
+
+.nav-link:hover,
+.nav-link:active,
+.nav-link {
+  text-decoration: none;
+}
+
+.section {
+  background-color: lightgray;
+  display: flex;
+}
+
+.menu {
+  background-color: white;
+  padding: 0px;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.5s;
+  padding: 0px 5px;
+  box-shadow: 0px 0px 8px grey;
+  position: fixed;
+  left: 0;
+  z-index: 10000;
+}
+
+.menu:hover ul li div {
+  width: 100%;
+  height: 40px;
+}
+
+ul {
+  list-style: none;
+}
+
+ul li div {
+  text-decoration: none;
+  padding: 10px;
+  margin: 10px 0;
+  display: flex;
+  gap: 25px;
+  align-items: center;
+  transition: 0.5s;
+  font-size: 12px;
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
+ul div {
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
+ul li div:hover,
+.active {
+  background-color: grey;
+  color: white !important;
+  border-radius: 10px !important;
+  // border-top-right-radius: 10px !important;
+  // border-bottom-right-radius: 50px !important;
+  height: 40px;
+}
+
+.active2 {
+  background-color: grey !important;
+  color: white !important;
+  border-radius: 10px !important;
+  height: 40px;
+}
+
+.flex-column li a {
+  text-decoration: none;
+  padding: 10px;
+  margin: 10px 0 0 20px;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  transition: 0.5s;
+  font-size: 12px;
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
+.flex-column li a:hover,
+.actived {
+  background-color: rgb(255, 255, 255, 0.4);
+}
+
+.nav-link {
+  border-radius: 8px;
+}
+
+.nav-item .nav-link:hover,
+li a:hover {
+  background-color: rgb(255, 255, 255, 0.4);
+  padding: 5px;
+}
+
+.margin-top {
+  margin-top: 60px;
+}
+
+.content {
+  transition: 0.4s;
+  margin-left: 50px;
+  margin-top: 0px;
+  overflow-wrap: normal;
+  white-space: nowrap;
+  background-color: #002244;
+  box-shadow: 0px 0px 8px grey;
+  font-size: 14px;
+}
+
+.content2 {
+  width: 100%;
+}
+
+.content3 {
+  font-size: 24px;
+  margin-top: 2px;
+}
+
+::ng-deep .mat-typography p {
+  margin: 0 0 0px;
+}
+/*  */
+
+ul li label {
+  display: block;
+  text-decoration: none;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  transition: 0.5s;
+  font-size: 12px;
+}
+
+.main {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.drop {
+  display: none;
+}
+
+.drop li {
+  display: block;
+  font-size: 14px;
+  padding-left: 40px;
+}
+
+.drop li label {
+  width: 100%;
+}
+.adjustWidth {
+  width: 200px;
+}
+
+.headerBar {
+  width: 100%;
+  height: 8vh;
+  box-shadow: 0px 0px 5px rgb(205, 204, 204);
+  display: flex;
+  justify-content: space-between;
+  background-color: white;
+}
+
+.profile {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+}
+
+.viewContainer {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 10px;
+  padding-bottom: 100px;
+}
+
+.width {
+  width: 100%;
+  overflow: hidden !important;
+}
+
+.dropdown-menu {
+  gap: 10px;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.dropdown-item {
+  padding: 5px;
+}
+
+.dropdown-item:hover {
+  padding: 5px;
+  border-radius: 8px;
+  background-color: #1501a5;
+  color: white;
+}
+
+.business {
+  background-color: #ff6f00;
+}
+
+.payout {
+  background-color: #1501a5;
+  color: white !important;
+}
+
+.payoutDark {
+  background-color: white;
+  color: black !important;
+}
+
+.modes {
+  height: 32px;
+  width: 32px;
+  border: 1px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.contentDark {
+  background-color: #2a2b2e;
+}
+
+.lightMode {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+.darkMode {
+  background-color: #2a2b2e;
+  color: #ffffff !important;
+}
+
+.headerBarLightMode {
+  color: #fff;
+  background-color: #123;
+}
+
+.SideBarMode {
+  color: #fff;
+  background-color: #001;
+}

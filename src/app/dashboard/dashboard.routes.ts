@@ -1,0 +1,25 @@
+import { Routes } from '@angular/router';
+import { DashboardComponent } from './dashboard';
+
+export const dashboardRoutes: Routes = [
+  {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full',
+  },
+
+  {
+    path: '',
+    component: DashboardComponent,
+    children: [
+      {
+        path: 'home',
+        loadChildren: () => import('./home/home.routes').then((home) => home.homeRoutes),
+      },
+      {
+        path: "account",
+        loadChildren:()=> import('./account_management/account-management.routes').then((account)=>account.accountManagementRoute)
+      }
+    ],
+  },
+];

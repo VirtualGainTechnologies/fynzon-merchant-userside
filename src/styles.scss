@@ -1,1 +1,197 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+body {
+  padding: 0;
+  margin: 0;
+  overflow-y: hidden;
+}
+
+.headerBar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+//------------input box styles-----------//
+.custom-input {
+  border: 1px solid #008cba !important;
+  border-radius: 10px !important;
+}
+
+.custom-input-error {
+  border: 1px solid red !important;
+  border-radius: 10px !important;
+}
+
+.custom-input:hover,
+.custom-input:focus {
+  -webkit-box-shadow: 2px 2px 3px #888888 !important;
+  box-shadow: 2px 2px 3px #888888 !important;
+  border: 2px solid #008cba !important;
+}
+
+.custom-input-error:hover,
+.custom-input-error:focus {
+  -webkit-box-shadow: 5px 5px 5px #888888 !important;
+  box-shadow: 5px 5px 5px #888888 !important;
+  border: 2px solid red !important;
+}
+
+.cutsom-input-height-45 {
+  height: 45px !important;
+}
+
+.cutsom-input-height-45 {
+  height: 45px !important;
+}
+
+//------------chekc  box styles-----------//
+.custom-check-box {
+  border: 1px solid #008cba !important;
+}
+
+.custom-check-box-error {
+  border: 1px solid red !important;
+}
+
+.custom-check-box-dark {
+  border: 1px solid #008cba !important;
+}
+
+.custom-check-box:hover,
+.custom-check-box:focus {
+  -webkit-box-shadow: 2px 2px 3px #888888 !important;
+  box-shadow: 2px 2px 3px #888888 !important;
+  border: 2px solid #008cba !important;
+}
+
+.custom-check-box-error:hover,
+.custom-check-box-error:focus {
+  -webkit-box-shadow: 5px 5px 5px #888888 !important;
+  box-shadow: 5px 5px 5px #888888 !important;
+  border: 2px solid red !important;
+}
+
+//cursor classes
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-progress {
+  cursor: progress !important;
+}
+
+//input box inner icon css
+.inner-addon {
+  position: relative;
+}
+
+/* style icon */
+.inner-addon .innerText {
+  position: absolute;
+}
+
+/* align icon */
+.left-addon .innerText {
+  left: 0px;
+  // padding-bottom: 10px;
+  padding: 6px 10px 15px 15px;
+  cursor: pointer;
+}
+.right-addon .innerText {
+  right: 25px;
+  padding: 13px 10px 15px 15px;
+  cursor: pointer;
+}
+
+.text-decoration-none {
+  text-decoration: none;
+}
+
+//--------Hide Arrows From Input Number------//
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* ✅ Success Snackbar */
+.mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__surface {
+  background-color: #28a745 !important;
+  color: #fff !important;
+  font-weight: 500;
+  z-index: 10000000000 !important;
+}
+
+/* ❌ Error Snackbar */
+.mat-mdc-snack-bar-container.error-snackbar .mdc-snackbar__surface {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+  font-weight: 500;
+  z-index: 10000000000 !important;
+}
+
+.mat-mdc-snack-bar-container.warning-snackbar .mdc-snackbar__surface {
+  background-color: #ffa500 !important;
+  color: #fff !important;
+  font-weight: 500;
+  z-index: 10000000 !important;
+}
+
+/* Common setup for progress animation */
+.mat-mdc-snack-bar-container.snackbar-with-progress .mdc-snackbar__surface {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px !important;
+  padding-bottom: 6px !important;
+}
+
+/* Fake progress bar at bottom */
+.mat-mdc-snack-bar-container.snackbar-with-progress .mdc-snackbar__surface::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.7);
+  width: 100%;
+  animation: shrinkBar 4s linear forwards;
+}
+
+@keyframes shrinkBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__actions .mdc-button__label {
+  color: #fff !important;
+  font-size: 16px !important;
+}
+
+.modal-backdrop {
+  z-index: 1050 !important;
+}
+
+/* Modal container */
+.modal {
+  z-index: 1100 !important;
+}
+
+/* Modal content if needed */
+.modal-dialog {
+  z-index: 1101 !important;
+}

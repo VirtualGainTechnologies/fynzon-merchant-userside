@@ -1,0 +1,1018 @@
+@if (pageLoader) {
+<div class="d-flex flex-column justify-content-center align-items-center vh-100 bg-white">
+  <div class="spinner-border text-primary" role="status"></div>
+  <div class="blink fs-13 text-primary mt-1 fw-bold">Fetching Profile Details...</div>
+</div>
+} @else {
+<div class="container-fluid">
+  <div class="fw-bold babyBlue">Account settings</div>
+  <div class="fs-10 fw-bold text-light">It helps in verifying your identity</div>
+  <hr class="mt-2" />
+  <div class="card rounded-4 mt-4 card-dark">
+    <!-- Profile title, business -->
+    <div class="card-body py-5">
+      <div class="d-flex justify-content-between">
+        <div class="text-start">
+          <div class="fs-6 fw-bold profileDetails">Profile Details</div>
+          <div class="mb-2 accSettingSubtitle">These are your personal Details</div>
+        </div>
+        <!-- <div class="ps-3 mt-0 business d-flex align-items-center rounded-5">
+              @if (data?.userData?.merchantType === "INDIVIDUAL") {
+                <img src="./icons/business_img.svg" />
+                <span class="ps-2 text-white">Individual Account</span>
+              }
+              @if (data?.userData?.merchantType === "ENTITY") {
+                <img src="./icons/business_img.svg" />
+                <span class="ps-2 text-white">Business Account</span>
+              }
+            </div> -->
+      </div>
+
+      <!-- Img,Mbno,email,change pwd -->
+      <div class="d-flex align-items-center justify-content-between mt-3">
+        <div class="d-flex align-items-center justify-content-center">
+          <div>
+            <input
+              #fileUpload
+              type="file"
+              title="file_upload"
+              class="d-none"
+              accept="image/png,image/jpeg,image/jpg"
+              (change)="onSelfieUpload($event)"
+            />
+
+            <div class="position-relative ms-3">
+              @if (imagePreview) {
+              <img class="profileImage" [src]="imagePreview" width="80px" alt="profile_image" />
+
+              @if (!loader) {
+              <button
+                class="deleteImgBtn"
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="Delete Preview"
+                (click)="clearPreview(fileUpload)"
+              >
+                <i class="bi bi-x-lg"></i>
+              </button>
+              } } @if (!imagePreview) { @if (userData?.selfieUrl) {
+              <img
+                class="profileImage"
+                [src]="userData?.selfieUrl"
+                width="80px"
+                alt="profile_image"
+              />
+
+              <button class="editImgBtn" (click)="onSelfieInputClick(fileUpload)">
+                <i class="bi bi-pencil-fill"></i>
+                <span class="visually-hidden">title for edit</span>
+              </button>
+              } @else {
+              <div
+                class="profilePhoto d-flex align-items-center justify-content-center"
+                [ngStyle]="{
+                          'background-color': getUserInitials(
+                           userData?.merchantType,
+                           userData?.fullName ||
+                          userData?.businessName
+                          ).initialsColor,
+                        }"
+              >
+                {{
+                  getUserInitials(
+                    userData?.merchantType,
+                    userData?.fullName || userData?.businessName
+                  ).userInitials
+                }}
+              </div>
+
+              } }
+            </div>
+
+            @if (imagePreview) {
+            <div class="d-flex justify-content-center mt-2 ms-1">
+              @if (!loader) {
+              <div>
+                <button class="btn btn-sm btn-primary" (click)="onSelfieSubmit(fileUpload)">
+                  Upload Image
+                </button>
+              </div>
+              } @if (loader) {
+              <div class="progress ms-1 h-30 w-auto">
+                <div class="progress-bar progress-bar-striped progress-bar-animated px-2 w-100">
+                  <span class="blink fw-bold fs-13 px-1">Uploading...</span>
+                </div>
+              </div>
+              }
+            </div>
+            }
+          </div>
+
+          <div>
+            <div class="d-flex gap-3 mb-3 ms-4">
+              <span class="fs-6">KYC Status </span>
+              @if (userData?.kycStatus === "PENDING") {
+              <span class="badge text-bg-warning rounded-5 py-2 px-4">{{
+                userData?.kycStatus | titlecase
+              }}</span>
+              } @else if (userData?.kycStatus === "VERIFIED") {
+              <span class="badge text-bg-success rounded-5 py-2 px-4">{{
+                userData?.kycStatus | titlecase
+              }}</span>
+              } @else if (userData?.kycStatus === "REJECTED") {
+              <span class="badge text-bg-danger rounded-5 py-2 px-4">{{
+                userData?.kycStatus | titlecase
+              }}</span>
+              }
+            </div>
+
+            <div class="d-flex gap-3 ms-4">
+              <span class="border-line pe-3">
+                @if (userData?.businessName) {
+                {{ userData?.businessName | titlecase }}
+                } @else {
+                {{ userData?.fullName | titlecase }}
+                }
+              </span>
+
+              <span class="border-line px-2 pe-4"
+                >+91 {{ userData?.phone }}
+                <i
+                  class="bi bi-pencil-square text-primary ms-1 cursor-pointer"
+                  data-bs-toggle="modal"
+                  data-bs-target="#updatePhone"
+                  [matTooltip]="'Update Mobile Number'"
+                  matTooltipPosition="above"
+                ></i
+              ></span>
+
+              <span
+                >{{ userData?.email }}
+                <i
+                  class="bi bi-pencil-square text-primary ms-1 cursor-pointer"
+                  data-bs-toggle="modal"
+                  data-bs-target="#updateEmail"
+                  [matTooltip]="'Update Email Id'"
+                  matTooltipPosition="above"
+                  (click)="sendMobileOtpForEmailChange(userData?.phoneCode, userData?.phone)"
+                ></i>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 cursor-pointer">
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updatePassword">
+            Change Password
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!--Modal for mobile change-->
+<div
+  class="modal mt-5"
+  id="updatePhone"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="updatePhoneLabel"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog text-black" role="document">
+    <div class="modal-content">
+      <div class="modal-header border border-0 fw-bold d-flex justify-content-between">
+        <div class="fs-13">Update Mobile Number</div>
+        <div
+          class="fs-15 cursor-pointer"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="clearChangeMobileForm()"
+        >
+          <i class="bi bi-x-lg fw-bold"></i>
+        </div>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="changeMobileForm" (ngSubmit)="onSubmitChangeMobileForm()">
+          @if (modalStep === 1) { @if (changePhoneModalLoader) {
+          <div class="d-flex flex-column justify-content-center align-items-center my-5">
+            <div class="spinner-border text-primary" role="status"></div>
+          </div>
+          } @else {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="mobile_otp-logo" src="assets/icons/lock_img.svg" width="40px" />
+            </div>
+
+            <div class="alert alert-warning fade show p-2 my-3 fs-12" role="alert">
+              <div class="d-flex justify-content-start">
+                <div class="mt-1"><i class="bi bi-info-circle-fill"></i>&nbsp;</div>
+                <div class="fw-bold ms-1 text-justify lh-lg">
+                  Once you will update mobile number, you have to update KYC details to ensure
+                  security. This process helps prevent unauthorized access and protects your account
+                  information.
+                </div>
+              </div>
+            </div>
+
+            <div class="d-block gap-2 d-flex justify-content-between mt-2">
+              <button
+                type="button"
+                class="btn-sm btn btn-secondary text-white col-6"
+                data-bs-dismiss="modal"
+              >
+                No
+              </button>
+
+              @if (!loader) {
+              <button
+                type="button"
+                class="btn-sm btn btn-primary col-6"
+                (click)="sendEmailOtpForMobileChange(userData?.email)"
+              >
+                Yes
+              </button>
+              } @if (loader) {
+              <button type="button" class="btn-sm btn btn-primary col-6" title="Loading...">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+          </div>
+          } } @if (modalStep === 2) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="email_otp-logo" src="assets/icons/email_verify_otp.png" width="40px" />
+            </div>
+
+            <div class="text-center fs-15 fw-bold mt-2 mb-1">Email Verification</div>
+
+            <p class="text-center fs-13 fw-bold mb-2">
+              Changing mobile number requires you to enter OTP<br />
+              sent over to your registered email address <br />
+              <span class="text-primary">{{ userData?.email | fixedMaskData : 'email' }}</span>
+            </p>
+
+            <div class="text-center my-4 ms-4">
+              <ng-otp-input
+                [config]="ngOtpConfig"
+                (onInputChange)="onOtpChange('change-mobile', 'EMAIL', $event)"
+              ></ng-otp-input>
+            </div>
+
+            @if(resendEmailOtpTimer$ | async; as time){ @if (time.minutes > 0 || time.seconds > 0) {
+            <div class="text-center">
+              @if (!loader) {
+              <button
+                type="button"
+                class="btn btn-primary padding-inline-130"
+                [disabled]="changeMobileForm.invalid"
+                (click)="verifyEmailOtpForMobileChange(userData?.email)"
+              >
+                Verify
+              </button>
+              } @if (loader) {
+              <button type="button" class="btn btn-primary padding-inline-140" title="Loading...">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+
+            @if (time) {
+            <div class="text-center fs-13 mt-1 mb-2">
+              <div>
+                Haven't received OTP ? Resend OTP in
+                <span class="text-danger fw-bold">{{ time.minutes }}m {{ time.seconds }}s</span>
+              </div>
+            </div>
+            } } @if (time.minutes === 0 && time.seconds <= 0) {
+            <div class="text-center">
+              @if (!resendOtpLoader) {
+              <button
+                type="button"
+                class="btn btn-secondary padding-inline-105"
+                (click)="
+                            resendOtp('EMAIL', {
+                              email: userData?.email,
+                            })
+                          "
+              >
+                Resend OTP
+              </button>
+              } @if (resendOtpLoader) {
+              <button type="button" class="btn btn-secondary padding-inline-140" title="Loading...">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+            } }
+          </div>
+          } @if (modalStep === 3) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="mobile_otp-logo" src="assets/icons/mobile_otp.png" width="40px" />
+            </div>
+            <p class="text-center fs-13 fw-bold my-2">
+              Pezon will send OTP to verify your new mobile number
+            </p>
+            <div class="my-4">
+              <div class="form-group inner-addon left-addon">
+                <span class="innerText"
+                  ><img
+                    src="assets/icons/indianFlag.svg"
+                    width="20px"
+                    class="rounded-pill"
+                    alt="indian_flag"
+                /></span>
+                <input
+                  type="number"
+                  id="mobileNumber"
+                  class="form-control custom-input"
+                  formControlName="phone"
+                  placeholder="Enter Mobile Number (As per Aadhaar)*"
+                  [ngClass]="{
+                        'is-valid':
+                          changeMobileFormControllers['phone'].dirty &&
+                          changeMobileFormControllers['phone'].valid,
+                        'is-invalid custom-input-error':
+                          (changeMobileFormControllers['phone'].dirty ||
+                            changeMobileFormControllers['phone'].touched) &&
+                          changeMobileFormControllers['phone'].invalid,
+                      }"
+                />
+
+                <div class="d-flex justify-content-start">
+                  <div>
+                    @if ( (changeMobileFormControllers["phone"].dirty ||
+                    changeMobileFormControllers["phone"].touched) &&
+                    changeMobileFormControllers["phone"].invalid ) { @if (
+                    changeMobileFormControllers["phone"].hasError( "required" ) ) {
+                    <div class="text-danger fs-12 ps-1 mt-1">Phone number is mandatory!</div>
+                    } @if ( changeMobileFormControllers["phone"].hasError( "pattern" ) ) {
+                    <div class="text-danger fs-12 ps-1 mt-1">Invalid phone number!</div>
+                    } @if ( changeMobileFormControllers["phone"].hasError( "userExists" ) ) {
+                    <div class="text-danger fs-12 ps-1 mt-1">
+                      This phone number already exists. Please try a different one.
+                    </div>
+                    } }
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-grid mt-4">
+                @if (!loader) {
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  [disabled]="changeMobileForm.invalid"
+                  (click)="sendMobileOtpForMobileChange()"
+                >
+                  Send OTP
+                </button>
+                } @if (loader) {
+                <button type="button" class="btn btn-primary" title="Loding...">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+            </div>
+          </div>
+          } @if (modalStep === 4) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="mobile_otp-logo" src="assets/icons/mobile_otp.png" width="40px" />
+            </div>
+
+            <div class="text-center fs-15 fw-bold mt-2 mb-1">Phone Verification</div>
+
+            <p class="text-center fs-13 fw-bold mb-2">
+              Enter OTP sent to your new mobile number <br />
+              <span class="text-primary">{{
+                changeMobileFormControllers['phone'].value | fixedMaskData
+              }}</span>
+            </p>
+
+            <div class="text-center my-4 ms-4">
+              <ng-otp-input
+                [config]="ngOtpConfig"
+                (onInputChange)="onOtpChange('change-mobile', 'PHONE', $event)"
+              ></ng-otp-input>
+            </div>
+
+
+              @if(resendPhoneOtpTimer$ | async; as time) {
+              @if (time.minutes > 0 || time.seconds > 0) {
+              <div class="text-center">
+                @if (!loader) {
+                <button
+                  type="submit"
+                  class="btn btn-primary padding-inline-130"
+                  [disabled]="changeMobileForm.invalid"
+                >
+                  Verify
+                </button>
+                } @if (loader) {
+                <button type="button" class="btn btn-primary paddin-inline-140" title="Loading...">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+
+              @if (time) {
+              <div class="text-center fs-13 mt-1 mb-2">
+                <div>
+                  Haven't received OTP ? Resend OTP in
+                  <span class="text-danger fw-bold">{{ time.minutes }}m {{ time.seconds }}s</span>
+                </div>
+              </div>
+              } } @if (time.minutes === 0 && time.seconds <= 0) {
+              <div class="text-center">
+                @if (!resendOtpLoader) {
+                <button type="button" class="btn btn-secondary padding-inline-105">
+                  Resend OTP
+                </button>
+                } @if (resendOtpLoader) {
+                <button
+                  type="button"
+                  class="btn btn-secondary padding-inline-140"
+                  title="Loading..."
+                >
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+              }
+            }
+          </div>
+          } @if (modalStep === 5) {
+          <div class="text-center mt-2">
+            <div class="checkmark-container">
+              <i class="bi bi-check checkmark-icon"></i>
+            </div>
+            <h5 class="text-center fw-bold mt-0">Congratulations!!</h5>
+            <p class="text-dark text-center mb-5">
+              Your mobile number has been updated successfully.
+            </p>
+          </div>
+
+          <div class="mt-3 d-grid d-flex justify-content-center">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm me-1 col-6"
+              data-bs-dismiss="modal"
+              (click)="clearChangeMobileForm()"
+              [routerLink]="
+                userData?.merchantType === 'INDIVIDUAL'
+                  ? '/dashboard/account/kyc'
+                  : '/dashboard/account/account-setting'
+              "
+            >
+              OK
+            </button>
+          </div>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal for email-->
+<div
+  class="modal mt-5"
+  id="updateEmail"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="updateEmailLabel"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog text-black" role="document">
+    <div class="modal-content">
+      <div class="modal-header border border-0 fw-bold d-flex justify-content-between">
+        <div class="fs-13">Update Email Id</div>
+        <div
+          class="fs-15 cursor-pointer"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="clearChangeEmailForm()"
+        >
+          <i class="bi bi-x-lg fw-bold"></i>
+        </div>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="changeEmailForm" (ngSubmit)="onSubmitChangeEmailForm()">
+          @if (modalStep === 1) { @if (changeEmailModalLoader) {
+          <div class="d-flex flex-column justify-content-center align-items-center my-5">
+            <div class="spinner-border text-primary" role="status"></div>
+          </div>
+          } @else {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="mobile_otp-logo" src="assets/icons/mobile_otp.png" width="40px" />
+            </div>
+
+            <div class="text-center fs-15 fw-bold mt-2 mb-1">Phone Verification</div>
+
+            <p class="text-center fs-13 fw-bold mb-2">
+              Changing email id requires you to enter OTP<br />
+              sent over to your registered phone number <br />
+              <span class="text-primary"> {{ userData?.phone | fixedMaskData }}</span>
+            </p>
+
+            <div class="text-center my-4 ms-4">
+              <ng-otp-input
+                [config]="ngOtpConfig"
+                (onInputChange)="onOtpChange('change-email', 'PHONE', $event)"
+              ></ng-otp-input>
+            </div>
+
+              @if(resendPhoneOtpTimer$ | async; as time) {
+              @if (time.minutes > 0 || time.seconds > 0) {
+              <div class="text-center">
+                @if (!loader) {
+                <button
+                  type="button"
+                  class="btn btn-primary padding-inline-130"
+                  [disabled]="changeEmailForm.invalid"
+                  (click)="verifyMobileOtpForEmailChange(userData?.phoneCode, userData?.phone)"
+                >
+                  Verify
+                </button>
+                } @if (loader) {
+                <button type="button" class="btn btn-primary padding-inline-140" title="Loading...">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+
+              @if (time) {
+              <div class="text-center fs-13 mt-1 mb-2">
+                <div>
+                  Haven't received OTP ? Resend OTP in
+                  <span class="text-danger fw-bold">{{ time.minutes }}m {{ time.seconds }}s</span>
+                </div>
+              </div>
+              } } @if (time.minutes === 0 && time.seconds <= 0) {
+              <div class="text-center">
+                @if (!resendOtpLoader) {
+                <button
+                  type="button"
+                  class="btn btn-secondary padding-inline-105"
+                  (click)="
+                              resendOtp('PHONE', {
+                                phoneCode: userData?.phoneCode,
+                                phone: userData?.phone,
+                              })
+                            "
+                >
+                  Resend OTP
+                </button>
+                } @if (resendOtpLoader) {
+                <button
+                  type="button"
+                  class="btn btn-secondary padding-inline-140"
+                  title="Loading..."
+                >
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+              }
+            }
+          </div>
+          } } @if (modalStep === 2) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="email_otp-logo" src="assets/icons/email_verify_otp.png" width="40px" />
+            </div>
+            <p class="text-center fs-13 fw-bold my-2">
+              We'll send you a one-time password (OTP) to verify your new email Id.
+            </p>
+            <div class="my-4">
+              <div class="form-group mb-3">
+                <input
+                  type="email"
+                  class="form-control shadow-none custom-input"
+                  placeholder="Enter New Email Id*"
+                  formControlName="email"
+                  [ngClass]="{
+                        'is-valid':
+                          changeEmailFormControllers['email'].dirty &&
+                          changeEmailFormControllers['email'].valid,
+                        'is-invalid custom-input-error':
+                          (changeEmailFormControllers['email'].dirty ||
+                            changeEmailFormControllers['email'].touched) &&
+                          changeEmailFormControllers['email'].invalid,
+                      }"
+                />
+
+                @if ( (changeEmailFormControllers["email"].dirty ||
+                changeEmailFormControllers["email"].touched) &&
+                changeEmailFormControllers["email"].invalid ) { @if (
+                changeEmailFormControllers["email"].hasError("required") ) {
+                <div class="text-danger fs-12 ps-1 mt-1">Email is mandatory!</div>
+                } @if ( changeEmailFormControllers["email"].hasError("email") ) {
+                <div class="text-danger fs-12 ps-1 mt-1">Invalid email!</div>
+                } @if ( changeEmailFormControllers["email"].hasError( "userExists" ) ) {
+                <div class="text-danger fs-12 ps-1 mt-1">
+                  This email already exists. Please try a different one.
+                </div>
+                } }
+              </div>
+
+              <div class="d-grid mt-4">
+                @if (!loader) {
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  [disabled]="changeEmailForm.invalid"
+                  (click)="sendEmailOtpForEmailChange()"
+                >
+                  Send OTP
+                </button>
+                } @if (loader) {
+                <button type="button" class="btn btn-primary" title="Loading...">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+            </div>
+          </div>
+          } @if (modalStep === 3) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="email_otp-logo" src="assets/icons/email_verify_otp.png" width="40px" />
+            </div>
+
+            <div class="text-center fs-15 fw-bold mt-2 mb-1">Email Verification</div>
+
+            <p class="text-center fs-13 fw-bold mb-2">
+              Enter OTP sent to your new email id <br />
+              <span class="text-primary">{{
+                changeEmailFormControllers['email'].value | fixedMaskData : 'email'
+              }}</span>
+            </p>
+
+            <div class="text-center my-4 ms-4">
+              <ng-otp-input
+                [config]="ngOtpConfig"
+                (onInputChange)="onOtpChange('change-email', 'EMAIL', $event)"
+              ></ng-otp-input>
+            </div>
+
+
+              @if(resendEmailOtpTimer$ | async; as time) {
+              @if (time.minutes > 0 || time.seconds > 0) {
+              <div class="text-center">
+                @if (!loader) {
+                <button
+                  type="submit"
+                  class="btn btn-primary padding-inline-130"
+                  [disabled]="changeEmailForm.invalid"
+                >
+                  Verify
+                </button>
+                } @if (loader) {
+                <button type="button" class="btn btn-primary padding-inline-140" title="Loading...">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+
+              @if (time) {
+              <div class="text-center fs-13 mt-1 mb-2">
+                <div>
+                  Haven't received OTP ? Resend OTP in
+                  <span class="text-danger fw-bold">{{ time.minutes }}m {{ time.seconds }}s</span>
+                </div>
+              </div>
+              } } @if (time.minutes === 0 && time.seconds <= 0) {
+              <div class="text-center">
+                @if (!resendOtpLoader) {
+                <button type="button" class="btn btn-secondary padding-inline-105">
+                  Resend OTP
+                </button>
+                } @if (resendOtpLoader) {
+                <button
+                  type="button"
+                  class="btn btn-secondary padding-inline-140"
+                  title="Loading..."
+                >
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+              }
+            }
+          </div>
+          } @if (modalStep === 4) {
+          <div class="text-center mt-2">
+            <div class="checkmark-container">
+              <i class="bi bi-check checkmark-icon"></i>
+            </div>
+            <h5 class="text-center fw-bold mt-0">Congratulations!!</h5>
+            <p class="text-dark text-center mb-5">Your email has been updated successfully.</p>
+          </div>
+
+          <div class="mt-3 d-grid d-flex justify-content-center">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm me-1 col-6"
+              data-bs-dismiss="modal"
+              (click)="clearChangeEmailForm()"
+            >
+              OK
+            </button>
+          </div>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal for password change-->
+<div
+  class="modal fade mt-5"
+  id="updatePassword"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="updatePasswordLabel"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog text-black" role="document">
+    <div class="modal-content">
+      <div class="modal-header border border-0 fw-bold d-flex justify-content-between">
+        <div class="fs-13">Update Password</div>
+        <div
+          class="fs-15 cursor-pointer"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="clearChangePasswordForm()"
+        >
+          <i class="bi bi-x-lg fw-bold"></i>
+        </div>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="changePasswordForm" (ngSubmit)="onSubmitChangePasswordForm()">
+          @if (modalStep === 1) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="email_otp-logo" src="assets/icons/reset_password.png" width="40px" />
+            </div>
+            <p class="text-center fs-13 fw-bold my-2">
+              We'll send one-time password (OTP) to verify your email.
+            </p>
+
+            @if (!passwordErrorMessage) {
+            <div class="alert alert-warning fw-bold fs-12 d-flex flex-row" role="alert">
+              <div class="text-end">
+                <i class="bi bi-exclamation-circle-fill"></i>
+              </div>
+              <div class="text-dark ps-1">
+                We recommend to use a strong password to keep your account secure.
+              </div>
+            </div>
+            } @if (passwordErrorMessage) {
+            <div class="alert alert-danger fw-bold fs-12 d-flex flex-row" role="alert">
+              <div class="text-end">
+                <i class="bi bi-info-circle-fill"></i>
+              </div>
+              <div class="text-dark ps-1">
+                {{ passwordErrorMessage }}
+              </div>
+            </div>
+            }
+
+            <div class="my-4">
+              <div class="form-group mb-3 inner-addon right-addon">
+                @if (showVisibilityIcon) {
+                <span class="innerText" (click)="togglePasswordVisibility()">
+                  @if (fieldTextType) {
+                  <i class="bi bi-eye-slash"></i>
+                  } @else {
+                  <i class="bi bi-eye"></i>
+                  }
+                </span>
+                }
+
+                <input
+                  [type]="fieldTextType ? 'text' : 'password'"
+                  class="form-control shadow-none custom-input"
+                  placeholder="Current Password*"
+                  formControlName="currentPassword"
+                  [ngClass]="{
+                        'is-valid':
+                          changePasswordFormControllers['currentPassword']
+                            .dirty &&
+                          changePasswordFormControllers['currentPassword']
+                            .valid,
+                        'is-invalid custom-input-error':
+                          (changePasswordFormControllers['currentPassword']
+                            .dirty ||
+                            changePasswordFormControllers['currentPassword']
+                              .touched) &&
+                          changePasswordFormControllers['currentPassword']
+                            .invalid,
+                      }"
+                />
+
+                @if ( (changePasswordFormControllers["currentPassword"].dirty ||
+                changePasswordFormControllers["currentPassword"] .touched) &&
+                changePasswordFormControllers["currentPassword"].invalid ) { @if (
+                changePasswordFormControllers[ "currentPassword" ].hasError("required") ) {
+                <div class="text-danger fs-12 ps-1 mt-1">Current password is mandatory!</div>
+                } }
+              </div>
+
+              <div class="form-group mb-3 inner-addon right-addon">
+                @if (showVisibilityIcon) {
+                <span class="innerText" (click)="togglePasswordVisibility()">
+                  @if (fieldTextType) {
+                  <i class="bi bi-eye-slash"></i>
+                  } @else {
+                  <i class="bi bi-eye"></i>
+                  }
+                </span>
+                }
+
+                <input
+                  [type]="fieldTextType ? 'text' : 'password'"
+                  class="form-control shadow-none custom-input"
+                  placeholder="New Password*"
+                  formControlName="password"
+                  [ngClass]="{
+                        'is-valid':
+                          changePasswordFormControllers['password'].dirty &&
+                          changePasswordFormControllers['password'].valid,
+                        'is-invalid custom-input-error':
+                          (changePasswordFormControllers['password'].dirty ||
+                            changePasswordFormControllers['password']
+                              .touched) &&
+                          changePasswordFormControllers['password'].invalid,
+                      }"
+                />
+
+                @if ( changePasswordForm.value.password &&
+                !changePasswordFormControllers["password"].hasError( "minlength" ) ) {
+                <div class="ms-2">
+                  <app-password-strength [passwordToCheck]="changePasswordForm.value.password">
+                  </app-password-strength>
+                </div>
+                } @if ( (changePasswordFormControllers["password"].dirty ||
+                changePasswordFormControllers["password"].touched) &&
+                changePasswordFormControllers["password"].invalid ) { @if (
+                changePasswordFormControllers["password"].hasError( "required" ) ) {
+                <div class="text-danger fs-12 ps-1 mt-1">Password is mandatory!</div>
+                } @if ( changePasswordFormControllers["password"].hasError( "minlength" ) ) {
+                <div class="text-danger fs-12 ps-1 mt-1">
+                  Password must be at least 8 characters long!
+                </div>
+                } }
+              </div>
+
+              <div class="form-group mb-3 inner-addon right-addon">
+                @if (showVisibilityIcon) {
+                <span class="innerText" (click)="togglePasswordVisibility()">
+                  @if (fieldTextType) {
+                  <i class="bi bi-eye-slash"></i>
+                  } @else {
+                  <i class="bi bi-eye"></i>
+                  }
+                </span>
+                }
+
+                <input
+                  disableCutCopyPaste
+                  autocomplete="off"
+                  [type]="fieldTextType ? 'text' : 'password'"
+                  class="form-control custom-input"
+                  placeholder="Renter New Password*"
+                  formControlName="confirmPassword"
+                  [ngClass]="{
+                        'is-valid':
+                          changePasswordFormControllers['confirmPassword']
+                            .dirty &&
+                          changePasswordFormControllers['confirmPassword']
+                            .valid,
+                        'is-invalid custom-input-error':
+                          (changePasswordFormControllers['confirmPassword']
+                            .dirty ||
+                            changePasswordFormControllers['confirmPassword']
+                              .touched) &&
+                          changePasswordFormControllers['confirmPassword']
+                            .invalid,
+                      }"
+                />
+
+                @if ( (changePasswordFormControllers["confirmPassword"].dirty ||
+                changePasswordFormControllers["confirmPassword"] .touched) &&
+                changePasswordFormControllers["confirmPassword"].invalid ) { @if (
+                changePasswordFormControllers[ "confirmPassword" ].hasError("required") ) {
+                <div class="text-danger fs-12 ps-1 mt-1">Password confirmation is mandatory!</div>
+                } @else if ( changePasswordFormControllers[ "confirmPassword"
+                ].getError("passwordMismatch") ) {
+                <div class="text-danger fs-12 ps-1 mt-1">Password mismatched!</div>
+                } }
+              </div>
+
+              <div class="d-grid mt-4">
+                @if (!loader) {
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  [disabled]="changePasswordForm.invalid"
+                  (click)="sendOtpToChangePassword()"
+                >
+                  Send OTP
+                </button>
+                } @if (loader) {
+                <button type="button" class="btn btn-primary" title="Loading...">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+            </div>
+          </div>
+          } @if (modalStep === 2) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="email_otp-logo" src="assets/icons/email_verify_otp.png" width="40px" />
+            </div>
+
+            <div class="text-center fs-15 fw-bold mt-2 mb-1">Email Verification</div>
+
+            <p class="text-center fs-13 fw-bold mb-2">
+              Enter OTP sent to your email id <br />
+              <span class="text-primary">{{ userData?.email | fixedMaskData : 'email' }}</span>
+            </p>
+
+            <div class="text-center my-4 ms-4">
+              <ng-otp-input
+                [config]="ngOtpConfig"
+                (onInputChange)="onOtpChange('change-password', 'EMAIL', $event)"
+              ></ng-otp-input>
+            </div>
+
+            @if(resendEmailOtpTimer$ |async; as time){ @if (time.minutes > 0 || time.seconds > 0) {
+            <div class="text-center">
+              @if (!loader) {
+              <button
+                type="submit"
+                class="btn btn-primary padding-inline-130"
+                [disabled]="changePasswordForm.invalid"
+              >
+                Verify
+              </button>
+              } @if (loader) {
+              <button type="button" class="btn btn-primary padding-inline-140" title="Loading...">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+
+            @if (time) {
+            <div class="text-center fs-13 mt-1 mb-2">
+              <div>
+                Haven't received OTP ? Resend OTP in
+                <span class="text-danger fw-bold">{{ time.minutes }}m {{ time.seconds }}s</span>
+              </div>
+            </div>
+            } } @if (time.minutes === 0 && time.seconds <= 0) {
+            <div class="text-center">
+              @if (!resendOtpLoader) {
+              <button type="button" class="btn btn-secondary padding-inline-105">Resend OTP</button>
+              } @if (resendOtpLoader) {
+              <button type="button" class="btn btn-secondary padding-inline-140" title="Loading...">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+            } }
+          </div>
+          } @if (modalStep === 3) {
+          <div class="text-center mt-2">
+            <div class="checkmark-container">
+              <i class="bi bi-check checkmark-icon"></i>
+            </div>
+            <h5 class="text-center fw-bold mt-0">Congratulations!!</h5>
+            <p class="text-dark text-center mb-5">Your password has been updated successfully.</p>
+          </div>
+
+          <div class="mt-3 d-grid d-flex justify-content-center">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm me-1 col-6"
+              data-bs-dismiss="modal"
+              (click)="clearChangePasswordForm()"
+            >
+              OK
+            </button>
+          </div>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

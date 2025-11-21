@@ -1,0 +1,872 @@
+<div class="container-fluid mb-100">
+  <div class="fw-bold text-info">KYC Details</div>
+  <div class="fs-10 fw-bold text-light">It helps in verifying your identity</div>
+  <hr class="mt-1 text-light" />
+  <div class="container">
+    <!--icons-->
+    <div class="d-flex justify-content-around">
+      <div [ngClass]="kycData?.aadhaar?.status === 'VERIFIED' ? 'cursor' : ''">
+        <div
+          class="progress-item"
+          [ngClass]="percentage >= 25 || render == 'aadhar' ? 'active-step-icon' : ''"
+          (click)="kycData?.aadhaar?.status === 'VERIFIED' ? onRender('aadhar') : false"
+        >
+          <i class="bi bi-person-workspace"></i>
+        </div>
+
+        <div
+          class="text-center"
+          [ngClass]="percentage >= 25 || render == 'aadhar' ? 'active-step' : 'text-light'"
+          (click)="kycData?.aadhaar?.status === 'VERIFIED' ? onRender('aadhar') : false"
+        >
+          Aadhar
+        </div>
+      </div>
+
+      <div [ngClass]="kycData?.pan?.status === 'VERIFIED' ? 'cursor' : ''">
+        <div
+          class="progress-item"
+          [ngClass]="percentage >= 50 || render == 'pan' ? 'active-step-icon' : ''"
+          (click)="kycData?.pan?.status === 'VERIFIED' ? onRender('pan') : ''"
+        >
+          <i class="bi bi-person-vcard"></i>
+        </div>
+
+        <div
+          class="text-center"
+          [ngClass]="percentage >= 50 || render == 'pan' ? 'active-step' : 'text-light'"
+          (click)="kycData?.pan?.status === 'VERIFIED' ? onRender('pan') : ''"
+        >
+          PAN
+        </div>
+      </div>
+
+      <div [ngClass]="kycData?.bank?.status === 'VERIFIED' ? 'cursor' : ''">
+        <div
+          class="progress-item"
+          [ngClass]="percentage >= 75 || render == 'bank' ? 'active-step-icon' : ''"
+          (click)="kycData?.bank?.status === 'VERIFIED' ? onRender('bank') : ''"
+        >
+          <i class="bi bi-bank"></i>
+        </div>
+
+        <div
+          class="text-center"
+          [ngClass]="percentage >= 75 || render == 'bank' ? 'active-step' : 'text-light'"
+          (click)="kycData?.bank?.status === 'VERIFIED' ? onRender('bank') : ''"
+        >
+          Bank
+        </div>
+      </div>
+
+      <div [ngClass]="kycData?.selfie?.status === 'VERIFIED' ? 'cursor' : ''">
+        <div
+          class="progress-item"
+          [ngClass]="percentage >= 100 || render == 'selfie' ? 'active-step-icon' : ''"
+          (click)="kycData?.selfie?.status === 'VERIFIED' ? onRender('selfie') : ''"
+        >
+          <i class="bi bi-person-badge"></i>
+        </div>
+
+        <div
+          class="text-center"
+          [ngClass]="percentage >= 100 || render == 'selfie' ? 'active-step' : 'text-light'"
+          (click)="kycData?.selfie?.status === 'VERIFIED' ? onRender('selfie') : ''"
+        >
+          Selfie
+        </div>
+      </div>
+    </div>
+
+    <!--progress bar-->
+    <div class="progress">
+      <div
+        class="text-end text-white px-2"
+        [ngClass]="
+          percentage == 25
+            ? 'progress-25'
+            : percentage == 50
+            ? 'progress-50'
+            : percentage == 75
+            ? 'progress-75'
+            : percentage == 100
+            ? 'progress-100'
+            : 'progress-0'
+        "
+      >
+        @if(percentage){<span>{{ percentage }} %</span>}
+      </div>
+    </div>
+
+    <!--kyc form-->
+    <div
+      class="formContent-dark"
+      [ngClass]="{
+          'success-background':
+            render === 'kycCompleted' && !pageLoader,
+        }"
+    >
+      @switch (render) { @case ("aadhar") { @if (!pageLoader) { @if (kycData?.aadhaar?.status ===
+      "PENDING") {
+      <form [formGroup]="aadharForm" (ngSubmit)="onAadhaarFormSubmit()">
+        @if (!formLoader) { @if (errorMessage) {
+        <div class="alert alert-danger d-flex fs-12 fw-bold">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+        } @else {
+        <div class="alert alert-warning d-flex fs-12 fw-bold">
+          <i class="bi bi-info-circle-fill me-1"></i>
+          <span
+            >Make sure that the clicked image fit tightly in camera view, horizontally-aligned and
+            less than 10 MB.</span
+          >
+        </div>
+        }
+
+        <div class="form-group my-2">
+          <label for="aadhaarNumber" class="form-label text-light"
+            >Aadhar Number<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="aadhaarNumber"
+            class="form-control custom-input-dark"
+            formControlName="aadhaarNumber"
+            placeholder="Enter aadhar number"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            aadharFormControls['aadhaarNumber'].dirty &&
+                            aadharFormControls['aadhaarNumber'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                           
+                            (aadharFormControls['aadhaarNumber'].dirty ||
+                              aadharFormControls['aadhaarNumber'].touched) &&
+                            aadharFormControls['aadhaarNumber'].invalid,
+                        }"
+          />
+          @if ( (aadharFormControls["aadhaarNumber"].dirty ||
+          aadharFormControls["aadhaarNumber"].touched) &&
+          aadharFormControls["aadhaarNumber"].invalid ) { @if (
+          aadharFormControls["aadhaarNumber"].hasError( "required" ) ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Aaadhar number is mandatory!</div>
+          } @if ( aadharFormControls["aadhaarNumber"].hasError( "pattern" ) ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Invalid aadhaar number!</div>
+          } }
+        </div>
+
+        <div class="form-group my-2">
+          <label for="aadharFrontImage" class="form-label text-light"
+            >Aadhar Front Image<span class="text-danger">*</span></label
+          >
+          <input
+            type="file"
+            id="aadharFrontImage"
+            class="form-control custom-input-dark"
+            formControlName="aadharFrontImage"
+            (change)="onFileChange($event, 'aadharFrontImage', 10)"
+            accept="image/png,image/jpeg,image/jpg"
+            [ngClass]="{
+                         
+                          'is-valid':
+                            aadharFormControls['aadharFrontImage'].dirty &&
+                            aadharFormControls['aadharFrontImage'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                            
+                            (aadharFormControls['aadharFrontImage'].dirty ||
+                              aadharFormControls['aadharFrontImage'].touched) &&
+                            aadharFormControls['aadharFrontImage'].invalid,
+                        }"
+          />
+          @if ( (aadharFormControls["aadharFrontImage"].dirty ||
+          aadharFormControls["aadharFrontImage"].touched) &&
+          aadharFormControls["aadharFrontImage"].invalid ) { @if (
+          aadharFormControls["aadharFrontImage"].hasError( "required" ) ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Aaadhar front image is mandatory!</div>
+          } }
+        </div>
+
+        <div class="form-group my-2">
+          <label for="aadharBackImage" class="form-label text-light"
+            >Aadhar Back Image<span class="text-danger">*</span></label
+          >
+          <input
+            type="file"
+            id="aadharBackImage"
+            class="form-control custom-input-dark"
+            formControlName="aadharBackImage"
+            (change)="onFileChange($event, 'aadharBackImage', 10)"
+            accept="image/png,image/jpeg,image/jpg"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            aadharFormControls['aadharBackImage'].dirty &&
+                            aadharFormControls['aadharBackImage'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                          
+                            (aadharFormControls['aadharBackImage'].dirty ||
+                              aadharFormControls['aadharBackImage'].touched) &&
+                            aadharFormControls['aadharBackImage'].invalid,
+                        }"
+          />
+          @if ( (aadharFormControls["aadharBackImage"].dirty ||
+          aadharFormControls["aadharBackImage"].touched) &&
+          aadharFormControls["aadharBackImage"].invalid ) { @if (
+          aadharFormControls["aadharBackImage"].hasError( "required" ) ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Aaadhar back image is mandatory!</div>
+          } }
+        </div>
+
+        <div class="form-group my-4 text-center d-grid">
+          <button type="submit" class="btn btn-primary" [disabled]="aadharForm.invalid">
+            Submit
+          </button>
+        </div>
+        } @else {
+        <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+          <div class="spinner-border text-primary" role="status"></div>
+          <div class="fs-13 blink mt-1 text-light">Verifying Aadhaar Details...</div>
+        </div>
+        }
+      </form>
+      } @else {
+      <div>
+        <div class="text-center">
+          <i class="bi bi-check2-circle text-success fs-1"></i>
+          <div class="fw-bold text-light">Aadhaar Verified Successfully</div>
+        </div>
+
+        <div class="Aadhardetails">
+          <div class="fs-10 mt-2 light-grey">Registered Name:</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.aadhaar?.registeredName }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Aadhaar Number :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.aadhaar?.aadhaarNumber }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Date of Birth :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.aadhaar?.dateOfBirth }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Registered Address :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.aadhaar?.registeredAddress }}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button type="button" class="btn btn-primary btn-sm" (click)="onRender('pan')">
+            Next<i class="bi bi-arrow-right-short"></i>
+          </button>
+        </div>
+      </div>
+      } } @else {
+      <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="fs-13 blink mt-1 text-light">Fetching Aadhaar Details...</div>
+      </div>
+      } } @case ("pan") { @if (!pageLoader) { @if (kycData?.pan?.status === "PENDING") {
+      <form [formGroup]="panForm" (ngSubmit)="onPanFormSubmit()">
+        @if (!formLoader) { @if (errorMessage) {
+        <div class="alert alert-danger d-flex fs-12 fw-bold">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+        } @else {
+        <div class="alert alert-warning d-flex fs-12 fw-bold">
+          <i class="bi bi-info-circle-fill me-1"></i>
+          <span
+            >Make sure that the clicked image fit tightly in camera view, horizontally-aligned and
+            less than 5 MB.</span
+          >
+        </div>
+        }
+        <div class="form-group my-2">
+          <label for="panNumber" class="form-label text-light"
+            >PAN Number<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="panNumber"
+            uppercase
+            class="form-control custom-input-dark"
+            formControlName="panNumber"
+            placeholder="Enter PAN number"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            panFormControls['panNumber'].dirty &&
+                            panFormControls['panNumber'].valid,
+                         
+                          'is-invalid custom-input-error-dark':
+                           
+                            (panFormControls['panNumber'].dirty ||
+                              panFormControls['panNumber'].touched) &&
+                            panFormControls['panNumber'].invalid,
+                        }"
+          />
+          @if ( (panFormControls["panNumber"].dirty || panFormControls["panNumber"].touched) &&
+          panFormControls["panNumber"].invalid ) { @if (
+          panFormControls["panNumber"].hasError("required") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">PAN number is mandatory!</div>
+          } @if (panFormControls["panNumber"].hasError("pattern")) {
+          <div class="text-danger fs-12 ps-1 mt-1">Invalid PAN number!</div>
+          } }
+        </div>
+
+        <div class="form-group my-2">
+          <label for="panImage" class="form-label text-light"
+            >PAN Image<span class="text-danger">*</span></label
+          >
+          <input
+            type="file"
+            id="panImage"
+            class="form-control custom-input-dark"
+            formControlName="panImage"
+            accept="image/png,image/jpeg,image/jpg"
+            (change)="onFileChange($event, 'panImage', 5)"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            panFormControls['panImage'].dirty &&
+                            panFormControls['panImage'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                            
+                            (panFormControls['panImage'].dirty ||
+                              panFormControls['panImage'].touched) &&
+                            panFormControls['panImage'].invalid,
+                        }"
+          />
+          @if ( (panFormControls["panImage"].dirty || panFormControls["panImage"].touched) &&
+          panFormControls["panImage"].invalid ) { @if
+          (panFormControls["panImage"].hasError("required")) {
+          <div class="text-danger fs-12 ps-1 mt-1">PAN image is mandatory!</div>
+          } }
+        </div>
+
+        <div class="form-group my-4 text-center d-grid">
+          <button type="submit" class="btn btn-primary" [disabled]="panForm.invalid">Submit</button>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm me-1"
+            (click)="onRender('aadhar', 'pan')"
+          >
+            <i class="bi bi-arrow-left-short"></i>Back
+          </button>
+        </div>
+        } @else {
+        <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+          <div class="spinner-border text-primary" role="status"></div>
+          <div class="fs-15 blink mt-1 text-light">Verifying PAN Details...</div>
+        </div>
+        }
+      </form>
+      } @else {
+      <div>
+        <div class="text-center">
+          <i class="bi bi-check2-circle text-success fs-1"></i>
+          <div class="fw-bold text-light">PAN Verified Successfully</div>
+        </div>
+        <div class="PANdetails">
+          <div class="fs-10 mt-2 light-grey">Registered Name:</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.pan?.registeredName }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">PAN Number :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.pan?.panNumber }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Type of Holder :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.pan?.typeOfHolder }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Date of Birth :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.pan?.dateOfBirth }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Registered Address :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.pan?.registeredAddress }}
+          </div>
+        </div>
+        <div class="d-flex justify-content-end mt-3">
+          <button type="button" class="btn btn-secondary btn-sm me-1" (click)="onRender('aadhar')">
+            <i class="bi bi-arrow-left-short"></i>Back
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" (click)="onRender('bank')">
+            Next<i class="bi bi-arrow-right-short"></i>
+          </button>
+        </div>
+      </div>
+      } } @else {
+      <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="fs-13 blink mt-1 text-light">Fetching Pan Details...</div>
+      </div>
+      } } @case ("bank") { @if (!pageLoader) { @if (kycData?.bank?.status === "PENDING" ||
+      isUpdateBank) {
+      <form [formGroup]="bankForm" (ngSubmit)="onBankFormSubmit()">
+        @if (!formLoader) { @if (errorMessage) {
+        <div class="alert alert-danger d-flex fs-12 fw-bold">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+        } @else {
+        <div class="alert alert-warning d-flex fs-12 fw-bold">
+          <i class="bi bi-info-circle-fill me-1"></i>
+          <span
+            >Make sure that the clicked image fit tightly in camera view, horizontally-aligned and
+            less than 2 MB.</span
+          >
+        </div>
+        }
+        <div class="form-group my-2">
+          <label for="ifscCode" class="form-label text-light"
+            >IFSC Code<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="ifscCode"
+            uppercase
+            class="form-control custom-input-dark"
+            formControlName="ifscCode"
+            placeholder="Enter IFSC code"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            bankFormControls['ifscCode'].dirty &&
+                            bankFormControls['ifscCode'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                            
+                            (bankFormControls['ifscCode'].dirty ||
+                              bankFormControls['ifscCode'].touched) &&
+                            bankFormControls['ifscCode'].invalid,
+                        }"
+          />
+          @if ( (bankFormControls["ifscCode"].dirty || bankFormControls["ifscCode"].touched) &&
+          bankFormControls["ifscCode"].invalid ) { @if (
+          bankFormControls["ifscCode"].hasError("required") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">IFSC code is mandatory!</div>
+          } @if (bankFormControls["ifscCode"].hasError("pattern")) {
+          <div class="text-danger fs-12 ps-1 mt-1">Invalid IFSC code!</div>
+          } }
+        </div>
+
+        <div class="form-group my-2">
+          <label for="accNumber" class="form-label text-light"
+            >Account Number<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="accNumber"
+            class="form-control custom-input-dark"
+            formControlName="accNumber"
+            placeholder="Enter Account Number"
+            [ngClass]="{
+                         
+                          'is-valid':
+                            bankFormControls['accNumber'].dirty &&
+                            bankFormControls['accNumber'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                           
+                            (bankFormControls['accNumber'].dirty ||
+                              bankFormControls['accNumber'].touched) &&
+                            bankFormControls['accNumber'].invalid,
+                        }"
+          />
+          @if ( (bankFormControls["accNumber"].dirty || bankFormControls["accNumber"].touched) &&
+          bankFormControls["accNumber"].invalid ) { @if (
+          bankFormControls["accNumber"].hasError("required") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Account number is mandatory!</div>
+          } @if ( bankFormControls["accNumber"].hasError("pattern") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Invalid account number!</div>
+          } }
+        </div>
+
+        <div class="form-group my-2">
+          <label for="confirmAccNumber" class="form-label text-light"
+            >Re-Enter Account Number<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="confirmAccNumber"
+            disableCutCopyPaste
+            autocomplete="off"
+            class="form-control custom-input-dark"
+            formControlName="confirmAccNumber"
+            placeholder="Re-enter your account number"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            bankFormControls['confirmAccNumber'].dirty &&
+                            bankFormControls['confirmAccNumber'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                           
+                            (bankFormControls['confirmAccNumber'].dirty ||
+                              bankFormControls['confirmAccNumber'].touched) &&
+                            bankFormControls['confirmAccNumber'].invalid,
+                        }"
+          />
+          @if ( (bankFormControls["confirmAccNumber"].dirty ||
+          bankFormControls["confirmAccNumber"].touched) &&
+          bankFormControls["confirmAccNumber"].invalid ) { @if (
+          bankFormControls["confirmAccNumber"].hasError( "required" ) ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Account confirmation is mandatory!</div>
+          } @else if ( bankFormControls["confirmAccNumber"].getError( "accountMismatch" ) ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Account number mismatched!</div>
+          } }
+        </div>
+
+        <div class="form-group my-2">
+          <label for="chequeImage" class="form-label text-light"
+            >Cancelled Cheque Image<span class="text-danger">*</span></label
+          >
+          <input
+            type="file"
+            id="chequeImage"
+            class="form-control custom-input-dark"
+            formControlName="chequeImage"
+            accept="image/png,image/jpeg,image/jpg"
+            (change)="onFileChange($event, 'chequeImage', 2)"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            bankFormControls['chequeImage'].dirty &&
+                            bankFormControls['chequeImage'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                           
+                            (bankFormControls['chequeImage'].dirty ||
+                              bankFormControls['chequeImage'].touched) &&
+                            bankFormControls['chequeImage'].invalid,
+                        }"
+          />
+          @if ( (bankFormControls["chequeImage"].dirty || bankFormControls["chequeImage"].touched)
+          && bankFormControls["chequeImage"].invalid ) { @if (
+          bankFormControls["chequeImage"].hasError("required") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Cancelled cheque image is mandatory!</div>
+          } }
+        </div>
+
+        @if (!isUpdateBank) {
+        <div class="form-group my-4 text-center d-grid">
+          <button type="submit" class="btn btn-primary" [disabled]="bankForm.invalid">
+            Submit
+          </button>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm me-1"
+            (click)="onRender('pan', 'bank')"
+          >
+            <i class="bi bi-arrow-left-short"></i>Back
+          </button>
+        </div>
+        } @if (isUpdateBank) {
+        <div class="d-grid gap-2 d-flex justify-content-center mt-3">
+          <button class="btn btn-secondary col-6" type="button" (click)="onCancelUpdateBankClick()">
+            Cancel
+          </button>
+          <button
+            class="form-group btn btn-primary col-6"
+            type="submit"
+            [disabled]="bankForm.invalid"
+          >
+            Update
+          </button>
+        </div>
+        } } @else {
+        <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+          <div class="spinner-border text-primary" role="status"></div>
+          <div class="fs-15 blink mt-1 text-light">Verifying Bank Details...</div>
+        </div>
+        }
+      </form>
+      } @else {
+      <div>
+        <div class="text-center">
+          <i class="bi bi-check2-circle text-success fs-1"></i>
+          <div class="fw-bold text-light">Bank Verified Successfully</div>
+        </div>
+
+        <div>
+          <div class="fs-10 mt-2 light-grey">Bank Name:</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.bank?.bankName }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">IFSC Code :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.bank?.ifscCode }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Account Number :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.bank?.accountNumber }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Branch :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.bank?.branch }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Account Type :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.bank?.accountType }}
+          </div>
+        </div>
+
+        <div class="form-group my-1 text-center d-grid">
+          <button type="button" class="btn btn-primary" (click)="onUpdateBankClick()">
+            Update Bank Details
+          </button>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button type="button" class="btn btn-secondary btn-sm me-1" (click)="onRender('pan')">
+            <i class="bi bi-arrow-left-short"></i>Back
+          </button>
+          <button type="button" class="btn btn-sm btn-primary btn-sm" (click)="onRender('selfie')">
+            Next<i class="bi bi-arrow-right-short"></i>
+          </button>
+        </div>
+      </div>
+      } } @else {
+      <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="fs-13 blink mt-1 text-light">Fetching Bank Details...</div>
+      </div>
+      } } @case ("selfie") {
+      <div>
+        @if (!pageLoader) { @if (!formLoader) { @if (errorMessage) {
+        <div class="alert alert-danger d-flex fs-12 fw-bold">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+        } @if ( !errorMessage && kycData?.selfie?.status === "PENDING" ) {
+        <div class="alert alert-warning d-flex fs-12 fw-bold">
+          <i class="bi bi-info-circle-fill me-1"></i>
+          <span
+            >Make sure that the clicked image fit tightly in camera view, horizontally-aligned and
+            less than 10 MB.</span
+          >
+        </div>
+        } @if ( !errorMessage && kycData?.selfie?.status === "VERIFIED" ) {
+        <div class="text-center">
+          <i class="bi bi-check2-circle text-success fs-1"></i>
+          <div class="fw-bold text-light">Selfie Verified Successfully</div>
+        </div>
+        }
+
+        <div class="text-center">
+          @if (kycData?.selfie?.selfieImage) {
+          <div class="uploaded_image">
+            <img [src]="kycData?.selfie?.selfieImage" alt="Captured Image" />
+          </div>
+          } @else { @if (!isCamerOpened) {
+          <div class="d-flex justify-content-center">
+            <div class="video_conatiner"></div>
+          </div>
+          }
+          <div class="row">
+            @if (isCamerOpened) {
+            <div [ngClass]="!capturedImage ? 'col-12' : 'col-6'">
+              <video
+                #video
+                autoplay
+                [attr.playsinline]="true"
+                webkit-playsinline
+                [ngStyle]="{
+                                width: !capturedImage && stream ? '70%' : '90%',
+                              }"
+              ></video>
+
+              <canvas #canvas hidden></canvas>
+            </div>
+            }
+
+            <div class="col-6">
+              @if (capturedImage) {
+              <div class="preview">
+                <img [src]="capturedImage" alt="Captured Image" />
+              </div>
+              }
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button class="btn btn-sm btn-primary" (click)="startCamera()">Start Camera</button>
+            <button
+              class="btn btn-sm btn-primary ms-2"
+              (click)="captureImage()"
+              [disabled]="!stream"
+            >
+              Capture
+            </button>
+            <button
+              class="btn btn-sm btn-primary ms-2"
+              (click)="uploadSelfieImage()"
+              [disabled]="!capturedImage"
+            >
+              Upload
+            </button>
+            <button class="btn btn-sm btn-primary ms-2" (click)="stopCamera()" [disabled]="!stream">
+              Stop
+            </button>
+          </div>
+          }
+        </div>
+        <div class="d-flex justify-content-end mt-3">
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm me-1"
+            (click)="onRender('bank', 'selfie')"
+          >
+            <i class="bi bi-arrow-left-short"></i>Back
+          </button>
+
+          <!-- @if (data?.kycdata?.selfie?.status === "VERIFIED") {
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        (click)="onRender('kycCompleted')"
+                      >
+                        Next<i class="bi bi-arrow-right-short"></i>
+                      </button>
+                    } -->
+        </div>
+
+        <!-- <div class="d-flex justify-content-center my-4">
+                    <input
+                      #fileUpload
+                      type="file"
+                      class="d-none"
+                      formControlName="selfieImage"
+                      accept="image/png,image/jpeg,image/jpg"
+                      (change)="onSelfieUpload($event, 10)"
+                    />
+
+                    <div class="position-relative">
+                      @if (imagePreview) {
+                        <img
+                          class="profileImage"
+                          [src]="imagePreview ? imagePreview : imgSrc"
+                          width="190px"
+                        />
+
+                        <button
+                          class="deleteImgBtn"
+                          [ngbTooltip]="'Delete preview'"
+                          tooltipClass="custom-tooltipclass"
+                          (click)="clearPreview(fileUpload)"
+                        >
+                          <i class="bi bi-x-lg"></i>
+                        </button>
+                      }
+
+                      @if (!imagePreview) {
+                        <img
+                          class="profileImage"
+                          [src]="
+                            data?.kycdata?.selfie?.selfieImage
+                              ? data?.kycdata?.selfie?.selfieImage
+                              : imgSrc
+                          "
+                          width="190px"
+                        />
+
+                        @if (!data?.kycdata?.selfie?.selfieImage) {
+                          <button
+                            class="editImgBtn"
+                            [ngbTooltip]="'Edit or upload image'"
+                            tooltipClass="custom-tooltipclass"
+                            (click)="onSelfieInputClick(fileUpload)"
+                          >
+                            <i class="bi bi-pencil-fill"></i>
+                          </button>
+                        }
+                      }
+                    </div>
+                  </div>
+
+                  @if (imagePreview) {
+                    <div class="d-flex justify-content-center">
+                      @if (!formLoader) {
+                        <div>
+                          <button
+                            class="btn btn-sm btn-primary mt-1 px-5"
+                            (click)="onSelfieFormSubmit()"
+                          >
+                            Upload Image
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  <div class="d-flex justify-content-end mt-3">
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-sm me-1"
+                      (click)="onRender('bank', 'selfie')"
+                    >
+                      <i class="bi bi-arrow-left-short"></i>Back
+                    </button>
+
+                    @if (data?.kycdata?.selfie?.status === "VERIFIED") {
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        (click)="onRender('kycCompleted')"
+                      >
+                        Next<i class="bi bi-arrow-right-short"></i>
+                      </button>
+                    }
+                  </div> -->
+        } @else {
+        <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+          <div class="spinner-border text-primary" role="status"></div>
+          <div class="fs-15 blink mt-1 text-light">Verifying Selfie...</div>
+        </div>
+        } } @else {
+        <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+          <div class="spinner-border text-primary" role="status"></div>
+          <div class="fs-13 blink mt-1 text-light">Fetching Selfie...</div>
+        </div>
+        }
+      </div>
+      } @case ("kycCompleted") { @if (!pageLoader) {
+      <div class="text-center mt-5">
+        <div>
+          <div class="checkmark-container">
+            <i class="bi bi-check-lg checkmark-icon fs-1 text-white"></i>
+          </div>
+          <h5 class="text-center fw-bold mt-0 text-light">Congratulations!!</h5>
+          <p class="text-center mb-5 text-light">Your KYC has been completed successfully.</p>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end mt-3">
+        <button type="button" class="btn btn-secondary btn-sm me-1" (click)="onRender('selfie')">
+          <i class="bi bi-arrow-left-short"></i>Back
+        </button>
+      </div>
+      } @else {
+      <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="fs-13 blink mt-1 text-light">Fetching KYC Details...</div>
+      </div>
+      } } }
+    </div>
+  </div>
+</div>

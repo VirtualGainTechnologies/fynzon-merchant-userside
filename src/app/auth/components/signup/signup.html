@@ -1,0 +1,482 @@
+<div class="headerBar">
+  <app-header></app-header>
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-4 leftScetion"></div>
+    <div class="col-12 col-sm-8 rightSection">
+      <div class="margin-container">
+        @if (step==1) {
+
+        <div class="form">
+          <h4 class="fs-20 fw-bold">Select one</h4>
+          <p class="fs-15">Create account for personalized financial solutions.</p>
+          <form [formGroup]="registerForm">
+            <div class="form-group row g-4">
+              @for (category of categories; track $index; let i = $index) {
+              <button
+                type="button"
+                class="category-button"
+                [ngStyle]="{
+                      'background-color':
+                        buttonIndex === i ? '#708090' : '#ffffff',
+                      color: buttonIndex === i ? '#ffffff' : 'blue',
+                    }"
+                (click)="setCategory(category.value, i)"
+              >
+                @if (category?.type == "Individual or Freelancer") {
+                <i class="bi bi-person-bounding-box"></i>
+                } @else {
+                <i class="bi bi-diagram-3-fill"></i>
+                }
+                <span class="ms-3">{{ category?.type }}</span>
+              </button>
+              }
+
+              <button
+                type="button"
+                class="btn btn-primary category-btn"
+                [disabled]="registerFormControls['category'].invalid"
+                (click)="gotoSecondStep()"
+              >
+                Continue
+              </button>
+            </div>
+          </form>
+        </div>
+
+        }@else if(step==2) {
+
+        <h4 class="fs-20 fw-bold">Sign Up</h4>
+        <p class="fs-15">Create account for personalized financial solutions.</p>
+
+        <div class="form my-4">
+          <form [formGroup]="registerForm">
+            @if (registerFormControls["email"].hasError("userExists")) {
+            <div class="alert alert-danger fade show p-2 fs-12" role="alert">
+              <div class="d-flex justify-content-start">
+                <div><i class="bi bi-info-circle-fill"></i>&nbsp;</div>
+                <div class="fw-bold ms-1 text-justify">
+                  The email
+                  <span class="fw-bold">"{{ registerFormControls['email'].value }}"</span>
+                  is already registered. Please use other email id.
+                </div>
+              </div>
+            </div>
+            }
+
+            <div class="form-group mb-3">
+              <input
+                type="email"
+                class="form-control custom-input cutsom-input-height-45"
+                placeholder="Email*"
+                formControlName="email"
+                [ngClass]="{
+                    'is-valid':
+                      registerFormControls['email'].dirty &&
+                      registerFormControls['email'].valid,
+                    'is-invalid custom-input-error':
+                      (registerFormControls['email'].dirty ||
+                        registerFormControls['email'].touched) &&
+                      registerFormControls['email'].invalid,
+                  }"
+              />
+
+              @if ( (registerFormControls["email"].dirty || registerFormControls["email"].touched)
+              && registerFormControls["email"].invalid ) { @if
+              (registerFormControls["email"].hasError("required")) {
+              <div class="text-danger fs-12 ps-1 mt-1">Email is mandatory!</div>
+              } @if (registerFormControls["email"].hasError("email")) {
+              <div class="text-danger fs-12 ps-1 mt-1">Invalid email!</div>
+              } }
+            </div>
+
+            <div class="form-group mb-3 inner-addon right-addon">
+              @if (showVisibilityIcon) {
+              <span class="innerText" (click)="togglePasswordVisibility()">
+                @if (fieldTextType) {
+                <i class="bi bi-eye-slash"></i>
+                } @else {
+                <i class="bi bi-eye"></i>
+                }
+              </span>
+              }
+
+              <input
+                [type]="fieldTextType ? 'text' : 'password'"
+                class="form-control custom-input cutsom-input-height-45"
+                placeholder="Password*"
+                formControlName="password"
+                [ngClass]="{
+                    'is-valid':
+                      registerFormControls['password'].dirty &&
+                      registerFormControls['password'].valid,
+                    'is-invalid custom-input-error':
+                      (registerFormControls['password'].dirty ||
+                        registerFormControls['password'].touched) &&
+                      registerFormControls['password'].invalid,
+                  }"
+              />
+
+              @if ( registerForm.value.password &&
+              !registerFormControls["password"].hasError("minlength") ) {
+              <div class="ms-2">
+                <app-password-strength [passwordToCheck]="registerForm.value.password">
+                </app-password-strength>
+              </div>
+              } @if ( (registerFormControls["password"].dirty ||
+              registerFormControls["password"].touched) && registerFormControls["password"].invalid
+              ) { @if (registerFormControls["password"].hasError("required")) {
+              <div class="text-danger fs-12 ps-1 mt-1">Password is mandatory!</div>
+              } @if (registerFormControls["password"].hasError("minlength")) {
+              <div class="text-danger fs-12 ps-1 mt-1">
+                Password must be at least 8 characters long!
+              </div>
+              } }
+            </div>
+
+            <div class="form-group mb-3 inner-addon right-addon">
+              @if (showVisibilityIcon) {
+              <span class="innerText" (click)="togglePasswordVisibility2()">
+                @if (fieldTextType2) {
+                <i class="bi bi-eye-slash"></i>
+                } @else {
+                <i class="bi bi-eye"></i>
+                }
+              </span>
+              }
+
+              <input
+                disableCutCopyPaste
+                autocomplete="off"
+                [type]="fieldTextType2 ? 'text' : 'password'"
+                class="form-control shadow-none custom-input cutsom-input-height-45"
+                placeholder="Confirm Password*"
+                formControlName="confirmPassword"
+                [ngClass]="{
+                    'is-valid':
+                      registerFormControls['confirmPassword'].dirty &&
+                      registerFormControls['confirmPassword'].valid,
+                    'is-invalid custom-input-error':
+                      (registerFormControls['confirmPassword'].dirty ||
+                        registerFormControls['confirmPassword'].touched) &&
+                      registerFormControls['confirmPassword'].invalid,
+                  }"
+              />
+
+              @if ( (registerFormControls["confirmPassword"].dirty ||
+              registerFormControls["confirmPassword"].touched) &&
+              registerFormControls["confirmPassword"].invalid ) { @if (
+              registerFormControls["confirmPassword"].hasError("required") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">Password confirmation is mandatory!</div>
+              } @else if ( registerFormControls["confirmPassword"].getError( "passwordMismatch" ) )
+              {
+              <div class="text-danger fs-12 ps-1 mt-1">Password mismatched!</div>
+              } }
+            </div>
+
+            <div class="d-grid">
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="registerForm.invalid"
+                (click)="gotoThirdStep()"
+              >
+                Continue
+              </button>
+            </div>
+          </form>
+        </div>
+        }@else if(step==3){
+        <!-- form3 Starts -->
+        <h4 class="fs-18 fw-bold">Smart Financing Starts Here</h4>
+        <p class="fs-15">Complete your details for personalized financial solutions.</p>
+
+        <div class="form my-4">
+          <form [formGroup]="registerForm">
+            @if ( registerFormControls["phone"]?.hasError("userExists") ||
+            registerFormControls["businessName"]?.hasError("userExists") ) {
+            <div class="alert alert-danger fade show p-2 fs-12" role="alert">
+              <div class="d-flex justify-content-start">
+                <div><i class="bi bi-info-circle-fill"></i>&nbsp;</div>
+                <div class="fw-bold ms-1 text-justify">
+                  @if ( registerFormControls["phone"].hasError("userExists") ) { The phone number
+                  <span class="fw-bold">"{{ registerFormControls['phone'].value }}"</span>
+                  is already registered. Please use other phone number. } @else if (
+                  registerFormControls["businessName"].hasError( "userExists" ) ) { The business
+                  name
+                  <span class="fw-bold">"{{ registerFormControls['businessName'].value }}"</span>
+                  is already registered. Please use other one. }
+                </div>
+              </div>
+            </div>
+            } @else if (registerFormControls["category"].value === "ENTITY") {
+            <div class="alert alert-warning fade show p-2 fs-12" role="alert">
+              <div class="d-flex justify-content-start">
+                <div><i class="bi bi-info-circle-fill"></i>&nbsp;</div>
+                <div class="fw-bold ms-1 text-justify">
+                  It is crucial to ensure that the business name matches exactly as it appears on
+                  the GST Registration Certificate. Any discrepancy, including differences in
+                  spelling, spacing, or punctuation, may result in issues or delays during the KYC
+                  process.
+                </div>
+              </div>
+            </div>
+            } @else if (registerFormControls["phoneCode"].value === "91") {
+            <div class="alert alert-warning fade show p-2 fs-12" role="alert">
+              <div class="d-flex justify-content-start">
+                <div><i class="bi bi-info-circle-fill"></i>&nbsp;</div>
+                <div class="fw-bold ms-1 text-justify">
+                  The phone number used for registration must match the one linked to your Aadhaar.
+                  This is a mandatory requirement for KYC verification and serves as a crucial
+                  security measure.
+                </div>
+              </div>
+            </div>
+            } @if (registerFormControls["category"].value === "ENTITY") {
+            <div class="form-group mb-3">
+              <input
+                type="text"
+                class="form-control shadow-none custom-input cutsom-input-height-45"
+                placeholder="Business Name*"
+                formControlName="businessName"
+                [ngClass]="{
+                      'is-valid':
+                        registerFormControls['businessName'].dirty &&
+                        registerFormControls['businessName'].valid,
+                      'is-invalid custom-input-error':
+                        (registerFormControls['businessName'].dirty ||
+                          registerFormControls['businessName'].touched) &&
+                        registerFormControls['businessName'].invalid,
+                    }"
+              />
+
+              @if ( (registerFormControls["businessName"].dirty ||
+              registerFormControls["businessName"].touched) &&
+              registerFormControls["businessName"].invalid ) { @if (
+              registerFormControls["businessName"].hasError("required") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">Business name is mandatory!</div>
+              } @if ( registerFormControls["businessName"].hasError("minlength") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">
+                Business name must be at least 5 characters long!
+              </div>
+              } }
+            </div>
+
+            <div class="form-group mb-3">
+              <select
+                class="form-select form-control custom-input cutsom-input-height-45"
+                formControlName="businessCategory"
+                title="business_category"
+                [ngClass]="{
+                      'is-valid':
+                        registerFormControls['businessCategory'].dirty &&
+                        registerFormControls['businessCategory'].valid,
+                      'is-invalid custom-input-error':
+                        (registerFormControls['businessCategory'].dirty ||
+                          registerFormControls['businessCategory'].touched) &&
+                        registerFormControls['businessCategory'].invalid,
+                    }"
+              >
+                <option value="" disabled>Select Your business category*</option>
+                @for (Categories of BusinessCategory; track $index) {
+                <option class="cursor">{{ Categories }}</option>
+                }
+              </select>
+
+              @if ( (registerFormControls["businessCategory"].dirty ||
+              registerFormControls["businessCategory"].touched) &&
+              registerFormControls["businessCategory"].invalid ) { @if (
+              registerFormControls["businessCategory"].hasError( "required" ) ) {
+              <div class="text-danger fs-12 ps-1 mt-1">Please select your business category!</div>
+              } }
+            </div>
+            } @if (registerFormControls["category"].value === "INDIVIDUAL") {
+            <div class="form-group mb-3">
+              <input
+                type="text"
+                class="form-control shadow-none custom-input cutsom-input-height-45"
+                placeholder="Full Name*"
+                formControlName="fullName"
+                [ngClass]="{
+                      'is-valid':
+                        registerFormControls['fullName'].dirty &&
+                        registerFormControls['fullName'].valid,
+                      'is-invalid custom-input-error':
+                        (registerFormControls['fullName'].dirty ||
+                          registerFormControls['fullName'].touched) &&
+                        registerFormControls['fullName'].invalid,
+                    }"
+              />
+
+              @if ( (registerFormControls["fullName"].dirty ||
+              registerFormControls["fullName"].touched) && registerFormControls["fullName"].invalid
+              ) { @if ( registerFormControls["fullName"].hasError("required") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">Full name is mandatory!</div>
+              } @if ( registerFormControls["fullName"].hasError("minlength") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">
+                Full name must be at least 2 characters long!
+              </div>
+              } }
+            </div>
+
+            <div class="form-group mb-3">
+              <select
+                class="form-select form-control custom-input cutsom-input-height-45"
+                formControlName="profession"
+                [ngClass]="{
+                      'is-valid':
+                        registerFormControls['profession'].dirty &&
+                        registerFormControls['profession'].valid,
+                      'is-invalid custom-input-error':
+                        (registerFormControls['profession'].dirty ||
+                          registerFormControls['profession'].touched) &&
+                        registerFormControls['profession'].invalid,
+                    }"
+              >
+                <option value="" disabled>Select Your Profession*</option>
+                @for (types of Professions; track $index) {
+                <option class="cursor">{{ types }}</option>
+                }
+              </select>
+
+              @if ( (registerFormControls["profession"].dirty ||
+              registerFormControls["profession"].touched) &&
+              registerFormControls["profession"].invalid ) { @if (
+              registerFormControls["profession"].hasError("required") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">Please select your profession!</div>
+              } }
+            </div>
+            }
+
+            <div class="form-group mb-3 inner-addon left-addon">
+              <span class="innerText">
+                <lib-country-list
+                  class="countryDropdown"
+                  [selectedCountryConfig]="selectedCountryConfig"
+                  [countryListConfig]="countryListConfig"
+                  [selectedCountryCode]="'in'"
+                  (onCountryChange)="onCountryChange($event)"
+                ></lib-country-list>
+              </span>
+
+              <input
+                type="number"
+                title="phone_number"
+                class="form-control custom-input cutsom-input-height-45"
+                [placeholder]="
+                  registerFormControls['category'].value === 'INDIVIDUAL'
+                    ? 'Phone Number (as per aadhaar)*'
+                    : 'Phone Number'
+                "
+                formControlName="phone"
+                [ngClass]="{
+                    'is-valid':
+                      registerFormControls['phone'].dirty &&
+                      registerFormControls['phone'].valid,
+                    'is-invalid custom-input-error':
+                      (registerFormControls['phone'].dirty ||
+                        registerFormControls['phone'].touched) &&
+                      registerFormControls['phone'].invalid,
+                  }"
+              />
+
+              @if ( (registerFormControls["phone"].dirty || registerFormControls["phone"].touched)
+              && registerFormControls["phone"].invalid ) { @if
+              (registerFormControls["phone"].hasError("required")) {
+              <div class="text-danger fs-12 ps-1 mt-1">Phone number is mandatory!</div>
+              } @if (registerFormControls["phone"].hasError("pattern")) {
+              <div class="text-danger fs-12 ps-1 mt-1">Invalid phone number!</div>
+              } }
+            </div>
+
+            <div class="d-grid">
+              @if (!loader) {
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="registerForm.invalid"
+                (click)="sendEmailOtp()"
+              >
+                Continue
+              </button>
+              } @if (loader) {
+              <button type="button" class="btn btn-primary cursor-progress">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+          </form>
+        </div>
+        }@else if(step==4) {
+        <h4 class="fs-18 fw-bold">Almost there</h4>
+        <p class="fs-15">Enter the verification code sent to</p>
+        <h5 class="text-primary fw-bold">
+          {{ registerFormControls['email'].value | fixedMaskData : 'email' }}
+        </h5>
+
+        <div class="form my-4">
+          <form [formGroup]="registerForm">
+            <div class="form-group">
+              <label for="otpInput" class="form-label">Enter verification code</label>
+
+              <div class="text-center mb-5">
+                <ng-otp-input
+                  [config]="ngOtpConfig"
+                  (onInputChange)="onEmailOtpChange($event)"
+                ></ng-otp-input>
+              </div>
+            </div>
+
+            @if(resendEmailOtpTimer$ | async; as time) { @if (time.minutes > 0 || time.seconds > 0)
+            {
+            <div class="d-grid">
+              @if (!loader) {
+              <button
+                type="button"
+                class="btn btn-primary padding-inline-130"
+                [disabled]="registerForm.invalid"
+                (click)="verifyEmailOtp()"
+              >
+                Verify
+              </button>
+              } @else{
+              <button type="button" class="btn btn-primary cursor-progress">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+
+            @if (time) {
+            <div class="text-center fs-13 mt-1">
+              <div>
+                Haven't received OTP ? Resend OTP in
+                <span class="text-danger fw-bold ps-1"
+                  >{{ time.minutes }}m {{ time.seconds }}s</span
+                >
+              </div>
+            </div>
+            } } @if (time.minutes === 0 && time.seconds <= 0) {
+            <div class="d-grid">
+              @if (!resendOtpLoader) {
+              <button
+                type="button"
+                class="btn btn-secondary padding-inline-125"
+                (click)="resendOtp('EMAIL')"
+              >
+                Resend OTP
+              </button>
+              } @if (resendOtpLoader) {
+              <button type="button" title="Loading..." class="btn btn-secondary padding-inline-140">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+            } }
+          </form>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

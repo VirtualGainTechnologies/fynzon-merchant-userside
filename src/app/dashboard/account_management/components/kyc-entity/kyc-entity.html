@@ -1,0 +1,645 @@
+<div class="container-fluid">
+  <div class="fw-bold text-info" >
+    KYC Details
+  </div>
+  <div class="fs-10 fw-bold text-light">It helps in verifying your identity</div>
+  <hr class="mt-1 text-light" />
+  <div class="container">
+    <!--icons-->
+    <div class="d-flex justify-content-around">
+      <div [ngClass]="kycData?.gst?.status === 'VERIFIED' ? 'cursor' : ''">
+        <div
+          class="progress-item"
+          [ngClass]="percentage >= 33 || render == 'gst' ? 'active-step-icon' : ''"
+          (click)="kycData?.gst?.status === 'VERIFIED' ? onRender('gst') : false"
+        >
+          <i class="bi bi-person-workspace"></i>
+        </div>
+
+        <div
+          class="text-center text-light"
+          [ngClass]="
+            percentage >= 33 || render == 'gst'
+              ? 'active-step'
+              : 'text-dark'
+          "
+          (click)="kycData?.gst?.status === 'VERIFIED' ? onRender('gst') : false"
+        >
+          GST
+        </div>
+      </div>
+
+      <div [ngClass]="kycData?.pan?.status === 'VERIFIED' ? 'cursor' : ''">
+        <div
+          class="progress-item"
+          [ngClass]="percentage >= 66 || render == 'pan' ? 'active-step-icon' : ''"
+          (click)="kycData?.pan?.status === 'VERIFIED' ? onRender('pan') : ''"
+        >
+          <i class="bi bi-person-vcard"></i>
+        </div>
+
+        <div
+          class="text-center text-light"
+          [ngClass]="
+            percentage >= 66 || render == 'pan'
+              ? 'active-step'
+              
+              : 'text-dark'
+          "
+          (click)="kycData?.pan?.status === 'VERIFIED' ? onRender('pan') : ''"
+        >
+          PAN
+        </div>
+      </div>
+
+      <div [ngClass]="kycData?.bank?.status === 'VERIFIED' ? 'cursor' : ''">
+        <div
+          class="progress-item"
+          [ngClass]="percentage >= 100 || render == 'bank' ? 'active-step-icon' : ''"
+          (click)="kycData?.bank?.status === 'VERIFIED' ? onRender('bank') : ''"
+        >
+          <i class="bi bi-bank"></i>
+        </div>
+
+        <div
+          class="text-center text-light"
+          [ngClass]="
+            percentage >= 100 || render == 'bank'
+              ? 'active-step'
+              
+              : 'text-dark'
+          "
+          (click)="kycData?.bank?.status === 'VERIFIED' ? onRender('bank') : ''"
+        >
+          Bank
+        </div>
+      </div>
+    </div>
+
+    <!--progress bar-->
+    <div class="progress">
+      <div
+        class="text-end text-white px-2"
+        [ngClass]="
+          percentage == 33
+            ? 'progress-33'
+            : percentage == 66
+            ? 'progress-66'
+            : percentage == 100
+            ? 'progress-100'
+            : 'progress-0'
+        "
+      >
+        @if(percentage){<span>{{ percentage }} %</span>}
+      </div>
+    </div>
+
+    <!--kyc form-->
+    <div
+      class="formContent formContent-dark"
+      [ngClass]="{
+          'success-background':
+            render === 'kycCompleted' && pageLoader,
+        }"
+    >
+      @switch (render) { @case ("gst") { @if (!pageLoader) { @if
+      (kycData?.gst?.status === "PENDING") {
+      <form [formGroup]="gstinForm" (ngSubmit)="onGstFormSubmit()">
+        @if (!formLoader) { @if (errorMessage) {
+        <div class="alert alert-danger d-flex fs-12 fw-bold">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+        } @else {
+        <div class="alert alert-warning d-flex fs-12 fw-bold">
+          <i class="bi bi-info-circle-fill me-1"></i>
+          <span
+            >Please ensure that the business name provided during registration matches the name
+            registered under the provided GSTIN (Goods and Services Tax Identification
+            Number).</span
+          >
+        </div>
+        }
+
+        <div class="form-group my-2">
+          <label for="gstinNumber" class="form-label text-light"
+            >GST Number<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="gstinNumber"
+            uppercase
+            class="form-control custom-input-dark"
+            formControlName="gstinNumber"
+            placeholder="Enter GST number"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            gstinFormControls['gstinNumber'].dirty &&
+                            gstinFormControls['gstinNumber'].valid,
+                          'is-invalid custom-input-error-dark':
+                            
+                            (gstinFormControls['gstinNumber'].dirty ||
+                              gstinFormControls['gstinNumber'].touched) &&
+                            gstinFormControls['gstinNumber'].invalid,
+                        }"
+          />
+          @if ( (gstinFormControls["gstinNumber"].dirty || gstinFormControls["gstinNumber"].touched)
+          && gstinFormControls["gstinNumber"].invalid ) { @if (
+          gstinFormControls["gstinNumber"].hasError("required") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">GST number is mandatory!</div>
+          } @if ( gstinFormControls["gstinNumber"].hasError("pattern") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Invalid GST number!</div>
+          } }
+        </div>
+
+        <div class="form-group my-3">
+          <label for="confirmGstinNumber" class="form-label text-light"
+            >Re-Enter GST Number<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="confirmGstinNumber"
+            autocomplete="off"
+            disableCutCopyPaste
+            autocomplete="off"
+            class="form-control custom-input-dark"
+            formControlName="confirmGstinNumber"
+            placeholder="Re-enter your GST number"
+            [ngClass]="{
+                          'is-valid':
+                            gstinFormControls['confirmGstinNumber'].dirty &&
+                            gstinFormControls['confirmGstinNumber'].valid,
+                          'is-invalid custom-input-error-dark':
+                            (gstinFormControls['confirmGstinNumber'].dirty ||
+                              gstinFormControls['confirmGstinNumber']
+                                .touched) &&
+                            gstinFormControls['confirmGstinNumber'].invalid,
+                        }"
+          />
+          @if ( (gstinFormControls["confirmGstinNumber"].dirty ||
+          gstinFormControls["confirmGstinNumber"].touched) &&
+          gstinFormControls["confirmGstinNumber"].invalid ) { @if (
+          gstinFormControls["confirmGstinNumber"].hasError( "required" ) ) {
+          <div class="text-danger fs-12 ps-1 mt-1">GST confirmation is mandatory!</div>
+          } @else if ( gstinFormControls["confirmGstinNumber"].getError( "gstinMismatch" ) ) {
+          <div class="text-danger fs-12 ps-1 mt-1">GST number mismatched!</div>
+          } }
+        </div>
+
+        <div class="form-group my-4 text-center d-grid">
+          <button type="submit" class="btn btn-primary" [disabled]="gstinForm.invalid">
+            Submit
+          </button>
+        </div>
+        } @else {
+        <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+          <div class="spinner-border text-primary" role="status"></div>
+          <div class="fs-13 blink mt-1 text-light">Verifying GST Details...</div>
+        </div>
+        }
+      </form>
+      } @else {
+      <div>
+        <div class="text-center">
+          <i class="bi bi-check2-circle text-success fs-40"></i>
+          <div class="fw-bold text-light">GSTIN Verified Successfully</div>
+        </div>
+
+        <div>
+          <div
+            class="fs-10 mt-2 light-grey"
+          >
+            GST Number:
+          </div>
+          <div class="fs-15 text-light">
+            {{ kycData?.gst?.gstinNumber }}
+          </div>
+          <div class="fs-12 mt-2 light-grey">Business Name :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.gst?.businessName }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Business Type :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.gst?.businessType }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Registered Address :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.gst?.registeredAddress }}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button type="button" class="btn btn-primary btn-sm" (click)="onRender('pan')">
+            Next<i class="bi bi-arrow-right-short"></i>
+          </button>
+        </div>
+      </div>
+      } } @else {
+      <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="fs-13 blink mt-1 text-light">Fetching GST Details...</div>
+      </div>
+      } } @case ("pan") { @if (!pageLoader) { @if (kycData?.pan?.status ===
+      "PENDING") {
+      <form [formGroup]="panForm" (ngSubmit)="onPanFormSubmit()">
+        @if (!formLoader) { @if (errorMessage) {
+        <div class="alert alert-danger d-flex fs-12 fw-bold">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+        } @else {
+        <div class="alert alert-warning d-flex fs-12 fw-bold">
+          <i class="bi bi-info-circle-fill me-1"></i>
+          <span
+            >Make sure that the clicked image fit tightly in camera view, horizontally-aligned and
+            less than 10 MB.</span
+          >
+        </div>
+        }
+        <div class="form-group my-2">
+          <label for="panNumber" class="form-label text-light"
+            >PAN Number<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="panNumber"
+            uppercase
+            class="form-control custom-input-dark"
+            formControlName="panNumber"
+            placeholder="Enter PAN number"
+            [ngClass]="{
+                          'is-valid':
+                            panFormControls['panNumber'].dirty &&
+                            panFormControls['panNumber'].valid,
+                          'is-invalid custom-input-error-dark':
+                            
+                            (panFormControls['panNumber'].dirty ||
+                              panFormControls['panNumber'].touched) &&
+                            panFormControls['panNumber'].invalid,
+                        }"
+          />
+          @if ( (panFormControls["panNumber"].dirty || panFormControls["panNumber"].touched) &&
+          panFormControls["panNumber"].invalid ) { @if (
+          panFormControls["panNumber"].hasError("required") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">PAN number is mandatory!</div>
+          } @if (panFormControls["panNumber"].hasError("pattern")) {
+          <div class="text-danger fs-12 ps-1 mt-1">Invalid PAN number!</div>
+          } }
+        </div>
+
+        <div class="form-group my-2">
+          <label for="panImage" class="form-label text-light"
+            >PAN Image<span class="text-danger">*</span></label
+          >
+          <input
+            type="file"
+            id="panImage"
+            class="form-control custom-input-dark"
+            formControlName="panImage"
+            accept="image/png,image/jpeg,image/jpg"
+            (change)="onFileChange($event, 'panImage', 5)"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            panFormControls['panImage'].dirty &&
+                            panFormControls['panImage'].valid,
+                          'is-invalid custom-input-error-dark':
+                            (panFormControls['panImage'].dirty ||
+                              panFormControls['panImage'].touched) &&
+                            panFormControls['panImage'].invalid,
+                        }"
+          />
+          @if ( (panFormControls["panImage"].dirty || panFormControls["panImage"].touched) &&
+          panFormControls["panImage"].invalid ) { @if
+          (panFormControls["panImage"].hasError("required")) {
+          <div class="text-danger fs-12 ps-1 mt-1">PAN image is mandatory!</div>
+          } }
+        </div>
+
+        <div class="form-group my-4 text-center d-grid">
+          <button type="submit" class="btn btn-primary" [disabled]="panForm.invalid">Submit</button>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm me-1"
+            (click)="onRender('gst', 'pan')"
+          >
+            <i class="bi bi-arrow-left-short"></i>Back
+          </button>
+        </div>
+        } @else {
+        <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+          <div class="spinner-border text-primary" role="status"></div>
+          <div class="fs-15 blink mt-1 text-light">Verifying PAN Details...</div>
+        </div>
+        }
+      </form>
+      } @else {
+      <div>
+        <div class="text-center">
+          <i class="bi bi-check2-circle text-success fs-40"></i>
+          <div class="fw-bold text-light">PAN Verified Successfully</div>
+        </div>
+        <div class="PANdetails">
+          <div class="fs-10 mt-2 light-grey">Registered Name:</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.pan?.registeredName }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">PAN Number :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.pan?.panNumber }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Type of Holder :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.pan?.typeOfHolder }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Registered Address :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.pan?.registeredAddress }}
+          </div>
+        </div>
+        <div class="d-flex justify-content-end mt-3">
+          <button type="button" class="btn btn-secondary btn-sm me-1" (click)="onRender('gst')">
+            <i class="bi bi-arrow-left-short"></i>Back
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" (click)="onRender('bank')">
+            Next<i class="bi bi-arrow-right-short"></i>
+          </button>
+        </div>
+      </div>
+      } } @else {
+      <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="fs-13 blink mt-1 text-light">Fetching Pan Details...</div>
+      </div>
+      } } @case ("bank") { @if (!pageLoader) { @if (kycData?.bank?.status ===
+      "PENDING" || isUpdateBank) {
+      <form [formGroup]="bankForm" (ngSubmit)="onBankFormSubmit()">
+        @if (!formLoader) { @if (errorMessage) {
+        <div class="alert alert-danger d-flex fs-12 fw-bold">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+        } @else {
+        <div class="alert alert-warning d-flex fs-12 fw-bold">
+          <i class="bi bi-info-circle-fill me-1"></i>
+          <span
+            >Make sure that the clicked image fit tightly in camera view, horizontally-aligned and
+            less than 10 MB.</span
+          >
+        </div>
+        }
+        <div class="form-group my-2">
+          <label for="ifscCode" class="form-label text-light"
+            >IFSC Code<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="ifscCode"
+            uppercase
+            class="form-control custom-input-dark"
+            formControlName="ifscCode"
+            placeholder="Enter IFSC code"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            bankFormControls['ifscCode'].dirty &&
+                            bankFormControls['ifscCode'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                          
+                            (bankFormControls['ifscCode'].dirty ||
+                              bankFormControls['ifscCode'].touched) &&
+                            bankFormControls['ifscCode'].invalid,
+                        }"
+          />
+          @if ( (bankFormControls["ifscCode"].dirty || bankFormControls["ifscCode"].touched) &&
+          bankFormControls["ifscCode"].invalid ) { @if (
+          bankFormControls["ifscCode"].hasError("required") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">IFSC code is mandatory!</div>
+          } @if (bankFormControls["ifscCode"].hasError("pattern")) {
+          <div class="text-danger fs-12 ps-1 mt-1">Invalid IFSC code!</div>
+          } }
+        </div>
+
+        <div class="form-group my-2">
+          <label for="accNumber" class="form-label text-light"
+            >Account Number<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="accNumber"
+            class="form-control custom-input-dark"
+            formControlName="accNumber"
+            placeholder="Enter Account Number"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            bankFormControls['accNumber'].dirty &&
+                            bankFormControls['accNumber'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                           
+                            (bankFormControls['accNumber'].dirty ||
+                              bankFormControls['accNumber'].touched) &&
+                            bankFormControls['accNumber'].invalid,
+                        }"
+          />
+          @if ( (bankFormControls["accNumber"].dirty || bankFormControls["accNumber"].touched) &&
+          bankFormControls["accNumber"].invalid ) { @if (
+          bankFormControls["accNumber"].hasError("required") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Account number is mandatory!</div>
+          } @if ( bankFormControls["accNumber"].hasError("pattern") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Invalid account number!</div>
+          } }
+        </div>
+
+        <div class="form-group my-2">
+          <label for="confirmAccNumber" class="form-label text-light"
+            >Re-Enter Account Number<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="confirmAccNumber"
+            autocomplete="off"
+            disableCutCopyPaste
+            autocomplete="off"
+            class="form-control custom-input-dark"
+            formControlName="confirmAccNumber"
+            placeholder="Re-enter your account number"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            bankFormControls['confirmAccNumber'].dirty &&
+                            bankFormControls['confirmAccNumber'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                            
+                            (bankFormControls['confirmAccNumber'].dirty ||
+                              bankFormControls['confirmAccNumber'].touched) &&
+                            bankFormControls['confirmAccNumber'].invalid,
+                        }"
+          />
+          @if ( (bankFormControls["confirmAccNumber"].dirty ||
+          bankFormControls["confirmAccNumber"].touched) &&
+          bankFormControls["confirmAccNumber"].invalid ) { @if (
+          bankFormControls["confirmAccNumber"].hasError( "required" ) ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Account confirmation is mandatory!</div>
+          } @else if ( bankFormControls["confirmAccNumber"].getError( "accountMismatch" ) ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Account number mismatched!</div>
+          } }
+        </div>
+
+        <div class="form-group my-2">
+          <label for="chequeImage" class="form-label text-light"
+            >Cancelled Cheque Image<span class="text-danger">*</span></label
+          >
+          <input
+            type="file"
+            id="chequeImage"
+            class="form-control custom-input-dark"
+            formControlName="chequeImage"
+            accept="image/png,image/jpeg,image/jpg"
+            (change)="onFileChange($event, 'chequeImage', 2)"
+            [ngClass]="{
+                          
+                          'is-valid':
+                            bankFormControls['chequeImage'].dirty &&
+                            bankFormControls['chequeImage'].valid,
+                          
+                          'is-invalid custom-input-error-dark':
+                            
+                            (bankFormControls['chequeImage'].dirty ||
+                              bankFormControls['chequeImage'].touched) &&
+                            bankFormControls['chequeImage'].invalid,
+                        }"
+          />
+          @if ( (bankFormControls["chequeImage"].dirty || bankFormControls["chequeImage"].touched)
+          && bankFormControls["chequeImage"].invalid ) { @if (
+          bankFormControls["chequeImage"].hasError("required") ) {
+          <div class="text-danger fs-12 ps-1 mt-1">Cancelled cheque image is mandatory!</div>
+          } }
+        </div>
+
+        @if (!isUpdateBank) {
+        <div class="form-group my-4 text-center d-grid">
+          <button type="submit" class="btn btn-primary" [disabled]="bankForm.invalid">
+            Submit
+          </button>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm me-1"
+            (click)="onRender('pan', 'bank')"
+          >
+            <i class="bi bi-arrow-left-short"></i>Back
+          </button>
+        </div>
+        } @if (isUpdateBank) {
+        <div class="d-grid gap-2 d-flex justify-content-center mt-3">
+          <button class="btn btn-secondary col-6" type="button" (click)="onCancelUpdateBankClick()">
+            Cancel
+          </button>
+          <button
+            class="form-group btn btn-primary col-6"
+            type="submit"
+            [disabled]="bankForm.invalid"
+          >
+            Update
+          </button>
+        </div>
+        } } @else {
+        <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+          <div class="spinner-border text-primary" role="status"></div>
+          <div class="fs-15 blink mt-1 text-light">Verifying Bank Details...</div>
+        </div>
+        }
+      </form>
+      } @else {
+      <div>
+        <div class="text-center">
+          <i class="bi bi-check2-circle text-success fs-40"></i>
+          <div class="fw-bold text-light">Bank Verified Successfully</div>
+        </div>
+
+        <div>
+          <div class="fs-10 mt-2 light-grey">Bank Name:</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.bank?.bankName }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">IFSC Code :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.bank?.ifscCode }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Account Number :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.bank?.accountNumber }}
+          </div>
+          <div class="fs-10 mt-2 light-grey">Branch :</div>
+          <div class="fs-15 text-light">
+            {{ kycData?.bank?.branch }}
+          </div>
+          <div
+            class="fs-10 mt-2 light-grey"
+          >
+            Account Type :
+          </div>
+          <div class="fs-15 text-light">
+            {{ kycData?.bank?.accountType }}
+          </div>
+        </div>
+
+        <div class="form-group my-1 text-center d-grid">
+          <button type="button" class="btn btn-primary" (click)="onUpdateBankClick()">
+            Update Bank Details
+          </button>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button type="button" class="btn btn-secondary btn-sm me-1" (click)="onRender('pan')">
+            <i class="bi bi-arrow-left-short"></i>Back
+          </button>
+          <!-- <button
+                      type="button"
+                      class="btn btn-sm btn-primary btn-sm"
+                      (click)="onRender('kycCompleted')"
+                    >
+                      Next<i class="bi bi-arrow-right-short"></i>
+                    </button> -->
+        </div>
+      </div>
+      } } @else {
+      <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="fs-13 blink mt-1 text=-light">Fetching Bank Details...</div>
+      </div>
+      } } @case ("kycCompleted") { @if (!pageLoader) {
+      <div class="text-center mt-5">
+        <div>
+          <div class="checkmark-container">
+            <i class="bi bi-check-lg checkmark-icon fs-1 text-white"></i>
+          </div>
+          <h5 class="text-center fw-bold mt-0 text-light">Congratulations!!</h5>
+          <p class="text-center mb-5 text-light">Your KYC has been completed successfully.</p>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end mt-3">
+        <button type="button" class="btn btn-secondary btn-sm me-1" (click)="onRender('bank')">
+          <i class="bi bi-arrow-left-short"></i>Back
+        </button>
+      </div>
+      } @else {
+      <div class="d-flex flex-column align-items-center justify-content-center h-50vh">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="fs-13 blink mt-1 text-light">Fetching KYC Details...</div>
+      </div>
+      } } }
+    </div>
+  </div>
+</div>

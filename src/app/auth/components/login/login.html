@@ -1,0 +1,187 @@
+<div class="headerBar">
+  <app-header></app-header>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-4 leftScetion"></div>
+    <div class="col-12 col-sm-8 rightSection">
+      <div class="login-container">
+        @if(step==1){
+        <h5>Login</h5>
+        <p>Log in your account to access smart banking</p>
+        <form [formGroup]="loginForm">
+          <div class="form-group mb-3">
+            <input
+              type="email"
+              class="form-control shadow-none custom-input cutsom-input-height-45"
+              placeholder="Email*"
+              formControlName="email"
+              [ngClass]="{
+                    'is-valid':
+                      loginFormControls['email']?.dirty &&
+                      loginFormControls['email']?.valid,
+                    'is-invalid custom-input-error':
+                      (loginFormControls['email'].dirty ||
+                        loginFormControls['email'].touched) &&
+                      loginFormControls['email'].invalid,
+                  }"
+            />
+
+            @if ( (loginFormControls["email"].dirty || loginFormControls["email"].touched) &&
+            loginFormControls["email"].invalid ) { @if
+            (loginFormControls["email"].hasError("required")) {
+            <div class="text-danger fs-12 ps-1 mt-1">Email is mandatory!</div>
+            } @if (loginFormControls["email"].hasError("email")) {
+            <div class="text-danger fs-12 ps-1 mt-1">Invalid email!</div>
+            } }
+          </div>
+
+          <div class="form-group mb-3 inner-addon right-addon">
+            @if (showVisibilityIcon) {
+            <span class="innerText" (click)="togglePasswordVisibility()">
+              @if (fieldTextType) {
+              <i class="bi bi-eye-slash"></i>
+              } @else {
+              <i class="bi bi-eye"></i>
+              }
+            </span>
+            }
+
+            <input
+              [type]="fieldTextType ? 'text' : 'password'"
+              class="form-control shadow-none custom-input cutsom-input-height-45"
+              placeholder="Password*"
+              formControlName="password"
+              [ngClass]="{
+                    'is-valid':
+                      loginFormControls['password'].dirty &&
+                      loginFormControls['password'].valid,
+                    'is-invalid custom-input-error':
+                      (loginFormControls['password'].dirty ||
+                        loginFormControls['password'].touched) &&
+                      loginFormControls['password'].invalid,
+                  }"
+            />
+            <div class="d-flex justify-content-between">
+              <div>
+                @if ( (loginFormControls["password"].dirty || loginFormControls["password"].touched)
+                && loginFormControls["password"].invalid ) { @if
+                (loginFormControls["password"].hasError("required")) {
+                <div class="text-danger fs-12 ps-1 mt-1">Password is mandatory!</div>
+                } }
+              </div>
+              <div
+                class="fs-13 text-primary cursor-pointer me-2 mt-1"
+                [routerLink]="'forgot-password'"
+              >
+                Forgot Password ?
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group d-grid">
+            @if(loader){
+            <button
+              class="btn btn-primary cursor-progress"
+              type="button"
+              [disabled]="loginForm.invalid"
+            >
+              <div class="spinner-border spinner-border-sm"></div>
+            </button>
+            }@else{
+            <button
+              class="btn btn-primary"
+              type="button"
+              [disabled]="loginForm.invalid"
+              (click)="sendOtp()"
+            >
+              Continue
+            </button>
+            }
+          </div>
+          <div class="text-center mt-4">
+            <a class="text-primary cursor-pointer text-decoration-none" [routerLink]="'/signup'">
+              You don't have an account ? <b> Sign-Up </b>
+            </a>
+          </div>
+        </form>
+        }@else if(step==2){
+        <h4 class="fs-20 fw-bold">Log in OTP</h4>
+        <p class="fs-15">Enter the verfification code sent to</p>
+        <h5 class="text-primary fw-bold">
+          @if (loginFormControls["email"]?.value) {
+          {{ loginFormControls['email']?.value | fixedMaskData : 'email' }}
+          } @if (loginFormControls["phone"]?.value) {
+          {{ loginFormControls['phone']?.value | fixedMaskData }}
+          }
+        </h5>
+
+        <form [formGroup]="loginForm" (ngSubmit)="submitLoginForm()">
+          <div class="form-group">
+            <label for="otpInput" class="form-label">Enter verification code</label>
+
+            <div class="text-center mb-5">
+              <ng-otp-input
+                [config]="ngOtpConfig"
+                (onInputChange)="onOtpChange($event)"
+              ></ng-otp-input>
+            </div>
+
+            @if (resendOtpTimer$ | async; as time) {
+
+            <!-- When timer is running -->
+            @if (time.minutes > 0 || time.seconds > 0) {
+
+            <div class="d-grid">
+              @if (!loader) {
+              <button
+                type="submit"
+                class="btn btn-primary padding-inline-130"
+                [disabled]="loginForm.invalid"
+              >
+                Verify
+              </button>
+              } @else {
+              <button type="button" class="btn btn-primary padding-inline-140 cursor-progress">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+
+            <div class="text-center fs-13 mt-1">
+              <div>
+                Haven't received OTP? Resend OTP in
+                <span class="text-danger fw-bold ps-1">
+                  {{ time.minutes }}m {{ time.seconds }}s
+                </span>
+              </div>
+            </div>
+
+            } @else if (time.minutes === 0 && time.seconds <= 0) {
+
+            <!-- When timer expires -->
+            <div class="d-grid">
+              @if (!resendOtpLoader) {
+              <button
+                type="button"
+                class="btn btn-secondary padding-inline-125"
+                (click)="resendOtp('EMAIL')"
+              >
+                Resend OTP
+              </button>
+              } @else {
+              <button type="button" class="btn btn-secondary padding-inline-140 cursor-progress">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+
+            } }
+          </div>
+        </form>
+        }
+      </div>
+    </div>
+  </div>
+</div>
