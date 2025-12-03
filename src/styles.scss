@@ -195,3 +195,57 @@ input[type='number'] {
 .modal-dialog {
   z-index: 1101 !important;
 }
+
+//-----------green check mark css-----------//
+.checkmark-container {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  margin: 10px auto;
+  box-shadow: inset 0px 0px 0px #007a4d;
+  animation: fill 0.5s ease-in 0.3s forwards, scale 0.4s ease-in-out 0.9s both;
+}
+
+.checkmark-icon {
+  font-size: 34px;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0);
+  animation: appear 0.4s cubic-bezier(1, 0, 0, 1) 0.3s forwards;
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #007a4d;
+  }
+}
+
+@keyframes scale {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.card-dark {
+  background-color: #38444d;
+  color: #fff;
+}

@@ -71,17 +71,17 @@
         </div>
       </li>
 
-      <!-- <li class="cursor-pointer">
+      <li class="cursor-pointer">
             <div
               routerLink="developer/api-setting"
               routerLinkActive="active"
               [routerLinkActiveOptions]="{ exact: isOtherMenuActive }"
               (click)="openMainMenuComponent('apiSetting')"
             >
-              <i class="bi bi-code-square fs-20"></i>
+              <i class="bi bi-code-square fs-5"></i>
               <p class="fw-bold">DEVELOPER CONTROL</p>
             </div>
-          </li> -->
+          </li>
 
       <!-- <li class="cursor-pointer">
             <div
@@ -99,7 +99,9 @@
   </div>
 
   <!--sidebar sub menu-->
-  @if(render){ @switch (render) { @case ("dashboard") {
+  @if(render){ 
+    @switch (render) { 
+      @case ("dashboard") {
   <div class="content" [ngStyle]="{ width: subMenubarWidth }">
     <div
       class="nav-item cursor-pointer margin-top mx-2"
@@ -154,7 +156,37 @@
       </div>
     </div>
   </div>
-  } @case ("txnDetails") {
+  } @case ("subadmins") {
+            <div class="content" [ngStyle]="{ width: subMenubarWidth }">
+              <div
+                class="nav-item cursor margin-top mx-2"
+                (click)="openSubMenuComponent('subadmins')"
+              >
+                <a
+                  class="nav-link p-2 text-white fw-bold"
+                  routerLink="home"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                >
+                  <i class="bi bi-list me-2 text-white"></i>Sub-Admin List
+                </a>
+              </div>
+              <div
+                class="nav-item cursor margin-top m-2"
+                (click)="openSubMenuComponent('addSubadmin')"
+              >
+                <a
+                  class="nav-link p-2 text-white fw-bold"
+                  routerLink="home/addSubadmin"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                >
+                  <i class="bi bi-person-plus me-2 text-white"></i>Add Subadmin
+                </a>
+              </div>
+            </div>
+          }
+  @case ("txnDetails") {
   <div class="content" [ngStyle]="{ width: subMenubarWidth }">
     <div
       class="nav-item cursor-pointer margin-top mx-2"

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { DeviceDetectorService } from 'ngx-device-detector';
@@ -120,6 +120,7 @@ export class LoginComponent implements OnInit {
         this.localStoreService.setData('userState', true, 1, 'h');
         this.loginForm.get('otp').setValidators([Validators.required]);
         this.loginForm.get('otp').updateValueAndValidity();
+        
 
         this.resendOtpTimer$ = getTimer(300000);
         this.snackBar.open(response.message, 'close', {

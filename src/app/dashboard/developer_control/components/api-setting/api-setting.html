@@ -1,0 +1,1436 @@
+@if (pageLoader) {
+<div class="d-flex flex-column justify-content-center align-items-center h-80vh">
+  <div class="spinner-border text-primary" role="status"></div>
+  <div class="blink fs-13 text-primary mt-1 fw-bold">Fetching Details...</div>
+</div>
+} @else {
+<div class="container-fluid">
+  <div class="fw-bold babyBlue">Developer Controls</div>
+  <div class="fs-10 fw-bold text-light">Manage Keys, Monitor Access, Master Integrations.</div>
+  <hr class="mt-2" />
+
+  <!--API Keys -->
+  <div class="mt-4">
+    <div class="card rounded-4 card-dark">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between">
+          <div>
+            <div class="fs-20 fw-bold card-dark">API Keys</div>
+            <div class="fs-12 text-light">
+              We will use this information to keep your account secure
+            </div>
+          </div>
+          <div>
+            <button
+              class="btn btn-sm btn-primary px-3 mt-2 me-3"
+              data-bs-toggle="modal"
+              data-bs-target="#generateAPIModal"
+              (click)="clearForm()"
+              [disabled]="
+                (userData?.onboardingMode === 'TEST' &&
+                  developerData?.apiSettingData?.test_api_key?.api_key) ||
+                (userData?.onboardingMode === 'LIVE' &&
+                  developerData?.apiSettingData?.live_api_key?.api_key)
+              "
+            >
+              Generate Key
+            </button>
+          </div>
+        </div>
+        @if ( (userData?.onboardingMode === "TEST" &&
+        !developerData?.apiSettingData?.test_api_key?.api_key) || (userData?.onboardingMode ===
+        "LIVE" && !developerData?.apiSettingData?.live_api_key?.api_key) ) {
+        <div>
+          <div class="fs-15 mt-3">
+            No API keys generated yet
+            <span class="badge text-bg-warning fs-10 ms-1">Mandatory for API access</span>
+          </div>
+          <div class="fs-12 mt-1 text-light">Once you generate API key, it appears here.</div>
+        </div>
+        } @else {
+        <div class="">
+          <table class="table table-sm my-3">
+            <thead class="text-center">
+              <tr class="fs-15">
+                <th scope="col">API Key</th>
+                <th scope="col">Status</th>
+                <th scope="col">Created At</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody class="text-center">
+              <tr scope="row" class="fs-14">
+                <td>
+                  {{
+                    userData?.onboardingMode === 'TEST'
+                      ? developerData?.apiSettingData?.test_api_key?.api_key
+                      : developerData?.apiSettingData?.live_api_key?.api_key
+                  }}
+
+                  <span
+                    class="cursor-pointer ms-2"
+                    [matTooltip]="'Copy'"
+                    (click)="
+                      copy(
+                        userData?.onboardingMode === 'TEST'
+                          ? developerData?.apiSettingData?.test_api_key?.api_key
+                          : developerData?.apiSettingData?.live_api_key?.api_key
+                      )
+                    "
+                  >
+                    <i class="bi bi-copy text-dark fw-bold"></i>
+                  </span>
+                </td>
+                <td>
+                  <span
+                    class="badge"
+                    [ngClass]="
+                      userData?.onboardingMode === 'TEST'
+                        ? developerData?.apiSettingData?.test_api_key?.status === 'PENDING'
+                          ? 'text-bg-secondary'
+                          : developerData?.apiSettingData?.test_api_key?.status === 'PROCESSING'
+                          ? 'text-bg-warning'
+                          : developerData?.apiSettingData?.test_api_key?.status === 'ACTIVE'
+                          ? 'text-bg-success'
+                          : 'text-bg-danger'
+                        : developerData?.apiSettingData?.live_api_key?.status === 'PENDING'
+                        ? 'text-bg-secondary'
+                        : developerData?.apiSettingData?.live_api_key?.status === 'PROCESSING'
+                        ? 'text-bg-warning'
+                        : developerData?.apiSettingData?.live_api_key?.status === 'ACTIVE'
+                        ? 'text-bg-success'
+                        : 'text-bg-danger'
+                    "
+                    >{{
+                      (userData?.onboardingMode === 'TEST'
+                        ? developerData?.apiSettingData?.test_api_key?.status
+                        : developerData?.apiSettingData?.live_api_key?.status
+                      ) | titlecase
+                    }}</span
+                  >
+                </td>
+                <td>
+                  {{
+                    (userData?.onboardingMode === 'TEST'
+                      ? developerData?.apiSettingData?.test_api_key?.created_at
+                      : developerData?.apiSettingData?.live_api_key?.created_at
+                    ) | date : 'd/M/yy, h:mm a' : 'UTC+5:30'
+                  }}
+                </td>
+                <td class="text-center">
+                  <i
+                    class="bi bi-trash3-fill text-danger cursor-pointer"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteAPIModal"
+                    (click)="clearForm()"
+                  ></i>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!--IP Address -->
+  <div class="mt-4">
+    <div class="card rounded-4 card-dark">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between">
+          <div>
+            <div>
+              <span class="fs-20 fw-bold">IP Address</span> &nbsp;
+              <span class="fs-15">(A maximum of 3 IP addresses can be added)</span>
+            </div>
+            <div class="fs-12 text-light">It will provide added layer of security</div>
+          </div>
+          <div>
+            <button
+              class="btn btn-sm btn-primary px-3 mt-2 me-3"
+              data-bs-toggle="modal"
+              data-bs-target="#addIpAddressModal"
+              (click)="clearForm()"
+              [disabled]="
+                (userData?.onboardingMode === 'TEST' &&
+                  (developerData?.apiSettingData?.test_ip)?.length >= 3) ||
+                (userData?.onboardingMode === 'LIVE' &&
+                  (developerData?.apiSettingData?.live_ip)?.length >= 3)
+              "
+            >
+              Add IP Address
+            </button>
+          </div>
+        </div>
+        @if ( (userData?.onboardingMode === "TEST" &&
+        !(developerData?.apiSettingData?.test_ip).length) || (userData?.onboardingMode === "LIVE" &&
+        !(developerData?.apiSettingData?.live_ip).length) ) {
+        <div>
+          <div class="fs-15 mt-3">
+            No IP address added yet
+            <span class="badge text-bg-warning fs-10 ms-1">Mandatory for API access</span>
+          </div>
+          <div class="fs-12 mt-1 text-light">Once you add IP addresses, they appear here.</div>
+        </div>
+        } @else {
+        <table class="table table-sm my-3">
+          <thead class="text-center">
+            <tr class="fs-15">
+              <th scope="col">IP Address</th>
+              <th scope="col">Status</th>
+              <th scope="col">Created/Updated At</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody class="text-center">
+            @for ( el of userData?.onboardingMode === "TEST" ?
+            developerData?.apiSettingData?.test_ip : developerData?.apiSettingData?.live_ip; let i =
+            $index; track el.created_at ) {
+            <tr scope="row" class="fs-14">
+              <td>
+                {{ el.ip_address }}&nbsp;
+                <span class="cursor-pointer ms-2" [matTooltip]="'Copy'" (click)="copy(el.ip_address)">
+                  <i class="bi bi-copy text-dark fw-bold"></i>
+                </span>
+              </td>
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="
+                    el?.status === 'PENDING'
+                      ? 'text-bg-secondary'
+                      : el?.status === 'PROCESSING'
+                      ? 'text-bg-warning'
+                      : el?.status === 'ACTIVE'
+                      ? 'text-bg-success'
+                      : 'text-bg-danger'
+                  "
+                  >{{ el?.status | titlecase }}</span
+                >
+              </td>
+              <td>
+                {{ el.created_at | date : 'd/M/yy, h:mm a' : 'UTC+5:30' }}
+              </td>
+              <td class="text-center">
+                <i
+                  class="bi bi-pencil-square text-primary cursor-pointer me-3"
+                  [matTooltip]="'Edit'"
+                  data-bs-toggle="modal"
+                  data-bs-target="#updateIpAddressModal"
+                  (click)="setIpAddress(el.ip_address, 'UPDATE')"
+                >
+                </i>
+                <i
+                  class="bi bi-trash3-fill text-danger cursor-pointer"
+                  [matTooltip]="'Delete'"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteIpAddressModal"
+                  (click)="setIpAddress(el.ip_address, 'DELETE')"
+                ></i>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!--Webhooks -->
+  <div class="mt-4">
+    <div class="card rounded-4 card-dark">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between">
+          <div>
+            <div class="fs-20 fw-bold">Webhooks</div>
+            <div class="fs-12 text-light">It will provide notifications about events</div>
+          </div>
+          <div>
+            <button
+              class="btn btn-sm btn-primary px-3 mt-2 me-3"
+              data-bs-toggle="modal"
+              data-bs-target="#addWebhookModal"
+              (click)="clearForm()"
+            >
+              Add Webhook
+            </button>
+          </div>
+        </div>
+        @if ( (userData?.onboardingMode === "TEST" &&
+        !developerData?.apiSettingData?.test_webhook_url ?.length) || (userData?.onboardingMode ===
+        "LIVE" && !developerData?.apiSettingData?.live_webhook_url?.length) ) {
+        <div>
+          <div class="fs-15 mt-3">No Webhooks listed yet</div>
+          <div class="fs-12 mt-1 text-light">Once you define webhooks, it appear here.</div>
+        </div>
+        } @else {
+        <table class="table table-sm my-3">
+          <thead class="text-center">
+            <tr class="fs-15">
+              <th scope="col">URL</th>
+              <th scope="col">Event</th>
+              <th scope="col">Created/Updated At</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody class="text-center">
+            @for ( el of userData?.onboardingMode === "TEST" ?
+            developerData?.apiSettingData?.test_webhook_url :
+            developerData?.apiSettingData?.live_webhook_url; let i = $index; track el.created_at ) {
+            <tr scope="row" class="fs-14">
+              <td>
+                <span
+                  [appTruncateText]="el.url"
+                  [limit]="100"
+                  [matTooltip]="el.url.length > 100 ? el.url : ''"
+                >
+                  {{ el.url }}&nbsp;</span
+                >
+
+                <span class="cursor-pointer ms-2" [matTooltip]="'Copy'" (click)="copy(el.url)">
+                  <i class="bi bi-copy text-dark fw-bold"></i>
+                </span>
+              </td>
+              <td>
+                {{ el.event }}
+              </td>
+              <td>
+                {{ el.created_at | date : 'd/M/yy, h:mm a' : 'UTC+5:30' }}
+              </td>
+              <td class="text-center">
+                <i
+                  class="bi bi-pencil-square text-primary cursor-pointer me-3"
+                  [matTooltip]="'Edit'"
+                  data-bs-toggle="modal"
+                  data-bs-target="#updateWebhookModal"
+                  (click)="getCurrentWebhookEvent(el.event, el.url)"
+                >
+                </i>
+                <i
+                  class="bi bi-trash3-fill text-danger cursor-pointer"
+                  [matTooltip]="'Delete'"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteWebhookModal"
+                  (click)="setWebhookDataToDelete(userData?.onboardingMode, el.url, el.event)"
+                ></i>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!--generate api key modal-->
+<div
+  class="modal fade mt-5"
+  id="generateAPIModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="generateAPIModalLabel"
+  data-bs-backdrop="static"
+  aria-hidden="true"
+>
+  <div class="modal-dialog text-black" role="document">
+    <div class="modal-content">
+      @if (step === 1) {
+      <div class="modal-header border border-0 fw-bold d-flex justify-content-between">
+        <div class="fs-13">Generate Api Key</div>
+        <div class="fs-15 cursor-pointer" data-bs-dismiss="modal" aria-label="Close" (click)="clearForm()">
+          <i class="bi bi-x-lg fw-bold"></i>
+        </div>
+      </div>
+      }
+
+      <div class="modal-body">
+        <form [formGroup]="generateApiKeyForm" (ngSubmit)="onSubmitApiKeyForm()">
+          @if (step === 1) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="api_key_icon" src="assets/icons/Setting.svg" width="60" />
+            </div>
+
+            <div class="text-center fs-15 fw-bold mt-2 mb-1 text-primary">API KEY GENERATION</div>
+
+            <div class="form-group mb-4 mt-4">
+              <label for="websiteUrl" class="form-label fs-13"
+                >Website URL (URL must starts with https)*</label
+              >
+              <input
+                type="text"
+                id="websiteUrl"
+                class="form-control custom-input cutsom-input-height-45"
+                placeholder="https://fynzon.in"
+                formControlName="websiteUrl"
+                [ngClass]="{
+                      'is-valid':
+                        generateApiKeyFormControls['websiteUrl'].dirty &&
+                        generateApiKeyFormControls['websiteUrl'].valid,
+                      'is-invalid custom-input-error':
+                        (generateApiKeyFormControls['websiteUrl'].dirty ||
+                          generateApiKeyFormControls['websiteUrl'].touched) &&
+                        generateApiKeyFormControls['websiteUrl'].invalid,
+                    }"
+              />
+
+              @if ( (generateApiKeyFormControls["websiteUrl"].dirty ||
+              generateApiKeyFormControls["websiteUrl"].touched) &&
+              generateApiKeyFormControls["websiteUrl"].invalid ) { @if (
+              generateApiKeyFormControls["websiteUrl"].hasError( "required" ) ) {
+              <div class="text-danger fs-12 ps-1 mt-1">Website URL is mandatory!</div>
+              } @if ( generateApiKeyFormControls["websiteUrl"].hasError( "insecureUrl" ) ) {
+              <div class="text-danger fs-12 ps-1 mt-1">URL must starts with https://</div>
+              } }
+            </div>
+
+            <div class="text-center">
+              @if (!loader) {
+              <button
+                type="submit"
+                class="btn btn-primary padding-inline-150"
+                [disabled]="generateApiKeyForm.invalid"
+              >
+                Generate
+              </button>
+              } @if (loader) {
+              <button type="button" class="btn btn-primary padding-inline-165">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+          </div>
+          } @if (step === 2) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="api_key_icon" src="assets/icons/Setting.svg" width="60" />
+            </div>
+
+            <div class="text-center fs-15 fw-bold mt-2 mb-1 text-primary">NEW API KEY</div>
+
+            <div class="alert alert-warning fade show p-2 my-3 fs-12" role="alert">
+              <div class="d-flex justify-content-start">
+                <div class="mt-1"><i class="bi bi-info-circle-fill"></i>&nbsp;</div>
+                <div class="fw-bold ms-1 text-justify lh-lg">
+                  Make sure to securely save the secret key. This is the only time it will be
+                  visible, you won't be able to access it again.
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="fs-15">API Key</div>
+              <div
+                class="d-flex justify-content-between align-items-center fs-13 p-2 rounded-2 customBg"
+              >
+                <div>
+                  {{
+                    userData?.onboardingMode === 'TEST'
+                      ? developerData?.apiSettingData?.test_api_key?.api_key
+                      : developerData?.apiSettingData?.live_api_key?.api_key
+                  }}
+                </div>
+
+                <div
+                  class="cursor-pointer"
+                  [matTooltip]="'Copy'"
+                  (click)="
+                    copy(
+                      userData?.onboardingMode === 'TEST'
+                        ? developerData?.apiSettingData?.test_api_key?.api_key
+                        : developerData?.apiSettingData?.live_api_key?.api_key
+                    )
+                  "
+                >
+                  <i class="bi bi-copy text-dark fw-bold"></i>
+                </div>
+              </div>
+              <div class="fs-15 mt-2">Secret Key</div>
+              <div
+                class="d-flex justify-content-between align-items-center fs-13 p-2 rounded-2 customBg"
+              >
+                <div>{{ secretKey }}</div>
+
+                <div class="cursor-pointer" [matTooltip]="'Copy'" (click)="copy(secretKey)">
+                  <i class="bi bi-copy text-dark fw-bold"></i>
+                </div>
+              </div>
+              <div
+                class="fs-13 text-end text-primary fw-bold text-decoration-underline cursor-pointer"
+                (click)="
+                  downloadKeysInCsv(
+                    userData?.onboardingMode === 'TEST'
+                      ? developerData?.apiSettingData?.test_api_key?.api_key
+                      : developerData?.apiSettingData?.live_api_key?.api_key,
+                    secretKey
+                  )
+                "
+              >
+                Download Keys
+              </div>
+            </div>
+
+            <div class="first-check my-2">
+              <input
+                class="form-check-input custom-check-box"
+                type="checkbox"
+                (change)="toggleChecked($event)"
+              />
+              <label class="ms-2 fs-15" for="whatsAppUpdates"
+                >I confirm that i have saved the keys securely.</label
+              >
+            </div>
+
+            <div class="text-center mt-3">
+              @if (!loader) {
+              <button
+                type="button"
+                class="btn btn-primary padding-inline-165"
+                [disabled]="!isKeysSaved"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              } @if (loader) {
+              <button type="button" class="btn btn-primary padding-inline-165">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+          </div>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--delete api key modal-->
+<div
+  class="modal fade mt-5"
+  id="deleteAPIModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="deleteAPIModalLabel"
+  data-bs-backdrop="static"
+  aria-hidden="true"
+>
+  <div class="modal-dialog text-black" role="document">
+    <div class="modal-content">
+      <div class="modal-header border border-0 fw-bold d-flex justify-content-between">
+        <div class="fs-13">Delete Api Key</div>
+        <div class="fs-15 cursor-pointer" data-bs-dismiss="modal" aria-label="Close">
+          <i class="bi bi-x-lg fw-bold"></i>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        @if (step === 1) {
+        <div class="px-md-5 px-1">
+          <div class="text-center mb-1 mt-1">
+            <img alt="api_key_icon" src="assets/icons/Setting.svg" width="60" />
+          </div>
+
+          <div class="text-center fs-15 fw-bold mt-2 mb-1 text-primary">Delete API Key</div>
+
+          <div class="alert alert-warning fade show p-2 my-3 fs-12" role="alert">
+            <div class="d-flex justify-content-start">
+              <div class="mt-1"><i class="bi bi-info-circle-fill"></i>&nbsp;</div>
+              <div class="fw-bold ms-1 text-justify lh-lg">
+                Once you delete the API key, you will lose access to the API. To regain access, you
+                must generate a new API key.
+              </div>
+            </div>
+          </div>
+
+          <p class="text-center fs-15 fw-bold mb-3">Are you sure you want to proceed?</p>
+
+          <div class="d-flex gap-2 justify-content-center">
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary padding-inline-40"
+              data-bs-dismiss="modal"
+            >
+              No, Go Back
+            </button>
+
+            @if (!loader) {
+            <button
+              type="button"
+              class="btn btn-sm btn-danger padding-inline-70"
+              (click)="
+                deleteApiKey(
+                  userData?.onboardingMode,
+                  userData?.onboardingMode === 'TEST'
+                    ? developerData?.apiSettingData?.test_api_key?.api_key
+                    : developerData?.apiSettingData?.live_api_key?.api_key
+                )
+              "
+            >
+              Delete
+            </button>
+            } @if (loader) {
+            <button type="button" class="btn btn-sm btn-danger padding-inline-75">
+              <div class="spinner-border spinner-border-sm" role="status"></div>
+            </button>
+            }
+          </div>
+        </div>
+        } @if (step === 2) {
+        <div class="text-center mt-2">
+          <div class="checkmark-container">
+            <i class="bi bi-check checkmark-icon"></i>
+          </div>
+          <h5 class="text-center fw-bold mt-0">Action Completed!!</h5>
+          <p class="text-dark text-center">API key removed successfully.</p>
+        </div>
+
+        <div class="mt-5 d-grid col-8 mx-auto">
+          <button type="button" class="btn btn-primary btn-sm me-1" data-bs-dismiss="modal">
+            OK
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--add IP address modal-->
+<div
+  class="modal fade mt-5"
+  id="addIpAddressModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="addIpAddressModalLabel"
+  data-bs-backdrop="static"
+  aria-hidden="true"
+>
+  <div class="modal-dialog text-black" role="document">
+    <div class="modal-content">
+      <div class="modal-header border border-0 fw-bold d-flex justify-content-between">
+        <div class="fs-13">Add IP Address</div>
+        <div class="fs-15 cursor-pointer" data-bs-dismiss="modal" aria-label="Close" (click)="clearForm()">
+          <i class="bi bi-x-lg fw-bold"></i>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="addIpAddressForm" (ngSubmit)="onSumbmitIpAddressForm()">
+          @if (step === 1) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="ip_address_icon" src="assets/icons/ip_image.svg" width="50" />
+            </div>
+
+            <div class="text-center fs-17 fw-bold mt-2 mb-1 text-primary">
+              We support IPV4 format
+            </div>
+
+            <div class="text-center fs-15 my-1">We will send OTP to verify your email</div>
+
+            <div class="form-group mb-4 mt-4">
+              <label for="ipAddress" class="form-label fs-15"
+                >IP Address* (max 3 IP address is allowed)</label
+              >
+              <textarea
+                rows="2"
+                id="ipAddress"
+                class="form-control custom-input"
+                placeholder="Enter the IP address comma separted&#10;e.g- 11.654.314.129, 12.981.412.119, 13.229.971.765 "
+                formControlName="ipAddress"
+                [ngClass]="{
+                      'is-valid':
+                        addIpAddressFormControls['ipAddress'].dirty &&
+                        addIpAddressFormControls['ipAddress'].valid,
+                      'is-invalid custom-input-error':
+                        (addIpAddressFormControls['ipAddress'].dirty ||
+                          addIpAddressFormControls['ipAddress'].touched) &&
+                        addIpAddressFormControls['ipAddress'].invalid,
+                    }"
+              ></textarea>
+
+              @if ( (addIpAddressFormControls["ipAddress"].dirty ||
+              addIpAddressFormControls["ipAddress"].touched) &&
+              addIpAddressFormControls["ipAddress"].invalid ) { @if (
+              addIpAddressFormControls["ipAddress"].hasError("required") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">At leat one IP address is mandatory!</div>
+              } @if ( addIpAddressFormControls["ipAddress"].hasError( "missingComma" ) ) {
+              <div class="text-danger fs-12 ps-1 mt-1">
+                {{ addIpAddressFormControls['ipAddress']?.errors['missingComma'] }}
+              </div>
+              } @if ( addIpAddressFormControls["ipAddress"].hasError("noComma") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">
+                {{ addIpAddressFormControls['ipAddress']?.errors['noComma'] }}
+              </div>
+              } @if ( addIpAddressFormControls["ipAddress"].hasError( "invalidCommaFormat" ) ) {
+              <div class="text-danger fs-12 ps-1 mt-1">
+                {{ addIpAddressFormControls['ipAddress']?.errors['invalidCommaFormat'] }}
+              </div>
+              } @if ( addIpAddressFormControls["ipAddress"].hasError( "maxIpCountIncreased" ) ) {
+              <div class="text-danger fs-12 ps-1 mt-1">
+                {{ addIpAddressFormControls['ipAddress']?.errors['maxIpCountIncreased'] }}
+              </div>
+              } @if ( addIpAddressFormControls["ipAddress"].hasError( "invalidIp" ) ) {
+              <div class="text-danger fs-12 ps-1 mt-1">
+                {{ addIpAddressFormControls['ipAddress']?.errors['invalidIp'] }}
+              </div>
+              } @if ( addIpAddressFormControls["ipAddress"].hasError( "duplicateIp" ) ) {
+              <div class="text-danger fs-12 ps-1 mt-1">
+                {{ addIpAddressFormControls['ipAddress']?.errors['duplicateIp'] }}
+              </div>
+              } }
+            </div>
+
+            <div class="d-grid">
+              @if (!loader) {
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="addIpAddressForm.invalid"
+                (click)="sendOtpToAddIpAddress()"
+              >
+                Send OTP
+              </button>
+              } @if (loader) {
+              <button type="button" class="btn btn-primary">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+          </div>
+          } @if (step === 2) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="email_otp-logo" src="assets/icons/lock_img.png" width="40" />
+            </div>
+
+            <div class="text-center fs-15 fw-bold mt-2 mb-1">Email Verification</div>
+
+            <p class="text-center fs-13 fw-bold mb-2">
+              Enter OTP sent over to your registered email <br />
+              <span class="text-primary">
+                {{ userData?.email | fixedMaskData : 'email' }}
+              </span>
+            </p>
+
+            <div class="text-center my-4 ms-4">
+              <ng-otp-input
+                [config]="ngOtpConfig"
+                (onInputChange)="onOtpChange($event)"
+              ></ng-otp-input>
+            </div>
+
+            <ng-container *ngIf="resendEmailOtpTimer$ | async as time">
+              @if (time.minutes > 0 || time.seconds > 0) {
+              <div class="text-center">
+                @if (!loader) {
+                <button
+                  type="submit"
+                  class="btn btn-primary padding-inline-150"
+                  [disabled]="addIpAddressForm.invalid"
+                >
+                  Verify
+                </button>
+                } @if (loader) {
+                <button type="button" class="btn btn-primary padding-inline-165">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+
+              @if (time) {
+              <div class="text-center fs-13 mt-1 mb-2">
+                Haven't received OTP ? Resend OTP in
+                <span class="text-danger fw-bold">{{ time.minutes }}m {{ time.seconds }}s </span>
+              </div>
+              } } @if (time.minutes === 0 && time.seconds <= 0) {
+              <div class="text-center">
+                @if (!resendOtpLoader) {
+                <button
+                  type="button"
+                  class="btn btn-secondary padding-inline-125"
+                  (click)="
+                            resendOtp('EMAIL', {
+                              email: userData?.email,
+                            })
+                          "
+                >
+                  Resend OTP
+                </button>
+                } @if (resendOtpLoader) {
+                <button type="button" class="btn btn-secondary padding-inline-165">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+              }
+            </ng-container>
+          </div>
+          } @if (step === 3) {
+          <div class="text-center mt-2">
+            <div class="checkmark-container">
+              <i class="bi bi-check checkmark-icon"></i>
+            </div>
+            <h5 class="text-center fw-bold mt-0">Congratulations!!</h5>
+            <p class="text-dark text-center">IP address added successfully.</p>
+          </div>
+
+          <div class="mt-5 d-grid col-8 mx-auto">
+            <button type="button" class="btn btn-primary btn-sm me-1" data-bs-dismiss="modal">
+              OK
+            </button>
+          </div>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Update IP address modal-->
+<div
+  class="modal fade mt-5"
+  id="updateIpAddressModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="updateIpAddressModalLabel"
+  data-bs-backdrop="static"
+  aria-hidden="true"
+>
+  <div class="modal-dialog text-black" role="document">
+    <div class="modal-content">
+      <div class="modal-header border border-0 fw-bold d-flex justify-content-between">
+        <div class="fs-13">Update IP Address</div>
+        <div class="fs-15 cursor-pointer" data-bs-dismiss="modal" aria-label="Close" (click)="clearForm()">
+          <i class="bi bi-x-lg fw-bold"></i>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="addIpAddressForm" (ngSubmit)="onSumbmitUpadteIpAddress()">
+          @if (step === 1) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="ip_address_icon" src="assets/icons/ip_image.svg" width="50" />
+            </div>
+
+            <div class="text-center fs-17 fw-bold mt-2 mb-1 text-primary">
+              We support IPV4 format
+            </div>
+
+            <div class="text-center fs-15 my-1">We will send OTP to verify your email</div>
+
+            <div class="form-group mb-4 mt-4">
+              <label for="ipAddress" class="form-label fs-15">New IP Address* </label>
+              <input
+                id="ipAddress"
+                class="form-control custom-input"
+                placeholder="Enter the IP address"
+                formControlName="ipAddress"
+                [ngClass]="{
+                      'is-valid':
+                        addIpAddressFormControls['ipAddress'].dirty &&
+                        addIpAddressFormControls['ipAddress'].valid,
+                      'is-invalid custom-input-error':
+                        (addIpAddressFormControls['ipAddress'].dirty ||
+                          addIpAddressFormControls['ipAddress'].touched) &&
+                        addIpAddressFormControls['ipAddress'].invalid,
+                    }"
+              />
+
+              @if ( (addIpAddressFormControls["ipAddress"].dirty ||
+              addIpAddressFormControls["ipAddress"].touched) &&
+              addIpAddressFormControls["ipAddress"].invalid ) { @if (
+              addIpAddressFormControls["ipAddress"].hasError("required") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">IP address is mandatory!</div>
+              } @if ( addIpAddressFormControls["ipAddress"].hasError( "ipCountExceeded" ) ) {
+              <div class="text-danger fs-12 ps-1 mt-1">
+                {{ addIpAddressFormControls['ipAddress']?.errors['ipCountExceeded'] }}
+              </div>
+              } @if ( addIpAddressFormControls["ipAddress"].hasError( "invalidIp" ) ) {
+              <div class="text-danger fs-12 ps-1 mt-1">
+                {{ addIpAddressFormControls['ipAddress']?.errors['invalidIp'] }}
+              </div>
+              } }
+            </div>
+
+            <div class="d-grid">
+              @if (!loader) {
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="addIpAddressForm.invalid"
+                (click)="sendOtpToUpdateIpAddress()"
+              >
+                Send OTP
+              </button>
+              } @if (loader) {
+              <button type="button" class="btn btn-primary">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+          </div>
+          } @if (step === 2) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="email_otp-logo" src="assets/icons/lock_img.png" width="40" />
+            </div>
+
+            <div class="text-center fs-15 fw-bold mt-2 mb-1">Email Verification</div>
+
+            <p class="text-center fs-13 fw-bold mb-2">
+              Enter OTP sent over to your registered email <br />
+              <span class="text-primary">
+                {{ userData?.email | fixedMaskData : 'email' }}
+              </span>
+            </p>
+
+            <div class="text-center my-4 ms-4">
+              <ng-otp-input
+                [config]="ngOtpConfig"
+                (onInputChange)="onOtpChange($event)"
+              ></ng-otp-input>
+            </div>
+
+            <ng-container *ngIf="resendEmailOtpTimer$ | async as time">
+              @if (time.minutes > 0 || time.seconds > 0) {
+              <div class="text-center">
+                @if (!loader) {
+                <button
+                  type="submit"
+                  class="btn btn-primary padding-inline-150"
+                  [disabled]="addIpAddressForm.invalid"
+                >
+                  Verify
+                </button>
+                } @if (loader) {
+                <button type="button" class="btn btn-primary padding-inline-165">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+
+              @if (time) {
+              <div class="text-center fs-13 mt-1 mb-2">
+                Haven't received OTP ? Resend OTP in
+                <span class="text-danger fw-bold">{{ time.minutes }}m {{ time.seconds }}s </span>
+              </div>
+              } } @if (time.minutes === 0 && time.seconds <= 0) {
+              <div class="text-center">
+                @if (!resendOtpLoader) {
+                <button
+                  type="button"
+                  class="btn btn-secondary padding-inline-125"
+                  (click)="
+                            resendOtp('EMAIL', {
+                              email: userData?.email,
+                            })
+                          "
+                >
+                  Resend OTP
+                </button>
+                } @if (resendOtpLoader) {
+                <button type="button" class="btn btn-secondary padding-inline-165">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </button>
+                }
+              </div>
+              }
+            </ng-container>
+          </div>
+          } @if (step === 3) {
+          <div class="text-center mt-2">
+            <div class="checkmark-container">
+              <i class="bi bi-check checkmark-icon"></i>
+            </div>
+            <h5 class="text-center fw-bold mt-0">Congratulations!!</h5>
+            <p class="text-dark text-center">IP address updated successfully.</p>
+          </div>
+
+          <div class="mt-5 d-grid col-8 mx-auto">
+            <button type="button" class="btn btn-primary btn-sm me-1" data-bs-dismiss="modal">
+              OK
+            </button>
+          </div>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--delete IP address modal-->
+<div
+  class="modal fade mt-5"
+  id="deleteIpAddressModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="deleteIpAddressModalLabel"
+  data-bs-backdrop="static"
+  aria-hidden="true"
+>
+  <div class="modal-dialog text-black" role="document">
+    <div class="modal-content">
+      <div class="modal-header border border-0 fw-bold d-flex justify-content-between">
+        <div class="fs-13">Delete IP Address</div>
+        <div class="fs-15 cursor-pointer" data-bs-dismiss="modal" aria-label="Close" (click)="clearForm()">
+          <i class="bi bi-x-lg fw-bold"></i>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        @if (step === 1) {
+        <div class="px-md-5 px-1">
+          <div class="text-center mb-1 mt-1">
+            <img alt="ip_address_icon" src="assets/icons/ip_image.svg" width="50" />
+          </div>
+
+          <div class="text-center fs-15 fw-bold mt-2 mb-1 text-primary">Delete IP Address</div>
+
+          <div class="alert alert-warning fade show p-2 my-3 fs-12" role="alert">
+            <div class="d-flex justify-content-start">
+              <div class="mt-1"><i class="bi bi-info-circle-fill"></i>&nbsp;</div>
+              <div class="fw-bold ms-1 text-justify lh-lg">
+                Once you delete the IP address, you will lose access to the API. To regain access,
+                you will need to add the IP address again.
+              </div>
+            </div>
+          </div>
+
+          <p class="text-center fs-15 fw-bold mb-3">Are you sure you want to proceed?</p>
+
+          <div class="d-flex gap-2 justify-content-center">
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary padding-inline-40"
+              data-bs-dismiss="modal"
+            >
+              No, Go Back
+            </button>
+
+            @if (!loader) {
+            <button
+              type="button"
+              class="btn btn-sm btn-danger padding-inline-70"
+              (click)="sendOtpToDeleteIpAddress(userData?.onboardingMode, currentIpAddress)"
+            >
+              Delete
+            </button>
+            } @if (loader) {
+            <button type="button" class="btn btn-sm btn-danger padding-inline-75">
+              <div class="spinner-border spinner-border-sm" role="status"></div>
+            </button>
+            }
+          </div>
+        </div>
+        } @if (step === 2) {
+        <div class="px-md-5 px-1">
+          <div class="text-center mb-1 mt-1">
+            <img alt="email_otp-logo" src="assets/icons/lock_img.png" width="40" />
+          </div>
+
+          <div class="text-center fs-15 fw-bold mt-2 mb-1">Email Verification</div>
+
+          <p class="text-center fs-13 fw-bold mb-2">
+            Enter OTP sent over to your registered email <br />
+            <span class="text-primary"> {{ userData?.email | fixedMaskData : 'email' }}</span>
+          </p>
+
+          <div class="text-center my-4 ms-4">
+            <ng-otp-input
+              [config]="ngOtpConfig"
+              (onInputChange)="onOtpChange($event)"
+            ></ng-otp-input>
+          </div>
+
+          <ng-container *ngIf="resendEmailOtpTimer$ | async as time">
+            @if (time.minutes > 0 || time.seconds > 0) {
+            <div class="text-center">
+              @if (!loader) {
+              <button
+                type="button"
+                class="btn btn-primary padding-inline-150"
+                [disabled]="!addIpAddressFormControls['emailOtp'].value"
+                (click)="verifyOtpAndDeleteIpAddress(userData?.onboardingMode, currentIpAddress)"
+              >
+                Verify
+              </button>
+              } @if (loader) {
+              <button type="button" class="btn btn-primary padding-inline-165">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+
+            @if (time) {
+            <div class="text-center fs-13 mt-1 mb-2">
+              <div>
+                Haven't received OTP ? Resend OTP in
+                <span class="text-danger fw-bold">{{ time.minutes }}m {{ time.seconds }}s</span>
+              </div>
+            </div>
+            } } @if (time.minutes === 0 && time.seconds <= 0) {
+            <div class="text-center">
+              @if (!resendOtpLoader) {
+              <button
+                type="button"
+                class="btn btn-secondary padding-inline-125"
+                (click)="
+                          resendOtp('EMAIL', {
+                            email: userData?.email,
+                          })
+                        "
+              >
+                Resend OTP
+              </button>
+              } @if (resendOtpLoader) {
+              <button type="button" class="btn btn-secondary padding-inline-165">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+            }
+          </ng-container>
+        </div>
+        } @if (step === 3) {
+        <div class="text-center mt-2">
+          <div class="checkmark-container">
+            <i class="bi bi-check checkmark-icon"></i>
+          </div>
+          <h5 class="text-center fw-bold mt-0">Action Completed!!</h5>
+          <p class="text-dark text-center">IP address removed successfully.</p>
+        </div>
+
+        <div class="mt-5 d-grid col-8 mx-auto">
+          <button type="button" class="btn btn-primary btn-sm me-1" data-bs-dismiss="modal">
+            OK
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--add webhook model-->
+<div
+  class="modal fade mt-5"
+  id="addWebhookModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="addWebhookModalLabel"
+  data-bs-backdrop="static"
+  aria-hidden="true"
+>
+  <div class="modal-dialog text-black" role="document">
+    <div class="modal-content">
+      @if (step === 1) {
+      <div class="modal-header border border-0 fw-bold d-flex justify-content-between">
+        <div class="fs-13">Add Webhook</div>
+        <div class="fs-15 cursor-pointer" data-bs-dismiss="modal" aria-label="Close" (click)="clearForm()">
+          <i class="bi bi-x-lg fw-bold"></i>
+        </div>
+      </div>
+      }
+
+      <div class="modal-body">
+        <form [formGroup]="addWebhookUrlForm" (ngSubmit)="addWebhookUrl()">
+          @if (step === 1) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="api_key_icon" src="assets/icons/Webhooks.svg" width="40" />
+            </div>
+
+            <div class="text-center fs-15 fw-bold mt-2 mb-1 text-primary">Add Webhook URL</div>
+
+            <div class="form-group mb-2 mt-4">
+              <label for="url" class="form-label fs-13"
+                >Webhook URL (URL must starts with https)*</label
+              >
+              <input
+                type="text"
+                id="url"
+                class="form-control custom-input cutsom-input-height-45"
+                placeholder="https://fynzon.in/get-notification"
+                formControlName="url"
+                [ngClass]="{
+                      'is-valid':
+                        addWebhookUrlFormControls['url'].dirty &&
+                        addWebhookUrlFormControls['url'].valid,
+                      'is-invalid custom-input-error':
+                        (addWebhookUrlFormControls['url'].dirty ||
+                          addWebhookUrlFormControls['url'].touched) &&
+                        addWebhookUrlFormControls['url'].invalid,
+                    }"
+              />
+
+              @if ( (addWebhookUrlFormControls["url"].dirty ||
+              addWebhookUrlFormControls["url"].touched) && addWebhookUrlFormControls["url"].invalid
+              ) { @if ( addWebhookUrlFormControls["url"].hasError("required") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">Webhook URL is mandatory!</div>
+              } @if ( addWebhookUrlFormControls["url"].hasError("insecureUrl") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">URL must starts with https://</div>
+              } }
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="event" class="form-label fs-13">Select Webhook Event*</label>
+              <select
+                id="event"
+                class="form-select form-control custom-input"
+                formControlName="event"
+                [ngClass]="{
+                      'is-valid':
+                        addWebhookUrlFormControls['event'].dirty &&
+                        addWebhookUrlFormControls['event'].valid,
+                      'is-invalid custom-input-error':
+                        (addWebhookUrlFormControls['event'].dirty ||
+                          addWebhookUrlFormControls['event'].touched) &&
+                        addWebhookUrlFormControls['event'].invalid,
+                    }"
+              >
+                @for (event of webhookEvents; track $index) {
+                <option class="cursor-pointer" [value]="event?.value">
+                  {{ event?.name }}
+                </option>
+                }
+              </select>
+
+              @if ( (addWebhookUrlFormControls["event"].dirty ||
+              addWebhookUrlFormControls["event"].touched) &&
+              addWebhookUrlFormControls["event"].invalid ) { @if (
+              addWebhookUrlFormControls["event"].hasError("required") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">Please select webhook event!</div>
+              } }
+            </div>
+
+            <div class="d-grid">
+              @if (!loader) {
+              <button type="submit" class="btn btn-primary" [disabled]="addWebhookUrlForm.invalid">
+                Add
+              </button>
+              } @if (loader) {
+              <button type="button" class="btn btn-primary">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+          </div>
+          } @if (step === 2) {
+          <div class="text-center mt-2">
+            <div class="checkmark-container">
+              <i class="bi bi-check checkmark-icon"></i>
+            </div>
+            <h5 class="text-center fw-bold mt-0">Congratulations!!</h5>
+            <p class="text-dark text-center">Webhook URL listed successfully.</p>
+          </div>
+
+          <div class="mt-5 d-grid col-8 mx-auto">
+            <button type="button" class="btn btn-primary btn-sm me-1" data-bs-dismiss="modal">
+              OK
+            </button>
+          </div>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--update webhook model-->
+<div
+  class="modal fade mt-5"
+  id="updateWebhookModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="updateWebhookModalLabel"
+  data-bs-backdrop="static"
+  aria-hidden="true"
+>
+  <div class="modal-dialog text-black" role="document">
+    <div class="modal-content">
+      @if (step === 1) {
+      <div class="modal-header border border-0 fw-bold d-flex justify-content-between">
+        <div class="fs-13">Update Webhook</div>
+        <div class="fs-15 cursor-pointer" data-bs-dismiss="modal" aria-label="Close" (click)="clearForm()">
+          <i class="bi bi-x-lg fw-bold"></i>
+        </div>
+      </div>
+      }
+
+      <div class="modal-body">
+        <form [formGroup]="addWebhookUrlForm" (ngSubmit)="updateWebhookUrl(currentWebhookUrl)">
+          @if (step === 1) {
+          <div class="px-md-5 px-1">
+            <div class="text-center mb-1 mt-1">
+              <img alt="api_key_icon" src="assets/icons/Webhooks.svg" width="40" />
+            </div>
+
+            <div class="text-center fs-15 fw-bold mt-2 mb-1 text-primary">Update Webhook URL</div>
+
+            <div class="form-group mb-2 mt-4">
+              <label for="url" class="form-label fs-13"
+                >Webhook URL (URL must starts with https)*</label
+              >
+              <input
+                type="text"
+                id="url"
+                class="form-control custom-input cutsom-input-height-45"
+                placeholder="https://fynzon.in/get-notification"
+                formControlName="url"
+                [ngClass]="{
+                      'is-valid':
+                        addWebhookUrlFormControls['url'].dirty &&
+                        addWebhookUrlFormControls['url'].valid,
+                      'is-invalid custom-input-error':
+                        (addWebhookUrlFormControls['url'].dirty ||
+                          addWebhookUrlFormControls['url'].touched) &&
+                        addWebhookUrlFormControls['url'].invalid,
+                    }"
+              />
+
+              @if ( (addWebhookUrlFormControls["url"].dirty ||
+              addWebhookUrlFormControls["url"].touched) && addWebhookUrlFormControls["url"].invalid
+              ) { @if ( addWebhookUrlFormControls["url"].hasError("required") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">Webhook URL is mandatory!</div>
+              } @if ( addWebhookUrlFormControls["url"].hasError("insecureUrl") ) {
+              <div class="text-danger fs-12 ps-1 mt-1">URL must starts with https://</div>
+              } }
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="event" class="form-label fs-13">Webhook Event*</label>
+
+              <input
+                type="text"
+                id="event"
+                class="form-control custom-input cutsom-input-height-45"
+                readonly
+                [(ngModel)]="currentWebhookEvent"
+                formControlName="event"
+              />
+            </div>
+
+            <div class="d-grid">
+              @if (!loader) {
+              <button type="submit" class="btn btn-primary" [disabled]="addWebhookUrlForm.invalid">
+                Update
+              </button>
+              } @if (loader) {
+              <button type="button" class="btn btn-primary">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </button>
+              }
+            </div>
+          </div>
+          } @if (step === 2) {
+          <div class="text-center mt-2">
+            <div class="checkmark-container">
+              <i class="bi bi-check checkmark-icon"></i>
+            </div>
+            <h5 class="text-center fw-bold mt-0">Congratulations!!</h5>
+            <p class="text-dark text-center">Webhook URL listed successfully.</p>
+          </div>
+
+          <div class="mt-5 d-grid col-8 mx-auto">
+            <button type="button" class="btn btn-primary btn-sm me-1" data-bs-dismiss="modal">
+              OK
+            </button>
+          </div>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--delete webhook address modal-->
+<div
+  class="modal fade mt-5"
+  id="deleteWebhookModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="deleteWebhookModalLabel"
+  data-bs-backdrop="static"
+  aria-hidden="true"
+>
+  <div class="modal-dialog text-black" role="document">
+    <div class="modal-content">
+      <div class="modal-header border border-0 fw-bold d-flex justify-content-between">
+        <div class="fs-13">Delete Webhook</div>
+        <div class="fs-15 cursor-pointer" data-bs-dismiss="modal" aria-label="Close" (click)="clearForm()">
+          <i class="bi bi-x-lg fw-bold"></i>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        @if (step === 1) {
+        <div class="px-md-5 px-1">
+          <div class="text-center mb-1 mt-1">
+            <img alt="api_key_icon" src="assets/icons/Webhooks.svg" width="40" />
+          </div>
+
+          <div class="text-center fs-15 fw-bold mt-2 mb-1 text-primary">Delete Webhook URL</div>
+
+          <div class="alert alert-warning fade show p-2 my-3 fs-12" role="alert">
+            <div class="d-flex justify-content-start">
+              <div class="mt-1"><i class="bi bi-info-circle-fill"></i>&nbsp;</div>
+              <div class="fw-bold ms-1 text-justify lh-lg">
+                Once you delete the webhook URL for the selected events, you will no longer receive
+                transaction notifications for those events.
+              </div>
+            </div>
+          </div>
+
+          <p class="text-center fs-15 fw-bold mb-3">Are you sure you want to proceed?</p>
+
+          <div class="d-flex gap-2 justify-content-center">
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary padding-inline-40"
+              data-bs-dismiss="modal"
+            >
+              No, Go Back
+            </button>
+
+            @if (!loader) {
+            <button
+              type="button"
+              class="btn btn-sm btn-danger padding-inline-70"
+              (click)="deleteWebhookUrl(webHookDataToDelete)"
+            >
+              Delete
+            </button>
+            } @if (loader) {
+            <button type="button" class="btn btn-sm btn-danger padding-inline-75">
+              <div class="spinner-border spinner-border-sm" role="status"></div>
+            </button>
+            }
+          </div>
+        </div>
+        } @if (step === 2) {
+        <div class="text-center mt-2">
+          <div class="checkmark-container">
+            <i class="bi bi-check checkmark-icon"></i>
+          </div>
+          <h5 class="text-center fw-bold mt-0">Action Completed!!</h5>
+          <p class="text-dark text-center">Webhook URL removed successfully.</p>
+        </div>
+
+        <div class="mt-5 d-grid col-8 mx-auto">
+          <button type="button" class="btn btn-primary btn-sm me-1" data-bs-dismiss="modal">
+            OK
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

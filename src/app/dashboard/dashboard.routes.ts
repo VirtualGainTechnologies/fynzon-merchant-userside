@@ -19,6 +19,9 @@ export const dashboardRoutes: Routes = [
       {
         path: "account",
         loadChildren:()=> import('./account_management/account-management.routes').then((account)=>account.accountManagementRoute)
+      },
+      {
+        path:"developer", loadChildren:()=> import("./developer_control/developerControl.routes").then((routes)=> routes.dashboardRoutes)
       }
     ],
   },

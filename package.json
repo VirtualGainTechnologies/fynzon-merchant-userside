@@ -41,6 +41,7 @@
     "express": "^5.1.0",
     "ng-otp-input": "^2.0.9",
     "ngx-countries-dropdown": "^4.0.1",
+    "ngx-csv": "^0.3.2",
     "ngx-device-detector": "^10.1.0",
     "ngx-toastr": "^19.1.0",
     "rxjs": "~7.8.0",
