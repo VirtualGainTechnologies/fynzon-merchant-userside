@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard';
+import { Invoice } from './payment/components/invoice/invoice';
 
 export const dashboardRoutes: Routes = [
   {
@@ -22,6 +23,9 @@ export const dashboardRoutes: Routes = [
       },
       {
         path:"developer", loadChildren:()=> import("./developer_control/developerControl.routes").then((routes)=> routes.dashboardRoutes)
+      },
+      {
+        path:"payment", loadChildren:()=> import("./payment/payment.routes").then((routes)=>routes.paymentRoutes)
       }
     ],
   },

@@ -96,7 +96,6 @@ export class ApiSettingComponent {
     this.authService.getMerchantDetails().subscribe({
       next: (res:AuthData) => {
         this.userData = res.data;
-        console.log("the userData is", this.userData);
       this.createGenerateApiKeyForm();
       this.createAddIpAddressForm();
       this.createAddWebhookUrlForm();

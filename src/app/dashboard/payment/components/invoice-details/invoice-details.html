@@ -1,0 +1,235 @@
+<div class="container-fluid bg-aliceblue px-4 py-4 rounded-3 position-relative">
+  <div class="d-flex justify-content-between align-items-center my-2">
+    <i
+      class="bi bi-chevron-left text-secondary fs-5"
+      matTooltip="back"
+      matTooltipPosition="right"
+      (click)="closedOpenedModal('searchContact')"
+    ></i>
+    <button class="btn-close btn btn-sm" (click)="closedOpenedModal('initialUi')"></button>
+  </div>
+  <h5 class="text-primary">{{ detailsForm }} Details</h5>
+  <div class="customHeight">
+    @if(detailsForm=="Invoice"){
+    <form class="text-dark row gap-3" [formGroup]="invoiceForm">
+      <div class="formGroup">
+        <label for="baseCurrency" class="form-label"
+          >Select Base Currency <span class="text-danger">*</span></label
+        >
+        <div class="dropdown">
+          <button
+            class="custom-input form-select w-100 text-start"
+            [ngClass]="
+              invoiceFormControls['currency'].invalid && invoiceFormControls['currency'].touched
+                ? 'is-invalid custom-input-error'
+                : ''
+            "
+            type="button"
+            id="contactTypeDropdown"
+            (click)="openDropdown()"
+            data-bs-toggle="dropdown"
+          >
+            {{ selectedCurrency ? selectedCurrency : '--Select Base Currency--' }}
+          </button>
+          <ul class="dropdown-menu w-100" aria-labelledby="contactTypeDropdown">
+            @for (currency of currencies; track $index) {
+            <li>
+              <a class="dropdown-item" (click)="selectCurrency(currency)">{{ currency }}</a>
+            </li>
+            }
+          </ul>
+        </div>
+        @if(invoiceFormControls['currency'].invalid && invoiceFormControls['currency'].touched) {
+        <div class="text-danger fst-italic">Currency is required!</div>
+
+        }
+      </div>
+
+      @if(selectedCurrency) {
+      <div class="formGroup">
+        <label for="conversionRate" class="form-label"
+          >Conversion Rate <span class="text-danger">*</span>
+          <i
+            class="bi bi-info-circle text-primary mx-2"
+            matTooltip="conversion rate conversion rate converasuion rate "
+            matTooltipPosition="above"
+          ></i
+        ></label>
+        <div class="d-flex">
+          <div class="formGroup flex-grow-1">
+            <div class="inner-addon right-addon">
+              <div class="innerText">
+                <img
+                  class="rounded-circle"
+                  [src]="`assets/icons/${selectedCurrency}.svg`"
+                  width="20"
+                  height="20"
+                  alt=""
+                />
+              </div>
+            </div>
+            <input
+              type="text"
+              class="form-control custom-input"
+              [placeholder]="selectedCurrency"
+              formControlName="currencyAmount"
+              [ngClass]="
+                invoiceFormControls['currencyAmount'].invalid &&
+                invoiceFormControls['currencyAmount'].touched
+                  ? 'is-invalid custom-input-error'
+                  : ''
+              "
+            />
+            @if(invoiceFormControls['currencyAmount'].invalid &&
+            invoiceFormControls['currencyAmount'].touched) {
+            <div class="text-danger fst-italic">Currency Amount is required!</div>
+            }
+          </div>
+          <div class="d-flex justify-content-center mt-1 mx-3">
+            <i class="bi bi-arrow-left-right fw-bold"></i>
+          </div>
+          <div class="formGroup flex-grow-1">
+            <div class="inner-addon right-addon">
+              <div class="innerText">
+                <img
+                  class="rounded-circle"
+                  [src]="`assets/icons/${selectedCrypto}.png`"
+                  width="20"
+                  height="20"
+                  alt=""
+                />
+              </div>
+            </div>
+            <input
+              type="text"
+              class="form-control custom-input"
+              [placeholder]="selectedCrypto"
+              formControlName="cryptoAmount"
+              [ngClass]="
+                invoiceFormControls['cryptoAmount'].invalid &&
+                invoiceFormControls['cryptoAmount'].touched
+                  ? 'is-invalid custom-input-error'
+                  : ''
+              "
+            />
+            @if(invoiceFormControls['cryptoAmount'].invalid &&
+            invoiceFormControls['cryptoAmount'].touched) {
+            <div class="text-danger fst-italic">Crypto Amount is required!</div>
+            }
+          </div>
+        </div>
+      </div>
+      }
+
+      <div class="formGroup">
+        <div class="row gap-3">
+          <div class="formGroup col">
+            <label for="invoiceNumber" class="form-label"
+              >Invoice Number <span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control custom-input"
+              formControlName="invoiceNumber"
+              [ngClass]="
+                invoiceFormControls['invoiceNumber'].invalid &&
+                invoiceFormControls['invoiceNumber'].touched
+                  ? 'is-invalid custom-input-error'
+                  : ''
+              "
+            />
+            @if(invoiceFormControls['invoiceNumber'].invalid &&
+            invoiceFormControls['invoiceNumber'].touched) {
+            <div class="text-danger fst-italic">Invoice Number is required!</div>
+            }
+          </div>
+          <div class="formGroup col">
+            <label for="invoiceDate" class="form-label"
+              >Invoice Date <span class="text-danger">*</span></label
+            >
+            <input
+              type="date"
+              class="form-control custom-input"
+              [min]="today"
+              formControlName="invoiceDate"
+              [ngClass]="
+                invoiceFormControls['invoiceDate'].invalid &&
+                invoiceFormControls['invoiceDate'].touched
+                  ? 'is-invalid custom-input-error'
+                  : ''
+              "
+            />
+            @if(invoiceFormControls['invoiceDate'].invalid &&
+            invoiceFormControls['invoiceDate'].touched) {
+            <div class="text-danger fst-italic">Invoice Date is required!</div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="formGroup">
+        <label for="dueDate" class="form-label">Due Date <span class="text-danger">*</span></label>
+        <input
+          type="date"
+          class="form-control custom-input"
+          [min]="today"
+          formControlName="dueDate"
+          [ngClass]="
+            invoiceFormControls['dueDate'].invalid && invoiceFormControls['dueDate'].touched
+              ? 'is-invalid custom-input-error'
+              : ''
+          "
+        />
+        @if(invoiceFormControls['dueDate'].invalid && invoiceFormControls['dueDate'].touched) {
+        <div class="text-danger fst-italic">Due Date is required!</div>
+        }
+      </div>
+      <div class="formGroup">
+        <label for="description" class="form-label"
+          >Order description <span class="text-danger">*</span></label
+        >
+        <textarea
+          class="form-control custom-input"
+          formControlName="description"
+          [ngClass]="
+            invoiceFormControls['description'].invalid && invoiceFormControls['description'].touched
+              ? 'is-invalid custom-input-error'
+              : ''
+          "
+        >
+        </textarea>
+        @if(invoiceFormControls['description'].invalid &&
+        invoiceFormControls['description'].touched) {
+        <div class="text-danger fst-italic">Description is required!</div>
+        }
+      </div>
+
+      <div class="formGroup text-end">
+        <button
+          class="btn btn-primary btn-sm px-4"
+          type="submit"
+          [disabled]="invoiceForm.invalid"
+          (click)="changeFormUI('Amount')"
+        >
+          Next
+        </button>
+      </div>
+    </form>
+    }@else if(detailsForm=="Amount") {
+    <app-amount-details
+      [selectedCrypto]="selectedCrypto"
+      [selectedCurrency]="selectedCurrency"
+      [currencyAmount]="currencyAmount"
+      [cryptoAmount]="cryptoAmount"
+    ></app-amount-details>
+    <button
+      class="btn btn-sm position-absolute top-0 my-2 px-0 mx-0"
+      matTooltip="Back"
+      matTooltipPosition="right"
+      (click)="changeFormUI('Invoice')"
+    >
+      <i class="bi bi-chevron-left me-2 text-dark fw-bold fs-5"></i>
+    </button>
+    }
+  </div>
+</div>

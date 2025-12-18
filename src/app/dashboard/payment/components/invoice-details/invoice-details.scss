@@ -1,0 +1,17 @@
+.bg-aliceblue {
+  background-color: aliceblue;
+}
+
+.customHeight {
+  height: 500px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.right-addon .innerText {
+  right: 35px;
+  padding: 5px 0px;
+  cursor: pointer;
+}

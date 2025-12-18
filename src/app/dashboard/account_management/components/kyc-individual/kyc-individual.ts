@@ -73,7 +73,6 @@ export class KycIndividualComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    console.log('this.vide', this.video);
   }
 
   createAadharForm() {

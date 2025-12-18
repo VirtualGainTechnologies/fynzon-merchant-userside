@@ -1,0 +1,173 @@
+@if(!isPreview) {
+<form [formGroup]="amountDetailsForm" class="text-dark">
+  <div formArrayName="items">
+    @for (item of items.controls; track $index) {
+    <div [formGroupName]="$index">
+      <div class="formGroup">
+        <div class="row my-3">
+          <div class="formGroup col-4">
+            <label for="itemName" class="form-label"
+              >Item Name <span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control custom-input"
+              formControlName="itemName"
+              placeholder="Item Name"
+              [ngClass]="
+                item.get('itemName')?.invalid && item.get('itemName')?.touched
+                  ? 'is-invalid custom-input-error'
+                  : ''
+              "
+            />
+            @if(item.get('itemName')?.invalid && item.get('itemName').touched) {
+            <div class="text-danger fst-italic">Item Name is required!</div>
+            }
+          </div>
+          <div class="formGroup col-3">
+            <label for="quantity" class="form-label"
+              >Quantity <span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control custom-input"
+              formControlName="quantity"
+              placeholder="Quantity"
+              [ngClass]="
+                item.get('quantity')?.invalid && item.get('quantity')?.touched
+                  ? 'is-invalid custom-input-error'
+                  : ''
+              "
+            />
+            @if(item.get('quantity')?.invalid && item.get('quantity').touched) {
+            <div class="text-danger fst-italic">Quantity is required!</div>
+            }
+          </div>
+          <div class="formGroup col-4">
+            <label for="pricePerQuantity" class="form-label"
+              >Price Per Quantity <span class="text-danger">*</span></label
+            >
+            <div class="inner-addon right-addon">
+              <div class="innerText">
+                <img
+                  class="rounded-circle"
+                  [src]="`assets/icons/${selectedCurrency}.svg`"
+                  width="20"
+                  height="20"
+                  alt=""
+                />
+              </div>
+              <input
+                type="number"
+                class="form-control custom-input"
+                formControlName="pricePerQuantity"
+                [placeholder]="selectedCurrency"
+                [ngClass]="
+                  item.get('pricePerQuantity')?.invalid && item.get('pricePerQuantity')?.touched
+                    ? 'is-invalid custom-input-error'
+                    : ''
+                "
+              />
+            </div>
+            @if(item.get('pricePerQuantity')?.invalid && item.get('pricePerQuantity').touched) {
+            <div class="text-danger fst-italic">Price/Quantity is required!</div>
+            }
+          </div>
+          <div class="form-group col-1">
+            <button
+              matTooltip="Remove Item"
+              type="button"
+              class="btn mt-4"
+              (click)="removeItem($index)"
+            >
+              <i class="bi bi-trash text-danger fs-5"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    } @if(items.length<5){
+    <button class="btn btn-link text-primary text-decoration-none my-2" (click)="addItem()">
+      + Add Item
+    </button>
+    }
+  </div>
+  <div class="formGroup">
+    <div class="row gap-3 my-2">
+      <div class="formGroup col">
+        <label for="discount" class="form-label">Discount <span class="text-danger">*</span></label>
+        <div class="inner-addon right-addon">
+          <div class="innerText">%</div>
+          <input
+            type="number"
+            class="form-control custom-input"
+            formControlName="discount"
+            placeholder="Discount"
+            [ngClass]="
+              amountDetailsForm.get('discount')?.invalid &&
+              amountDetailsForm.get('discount')?.touched
+                ? 'is-invalid custom-input-error'
+                : ''
+            "
+          />
+          @if(amountDetailsForm.get('discount')?.invalid &&
+          amountDetailsForm.get('discount')?.touched) {
+          <div class="text-danger fst-italic">Discount is required!</div>
+          }
+        </div>
+      </div>
+      <div class="formGroup col">
+        <label for="taxes" class="form-label">Taxes<span class="text-danger">*</span></label>
+        <div class="inner-addon right-addon">
+          <div class="innerText">%</div>
+          <input
+            type="number"
+            class="form-control custom-input"
+            formControlName="taxes"
+            placeholder="Taxes"
+            [ngClass]="
+              amountDetailsForm.get('taxes')?.invalid && amountDetailsForm.get('taxes')?.touched
+                ? 'is-invalid custom-input-error'
+                : ''
+            "
+          />
+          @if(amountDetailsForm.get('taxes')?.invalid && amountDetailsForm.get('taxes')?.touched) {
+          <div class="text-danger fst-italic">Taxes field is required!</div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="form-group d-flex justify-content-between bg-success-subtle text-dark p-3 my-4 rounded-2"
+  >
+    <div class="row row-cols-2">
+      <div class="col">Total Invoice Amount</div>
+      <div class="col text-end">{{ totalItemsValue }}</div>
+      <div class="col">Discount</div>
+      <div class="col text-end">{{ discountPrice }}</div>
+      <div class="col">Tax</div>
+      <div class="col text-end">{{ taxesPrice }}</div>
+      <div class="col fw-bold">Amount will be paid</div>
+      <div class="col fw-bold text-end"><span class="text-primary">{{ finalAmount }}</span>
+      <span class="text-primary mx-2">{{ selectedCrypto }} </span>
+      <img
+        class="rounded-circle"
+        [src]="`assets/icons/${selectedCrypto}.png`"
+        width="20"
+        height="20"
+        alt=""
+      /></div>
+    </div>
+  </div>
+  <div class="formGroup my-5">
+    <div class="row gap-4">
+      <button class="btn btn-secondary col mx-3">Save as Draft</button>
+      <button class="btn btn-primary col mx-3" (click)="openPreview()">Preview</button>
+    </div>
+  </div>
+</form>
+}@else {
+<app-preview-invoice-data></app-preview-invoice-data>
+}

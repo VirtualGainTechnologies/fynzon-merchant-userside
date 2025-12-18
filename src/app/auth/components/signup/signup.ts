@@ -78,6 +78,7 @@ export class SignupComponent {
   };
   countryListConfig: IConfig = {
     hideCode: true,
+    hideName:true
   };
   private formbuilder = inject(FormBuilder);
   private deviceService = inject(DeviceDetectorService);

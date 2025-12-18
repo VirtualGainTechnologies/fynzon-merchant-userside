@@ -1,0 +1,688 @@
+<div class="container-fluid d-flex justify-content-center vh-80 mt-5">
+  <div
+    class="card-dark rounded-3 position-relative col-6"
+    [ngClass]="
+      isaddingNewContact == 'addNewContact' || isaddingNewContact == 'initialUi' ? 'p-5' : 'p-0'
+    "
+  >
+    @if(step==1){ @if(showFilterForm()){
+    <h5 class="text-center">Payment Wallet Details</h5>
+    <form [formGroup]="cryptoForm" class="row my-3 g-3">
+      <div class="alert alert-warning my-3">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab neque at eos molestias fugit
+        quam eum consequuntur nobis,
+      </div>
+      <div class="formGroup col">
+        <label for="crypto" class="form-label"
+          >Select Crypto <span class="text-danger">*</span></label
+        >
+        <select class="form-select custom-input" formControlName="crypto">
+          <option value="" [selected]="true" [disabled]="true">---Select Crypto---</option>
+          @for (crypto of cryptoCoins; track $index) {
+          <option [value]="crypto.symbol">{{ crypto.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="formGroup col">
+        <label for="network" class="form-label"
+          >Select Network <span class="text-danger">*</span></label
+        >
+        <select class="form-select custom-input" formControlName="network">
+          <option value="" [selected]="true" [disabled]="true">---Select Network---</option>
+          @for (network of networkList; track $index) {
+          <option [value]="network">{{ network }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="formGroup mt-4">
+        <input
+          type="file"
+          id="imageUpload"
+          accept=".png, .jpg, .jpeg"
+          #fileInput
+          (change)="uploadFile($event)"
+          formControlName="companyLogo"
+          title="upload_image"
+          hidden
+        />
+        <div class="row">
+          <div
+            class="col-2 d-flex justify-content-center align-items-center cursor-pointer"
+            (click)="fileInput.click()"
+          >
+            <div class="rounded-circle bg-success-subtle cameraLogo">
+              <i class="bi bi-camera text-primary fs-5"></i>
+            </div>
+          </div>
+          <div class="col-10">
+            <h6>Company Logo <span class="text-danger">*</span></h6>
+            <div class="text-secondary">Supported Formats: jpeg, jpg, png, (max.10MB)</div>
+            <div class="text-primary">{{ imageFile?.name }}</div>
+          </div>
+        </div>
+      </div>
+    </form>
+    }@else {
+    <div class="d-flex justify-content-between">
+      <h5 class="">Payment Wallet Details</h5>
+      <img [src]="imagePreview" width="40" alt="company_logo" />
+    </div>
+
+    <div class="d-flex justify-content-between my-4">
+      <div class="text-start">
+        <div class="">
+          Crypto: {{ cryptoForm.get('crypto')?.value }}
+          <img [ngSrc]="cryptoImage" alt="crypto_coin" width="20" height="20" class="ms-2" />
+        </div>
+        <div class="my-2">Network: {{ cryptoForm.get('network')?.value }}</div>
+        <div>
+          Network Address:
+          <div class="border d-flex p-2 px-3 my-2 rounded-2">
+            <h5>{{ 'network Address trc20' }}</h5>
+            <i
+              class="bi bi-copy ms-4 cursor-pointer"
+              [matTooltip]="'copy'"
+              [matTooltipPosition]="'above'"
+              (click)="copyAddress('n')"
+            ></i>
+          </div>
+        </div>
+      </div>
+      <div>
+        <img [src]="qrImage" alt="qr_code" width="120" />
+      </div>
+    </div>
+    <div class="text-start position-absolute top-0 start-0 m-3">
+      <i
+        matTooltip="Back"
+        matTooltipPosition="right"
+        class="bi bi-chevron-left cursor-pointer text-white"
+        (click)="goBack()"
+      ></i>
+    </div>
+    <div class="text-end position-absolute bottom-0 end-0 mb-4 me-4">
+      <button class="btn btn-primary btn-sm" (click)="changeStep(2)">
+        Next<i class="bi bi-arrow-right ms-2"></i>
+      </button>
+    </div>
+    } } @else {
+
+    <div class="row">
+      @switch(isaddingNewContact) { @case('initialUi') {
+      <h5>Contact Details</h5>
+      <div class="col-6">
+        <label for="contact" class="form-label">Select Contact</label>
+        <div class="inner-addon left-addon" (click)="createNewContact()">
+          <div class="innerText">
+            <i class="bi bi-search"></i>
+          </div>
+          <input type="text" class="form-control custom-input ps-5" placeholder="Search contact" />
+        </div>
+      </div>
+      <div class="col-6">
+        <label for="contactType" class="form-label">Contact Type</label>
+        <div class="dropdown">
+          <button
+            #dropdownBtn
+            class="custom-input form-select w-100 text-start"
+            type="button"
+            id="contactTypeDropdown"
+            (click)="openDropdown()"
+            data-bs-toggle="dropdown"
+          >
+            {{ selectedContactType ? selectedContactType : '--Select Contact Type--' }}
+          </button>
+          <ul class="dropdown-menu w-100" aria-labelledby="contactTypeDropdown">
+            @if(!addNewContactType) {
+            <li (click)="$event.stopPropagation(); createNewContactType(true)">
+              <a class="dropdown-item text-primary text-primary-hover"> + Add New Contact Type</a>
+            </li>
+
+            }@else {
+            <li
+              class="mx-3 inner-addon right-addon"
+              (click)="$event.stopPropagation(); createNewContactType(false)"
+            >
+              <div class="innerText">
+                <i class="bi bi-x-lg text-danger fw-bold"></i>
+              </div>
+              <input
+                type="text"
+                class="custom-input form-control"
+                [(ngModel)]="newContactType"
+                (keyup.enter)="saveNewContactType()"
+                (click)="$event.stopPropagation()"
+              />
+            </li>
+            }
+            <li>
+              <a class="dropdown-item" (click)="selectContactType('ALL')"> ALL </a>
+            </li>
+            @for (type of contactTypes; track $index) {
+            <li>
+              <a class="dropdown-item" (click)="selectContactType(type.name)">{{ type.name }}</a>
+            </li>
+            }
+          </ul>
+        </div>
+      </div>
+      } @case('addNewContact') {
+      <div>
+        <i
+          class="bi bi-chevron-left text-white cursor-pointer"
+          matTooltip="back"
+          matTooltipPosition="right"
+          (click)="closeSearchContact('initialUi')"
+        ></i>
+      </div>
+
+      <h5 class="mb-3">Contact Details</h5>
+      <div class="shadow border p-4 rounded-3">
+        <div class="text-center my-2">
+          <img src="assets/icons/newContactImg.svg" alt="contact_img" width="82" />
+        </div>
+        <div class="row">
+          @for (ui of newContactStaticUi; track $index) {
+          <div class="col-1">
+            <i [ngClass]="ui.logo" class="fs-4"></i>
+          </div>
+          <div class="col-11">
+            <h6 class="text-primary">{{ ui.heading }}</h6>
+            <p>{{ ui.para }}</p>
+          </div>
+          }
+          <div class="text-center my-3">
+            <button
+              class="btn btn-primary px-5 btn-sm"
+              data-bs-toggle="modal"
+              data-bs-target="#addContact"
+            >
+              + Create Contact
+            </button>
+          </div>
+        </div>
+      </div>
+
+      } @case ('searchContact') {
+      <div class="container-fluid bg-aliceblue w-100 h-500 m-0 p-3 rounded-3 overflow-auto">
+        <div class="heading d-flex justify-content-between align-items-center">
+          <h6
+            class="text-primary cursor-pointer"
+            data-bs-toggle="modal"
+            data-bs-target="#addContact"
+          >
+            + Add New Contact
+          </h6>
+          <button class="btn btn-close btn-sm" (click)="closeSearchContact('initialUi')"></button>
+        </div>
+
+        <div class="inner-addon left-addon">
+          <div class="innerText">
+            <i class="bi bi-search"></i>
+          </div>
+          <form [formGroup]="filterContact">
+            <input
+              type="text"
+              formControlName="searchTerm"
+              id="searchContactInput"
+              class="form-control custom-input my-3 ps-5"
+              placeholder="Search by contact name, email or phone"
+            />
+          </form>
+        </div>
+        @for (contact of contacts; track $index) {
+        <div
+          class="border-bottom text-dark p-2 d-flex justify-content-between align-items-center w-100"
+        >
+          <div class="flex-grow-1 me-5">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h6 class="m-0"><i class="bi bi-person me-3"></i>{{ contact.contactName }}</h6>
+              <div class="div">
+                <div class="badge border rounded-1 text-black fw-medium">
+                  {{ contact.contactType | titlecase }}
+                </div>
+                <i
+                  class="bi bi-pencil-square text-primary ms-3 cursor-pointer"
+                  data-bs-toggle="modal"
+                  data-bs-target="#addContact"
+                  [matTooltip]="'Update Contact'"
+                  [matTooltipPosition]="'above'"
+                  (click)="updateContactDetails(contact)"
+                ></i>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div><i class="bi bi-envelope-at me-3 text-primary"></i>{{ contact.email }}</div>
+              @if(contact.phone) {
+              <div>
+                <i class="bi bi-telephone me-3 text-success text-end"></i>{{ contact.phone }}
+              </div>
+              }
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" (click)="selectContact(contact)">
+              Select <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+      } @case('viewContact') {
+
+      <div class="container-fluid bg-aliceblue w-100 h-500 text-dark rounded-3 m-0 p-4">
+        <div class="text-end mb-3">
+          <button class="btn btn-close btn-sm" (click)="closeSearchContact('initialUi')"></button>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="m-0"><i class="bi bi-person me-3"></i>{{ selectedContact.contactName }}</h6>
+          <div class="badge border rounded-1 text-black fw-medium">
+            {{ selectedContact.contactType | titlecase }}
+          </div>
+        </div>
+        <div class="d-flex justify-content-between mb-3">
+          <div><i class="bi bi-envelope-at me-3 text-primary"></i>{{ selectedContact.email }}</div>
+          @if(selectedContact.phone) {
+          <div>
+            <i class="bi bi-telephone me-3 text-success text-end"></i>{{ selectedContact.phone }}
+          </div>
+          }
+        </div>
+        <hr />
+
+        <h6 class="">Address:</h6>
+        <div class="d-flex justify-content-between mb-3">
+          <div><span class="fw-medium me-3">City:</span>{{ selectedContact.address.city }}</div>
+          <div><span class="fw-medium me-3">State:</span>{{ selectedContact.address.state }}</div>
+        </div>
+        <div class="d-flex justify-content-between mb-3">
+          <div>
+            <span class="fw-medium me-3">Country:</span> {{ selectedContact.address.country }}
+          </div>
+          <div><span class="fw-medium me-3">Zipcode:</span>{{ selectedContact.address.zip }}</div>
+        </div>
+        <div class="mb-3">
+          <span class="fw-medium me-3">Full Address:</span
+          >{{ selectedContact.address.full_address }}
+        </div>
+
+        <hr />
+        <div class="d-flex justify-content-between mb-2">
+          <div class="">
+            <span class="fw-medium">Company Name: </span
+            >{{ selectedContact.companyName ? selectedContact.companyName : 'N/A' }}
+          </div>
+          <div class="mb-3">
+            <span class="fw-medium">TaxId: </span
+            >{{ selectedContact.taxId ? selectedContact.taxId : 'N/A' }}
+          </div>
+        </div>
+        <div class="mb-3">
+          <span class="fw-medium me-3">Note:</span
+          >{{ selectedContact.note ? selectedContact.note : 'N/A' }}
+        </div>
+
+        <div class="text-end">
+          <button
+            class="btn btn-primary btn-sm px-3"
+            (click)="closeSearchContact('invoiceDetails')"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+      } @case ('invoiceDetails') {
+      <app-invoice-details
+        [selectedCrypto]="cryptoCurrency"
+        (closeUi)="closeSearchContact($event)"
+        (invoiceComponentData)="getInvoiceFormData($event)"
+      ></app-invoice-details>
+      } }
+    </div>
+
+    }
+  </div>
+</div>
+
+<div
+  class="modal modal-lg"
+  id="addContact"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="addContactLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header px-3">
+        <h5 class="modal-title" id="addContactLabel">
+          {{ isUpdatingContact ? 'Update ' : 'Add ' }}New Contact
+        </h5>
+        <button
+          type="button"
+          class="btn-close fs-6"
+          #closeBtn
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="changenewContactFormStep()"
+        ></button>
+      </div>
+
+      <div class="modal-body px-3">
+        <form [formGroup]="addNewContactForm" class="" (ngSubmit)="onContactSubmit()">
+          <div class="row gap-3">
+            <div class="form-group col">
+              <label for="contactName" class="form-label"
+                >Contact Name <span class="text-danger">*</span></label
+              >
+              <input
+                type="text"
+                class="form-control custom-input"
+                id="contactName"
+                formControlName="contactName"
+                [ngClass]="
+                  NewContactFormControls['contactName'].invalid &&
+                  (NewContactFormControls['contactName'].touched ||
+                    NewContactFormControls['contactName'].dirty)
+                    ? 'is-invalid custom-input-error'
+                    : ''
+                "
+              />
+              @if(NewContactFormControls['contactName'].invalid &&
+              (NewContactFormControls['contactName'].touched ||
+              NewContactFormControls['contactName'].dirty)) {
+              <div class="text-danger fst-italic">Contact Name is required!</div>
+              }
+            </div>
+            <div class="form-group col">
+              <label for="contactType" class="form-label"
+                >Contact Type <span class="text-danger">*</span></label
+              >
+              <div class="dropdown">
+                <button
+                  #dropdownBtn
+                  class="custom-input form-select w-100 text-start"
+                  [ngClass]="
+                    NewContactFormControls['contactType'].invalid &&
+                    (NewContactFormControls['contactType'].touched ||
+                      NewContactFormControls['contactType'].dirty)
+                      ? 'is-invalid custom-input-error'
+                      : ''
+                  "
+                  type="button"
+                  id="contactTypeDropdown"
+                  (click)="openDropdown()"
+                  data-bs-toggle="dropdown"
+                >
+                  {{ NewContactFormControls['contactType'].value || '--Select Contact Type--' }}
+                </button>
+                <ul class="dropdown-menu w-100" aria-labelledby="contactTypeDropdown">
+                  @if(!addNewContactType) {
+                  <li (click)="$event.stopPropagation(); createNewContactType(true)">
+                    <a class="dropdown-item text-primary-hover"> + Add new Contact Type</a>
+                  </li>
+                  }@else {
+                  <li
+                    class="mx-3 inner-addon right-addon"
+                    (click)="$event.stopPropagation(); createNewContactType(false)"
+                  >
+                    <div class="innerText">
+                      <i class="bi bi-x-lg text-danger fw-bold"></i>
+                    </div>
+                    <input
+                      type="text"
+                      class="custom-input form-control"
+                      [(ngModel)]="newContactType"
+                      [ngModelOptions]="{ standalone: true }"
+                      (keyup.enter)="saveNewContactType()"
+                      (click)="$event.stopPropagation()"
+                    />
+                  </li>
+
+                  } @for (type of contactTypes; track $index) {
+                  <li>
+                    <a class="dropdown-item" (click)="selectContactType(type.name)">{{
+                      type.name
+                    }}</a>
+                  </li>
+                  }
+                </ul>
+              </div>
+              @if(NewContactFormControls['contactType'].invalid &&
+              (NewContactFormControls['contactType'].touched ||
+              NewContactFormControls['contactType'].dirty)) {
+              <div class="text-danger fst-italic">Contact Type is required!</div>
+              }
+            </div>
+          </div>
+
+          <div class="row gap-3 my-3">
+            <div class="form-group col">
+              <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+              <input
+                [readOnly]="isUpdatingContact"
+                type="email"
+                class="form-control custom-input"
+                id="email"
+                formControlName="email"
+                [ngClass]="
+                  NewContactFormControls['email'].invalid &&
+                  (NewContactFormControls['email'].touched || NewContactFormControls['email'].dirty)
+                    ? 'is-invalid custom-input-error'
+                    : ''
+                "
+              />
+              @if(NewContactFormControls['email'].hasError('required') &&
+              (NewContactFormControls['email'].touched || NewContactFormControls['email'].dirty)) {
+              <div class="text-danger fst-italic">Email is required!</div>
+              } @if(NewContactFormControls['email'].hasError('email') &&
+              (NewContactFormControls['email'].touched || NewContactFormControls['email'].dirty)) {
+              <div class="text-danger fst-italic">Invalid email!</div>
+              }
+            </div>
+
+            <div class="form-group col inner-addon left-addon">
+              <span class="innerText">
+                <lib-country-list
+                  class="countryDropdown"
+                  [selectedCountryConfig]="selectedPhoneConfig"
+                  [countryListConfig]="phoneListConfig"
+                  [selectedCountryCode]="'in'"
+                  (onCountryChange)="onCountryChange($event)"
+                ></lib-country-list>
+              </span>
+
+              <input
+                type="number"
+                title="phone_number"
+                class="form-control custom-input cutsom-input-height-45"
+                formControlName="phone"
+                [ngClass]="{
+                    'is-valid':
+                      NewContactFormControls['phone'].dirty &&
+                      NewContactFormControls['phone'].valid,
+                    'is-invalid custom-input-error':
+                      (NewContactFormControls['phone'].dirty ||
+                        NewContactFormControls['phone'].touched) &&
+                      NewContactFormControls['phone'].invalid,
+                  }"
+              />
+
+              @if ( (NewContactFormControls["phone"].dirty ||
+              NewContactFormControls["phone"].touched) && NewContactFormControls["phone"].invalid )
+              { @if (NewContactFormControls["phone"].invalid) {
+              <div class="text-danger fs-12 ps-1 mt-1">Invalid phone number!</div>
+              } }
+            </div>
+          </div>
+
+          <div class="row gap-3 my-3">
+            <div class="form-group col">
+              <label for="companyName" class="form-label">Company Name </label>
+              <input
+                type="text"
+                class="form-control custom-input"
+                id="companyName"
+                formControlName="companyName"
+              />
+            </div>
+            <div class="form-group col">
+              <label for="taxId" class="form-label">Registration / Tax Id </label>
+              <input
+                type="text"
+                class="form-control custom-input"
+                id="taxId"
+                formControlName="taxId"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="Address" class="form-label"
+              >Address <span class="text-danger">*</span></label
+            >
+            <textarea
+              class="form-control custom-input"
+              id="address"
+              formControlName="address"
+              rows="3"
+              [ngClass]="
+                NewContactFormControls['address'].hasError('required') &&
+                (NewContactFormControls['address'].touched ||
+                  NewContactFormControls['address'].dirty)
+                  ? 'is-invalid custom-input-error'
+                  : ''
+              "
+            ></textarea>
+            @if(NewContactFormControls['address'].hasError('required') &&
+            (NewContactFormControls['address'].touched || NewContactFormControls['address'].dirty))
+            {
+            <div class="text-danger fst-italic">Address is required!</div>
+            }
+          </div>
+
+          <div class="row gap-3 my-3">
+            <div class="form-group col">
+              <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control custom-input"
+                id="city"
+                formControlName="city"
+                [ngClass]="
+                  NewContactFormControls['city'].hasError('required') &&
+                  (NewContactFormControls['city'].touched || NewContactFormControls['city'].dirty)
+                    ? 'is-invalid custom-input-error '
+                    : ''
+                "
+              />
+              @if(NewContactFormControls['city'].hasError('required') &&
+              (NewContactFormControls['city'].touched || NewContactFormControls['city'].dirty)) {
+              <div class="text-danger fst-italic">City is required!</div>
+              }
+            </div>
+            <div class="form-group col">
+              <label for="state" class="form-label">State <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control custom-input"
+                id="state"
+                formControlName="state"
+                [ngClass]="
+                  NewContactFormControls['state'].hasError('required') &&
+                  (NewContactFormControls['state'].touched || NewContactFormControls['state'].dirty)
+                    ? 'is-invalid custom-input-error '
+                    : ''
+                "
+              />
+              @if(NewContactFormControls['state'].hasError('required') &&
+              (NewContactFormControls['state'].touched || NewContactFormControls['state'].dirty)) {
+              <div class="text-danger fst-italic">State is required!</div>
+              }
+            </div>
+          </div>
+          <div class="row gap-3 my-3">
+            <div class="form-group col">
+              <label for="country" class="form-label"
+                >Country <span class="text-danger">*</span></label
+              >
+              @if(isUpdatingContact){
+              <lib-country-list
+                [selectedCountryConfig]="selectedCountryConfig"
+                [countryListConfig]="countryListConfig"
+                [selectedCountryCode]="selectedCountryCode"
+                (onCountryChange)="onCountryChange($event)"
+              ></lib-country-list>
+              }@else {
+              <lib-country-list
+                [selectedCountryConfig]="selectedCountryConfig"
+                [countryListConfig]="countryListConfig"
+                [selectedCountryCode]="'IN'"
+                (onCountryChange)="onCountryChange($event)"
+              ></lib-country-list>
+              }
+            </div>
+            <div class="form-group col">
+              <label for="zipCode" class="form-label"
+                >Zip Code <span class="text-danger">*</span></label
+              >
+              <input
+                type="text"
+                class="form-control custom-input"
+                id="zipCode"
+                formControlName="zipCode"
+                [ngClass]="
+                  NewContactFormControls['zipCode'].hasError('required') &&
+                  (NewContactFormControls['zipCode'].touched ||
+                    NewContactFormControls['zipCode'].dirty)
+                    ? 'is-invalid custom-input-error '
+                    : ''
+                "
+              />
+              @if(NewContactFormControls['zipCode'].hasError('required') &&
+              (NewContactFormControls['zipCode'].touched ||
+              NewContactFormControls['zipCode'].dirty)) {
+              <div class="text-danger fst-italic">Zip Code is required!</div>
+              }
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="note" class="form-label">Note</label>
+            <textarea
+              id="note"
+              class="form-control custom-input"
+              formControlName="note"
+              rows="2"
+            ></textarea>
+          </div>
+
+          <div class="formgroup mt-5 mb-3 row px-3 gap-3">
+            <button
+              class="btn btn-secondary col"
+              type="button"
+              data-bs-dismiss="modal"
+              (click)="changenewContactFormStep()"
+            >
+              Cancel
+            </button>
+            @if(spinner){
+            <button class="btn btn-primary col cursor-progress" type="button">
+              <div class="spinner-border spinner-border-sm"></div></button
+            >}@else {
+            <button
+              class="btn btn-primary col"
+              type="submit"
+              [disabled]="addNewContactForm.invalid"
+            >
+              {{ isUpdatingContact ? 'Update Contact' : 'Add New Contact' }}
+            </button>
+            }
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

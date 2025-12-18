@@ -467,7 +467,7 @@ export class AccountSettingComponnet {
         // this.store.dispatch(authActions.updateUser({ userData: response.data }));
 
         this.modalStep = 5;
-        console.log('this.modalStep', this.modalStep);
+        
       },
       error: (err: HttpErrorResponse) => {
         this.loader = false;

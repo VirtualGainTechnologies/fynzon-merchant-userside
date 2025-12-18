@@ -26,7 +26,6 @@ export function UserValiadtor(data: {
 
     return data?.services?.authservice?.validateUser(payload).pipe(
       map((res: ValidateUserData) => {
-        console.log('res', res);
         return res?.data?.userExists ? { userExists: true } : null;
       }),
     );

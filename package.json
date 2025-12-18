@@ -39,6 +39,7 @@
     "bootstrap-icons": "^1.13.1",
     "crypto-js": "^4.2.0",
     "express": "^5.1.0",
+    "libphonenumber-js": "^1.12.31",
     "ng-otp-input": "^2.0.9",
     "ngx-countries-dropdown": "^4.0.1",
     "ngx-csv": "^0.3.2",

@@ -17,12 +17,12 @@ body {
 //------------input box styles-----------//
 .custom-input {
   border: 1px solid #008cba !important;
-  border-radius: 10px !important;
+  border-radius: 5px !important;
 }
 
 .custom-input-error {
   border: 1px solid red !important;
-  border-radius: 10px !important;
+  border-radius: 5px !important;
 }
 
 .custom-input:hover,
@@ -102,8 +102,8 @@ body {
   cursor: pointer;
 }
 .right-addon .innerText {
-  right: 25px;
-  padding: 13px 10px 15px 15px;
+  right: 10px;
+  padding: 5px 0px;
   cursor: pointer;
 }
 
@@ -248,4 +248,10 @@ input[type='number'] {
 .card-dark {
   background-color: #38444d;
   color: #fff;
+}
+
+//font-szie
+
+.fs-12 {
+  font-size: 12px !important;
 }

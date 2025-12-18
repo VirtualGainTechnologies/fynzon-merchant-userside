@@ -146,6 +146,7 @@ export class DashboardComponent {
         this.pageLoader = false;
         this.userData = res.data;
         this.localStroageService.set("userData", this.userData);
+        
       },
       error: (err: HttpErrorResponse) => {
         this.pageLoader = false;

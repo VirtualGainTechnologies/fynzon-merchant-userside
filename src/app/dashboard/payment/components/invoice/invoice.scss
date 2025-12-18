@@ -1,0 +1,77 @@
+::ng-deep .ipv_selected-item {
+  border: 1px solid #008cba;
+  border-radius: 5px;
+}
+
+::ng-deep .ipv_selected-item:hover {
+  -webkit-box-shadow: 2px 2px 3px #888888;
+  box-shadow: 2px 2px 3px #888888;
+  border: 2px solid #008cba;
+}
+
+.dropdown-item {
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.dropdown-item:hover {
+  background-color: dodgerblue;
+  color: white;
+}
+
+.vh-80 {
+  max-height: 80vh !important;
+}
+
+.custom-overflow {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.left-addon .innerText {
+  left: 0px;
+  padding: 6px 10px 15px 15px;
+  cursor: pointer;
+  color: black;
+}
+
+.bg-aliceblue {
+  background-color: aliceblue;
+}
+
+.h-500 {
+  max-height: 500px;
+}
+
+.visually-disappeaer {
+  visibility: hidden !important;
+}
+
+.custom-input:hover,
+.custom-input:focus {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  border: 2px solid #008cba !important;
+}
+
+.custom-input-error:hover,
+.custom-input-error:focus {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  border: 2px solid red !important;
+}
+
+.text-primary-hover:hover {
+  color: white !important;
+}
+
+.left-addon input {
+  padding-left: 110px;
+}
+
+.cameraLogo {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+}
