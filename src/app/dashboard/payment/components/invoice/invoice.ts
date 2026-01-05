@@ -1,9 +1,14 @@
-import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { Component, ElementRef, EventEmitter, inject, Output, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ElementRef,
+  inject,
+  ViewChild,
+} from '@angular/core';
 
 import {
+  AbstractControl,
   FormBuilder,
-  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -34,7 +39,11 @@ import { InvoiceDetails } from '../invoice-details/invoice-details';
 import { CreateInvoicePayload } from '../../types/createInvoicePayload';
 import { DataHandlingService } from '../../services/dataHanling.service';
 import { CryptoCurrency } from '../../types/cryptoCurrency';
-import { phoneNumberValidator } from '../../../../validators/phoneNumberValidator';
+import { PaymentWalletData } from '../../types/paymentWalletData';
+import { PhoneNumberUtil } from 'google-libphonenumber';
+import { CryptoAddress, CryptoAddressData } from '../../models/getCryptoAddress';
+import { MatDividerModule } from '@angular/material/divider';
+
 interface NewContactObject {
   logo: string;
   heading: string;
@@ -49,25 +58,26 @@ interface NewContactObject {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    NgOptimizedImage,
     NgxCountriesDropdownModule,
     FormsModule,
     MatTooltipModule,
     InvoiceDetails,
+    MatDividerModule,
   ],
 })
 export class Invoice {
   @ViewChild('dropdownBtn', { static: false }) dropdownBtn!: ElementRef;
   @ViewChild('closeBtn', { static: false }) closeModal!: ElementRef;
+  @ViewChild('invoiceTemplate') invoiceTemplate!: ElementRef;
 
   step: number = 1;
   newContactFormStep: number = 1;
   cryptoCoins: CryptoCurrency[] = [
     { name: 'Tether (USDT)', symbol: 'USDT' },
-    { name: 'Bitcoin (BTC)', symbol: 'BTC' },
-    { name: 'Ethereum (ETH)', symbol: 'ETH' },
-    { name: 'Litecoin (LTC)', symbol: 'LTC' },
-    { name: 'Ripple (XRP)', symbol: 'XRP' },
+    // { name: 'Bitcoin (BTC)', symbol: 'BTC' },
+    // { name: 'Ethereum (ETH)', symbol: 'ETH' },
+    // { name: 'Litecoin (LTC)', symbol: 'LTC' },
+    // { name: 'Ripple (XRP)', symbol: 'XRP' },
   ];
   networkList: string[] = ['TRC20'];
   contactTypes: ContactType[];
@@ -75,26 +85,26 @@ export class Invoice {
   cryptoForm: FormGroup;
   addNewContactForm: FormGroup;
   selectedCrypto: string = 'assets/icons/USDT.png';
-  qrImage: string = 'assets/icons/qrCode.png';
   isaddingNewContact: string = 'initialUi';
   addNewContactType: boolean = false;
   selectedContact: ContactData;
-  selectedCountryCode: string = 'IN';
+  selectedCountryCode: string = 'in';
+  selectedPhoneCode: string = '+91';
   newContactStaticUi: NewContactObject[] = [
     {
       logo: 'bi bi-person',
       heading: 'IT LOOKS LIKE YOU DON’T HAVE ANY CONTACTS YET!',
-      para: 'Contacts are your beneficiaries for payouts, and once added, their details will appear here.',
+      para: 'Contacts are your beneficiaries for transactions, and once added, their details will appear here.',
     },
     {
       logo: 'bi bi-person-add',
       heading: 'START ADDING YOUR CONTACTS NOW!',
-      para: 'Once added, your contacts will be ready to receive payouts. Actual transfers can only be made to contacts set up in live mode.',
+      para: 'Once added, your contacts will be ready for transactions. Actual transactions can only be made to contacts set up in live mode.',
     },
     {
       logo: 'bi bi-check-lg',
       heading: 'READY TO GET STARTED?',
-      para: 'Set them up and manage your payouts effortlessly.',
+      para: 'Set them up and manage your transactions effortlessly.',
     },
   ];
 
@@ -131,6 +141,9 @@ export class Invoice {
   cryptoCurrency: string = '';
   imageFile: File;
   imagePreview: string;
+  cryptoNetworkData: CryptoAddressData;
+  invoiceNumber: string = 'INV-001';
+
   //dependancy injection
   private formBuilder = inject(FormBuilder);
   private paymentService = inject(PaymentService);
@@ -145,6 +158,10 @@ export class Invoice {
     this.createContactFilterForm();
     if (this.platform.isBrowser) {
       this.userData = this.localStorageService.get('userData');
+      if (this.userData.merchantType == "BUSINESS") {
+        this.cryptoForm.get('companyLogo').setValidators([Validators.required]);
+       this.cryptoForm.get('companyLogo')?.updateValueAndValidity();
+      }
       this.getAllContactTypes();
       this.filterContacts();
     }
@@ -152,8 +169,8 @@ export class Invoice {
 
   createCryptoForm() {
     this.cryptoForm = this.formBuilder.group({
-      crypto: [''],
-      network: [''],
+      crypto: ['', Validators.required],
+      network: ['', Validators.required],
       companyLogo: [''],
     });
   }
@@ -169,24 +186,52 @@ export class Invoice {
       contactName: ['', Validators.required],
       contactType: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', phoneNumberValidator()],
+      phone: [''],
       companyName: [''],
       address: ['', Validators.required],
       city: ['', Validators.required],
-      state: ['', Validators.required],
-      zipCode: ['', Validators.required],
+      state: [''],
+      zipCode: [''],
       country: ['', Validators.required],
       taxId: [''],
       note: [''],
     });
   }
 
-  uploadFile(event) {
+  updatePhoneValidator(region: string) {
+    const control = this.addNewContactForm.get('phone');
+    if (!control) return;
+
+    const phoneUtil = PhoneNumberUtil.getInstance();
+
+    const dynamicValidator = (ctrl: AbstractControl) => {
+      const value = ctrl.value;
+      if (!value) return null;
+
+      try {
+        const phoneNumber = phoneUtil.parse(value.toString(), region.toUpperCase());
+
+        const isValid = phoneUtil.isValidNumberForRegion(
+          phoneNumber,
+          region.toUpperCase() // ✅ no hard-coded 'IN'
+        );
+
+        return isValid ? null : { invalidPhone: true };
+      } catch {
+        return { invalidPhone: true };
+      }
+    };
+
+    control.setValidators([Validators.required, dynamicValidator]);
+    control.updateValueAndValidity();
+  }
+
+  async uploadFile(event) {
     let reader = new FileReader();
     let file = event.target.files[0];
     let file1 = event.target.files;
     this.imageFile = file;
-    this.imagePreview = URL.createObjectURL(file);
+    this.imagePreview = await this.convertToBase64(file);
     if (file1.length > 0) {
       let type = file1[0].type;
       let size = Math.round(file1[0].size / 10240);
@@ -211,6 +256,27 @@ export class Invoice {
     event.target.value = '';
   }
 
+  getCryptoAddress() {
+    this.spinner = false;
+    const network: string = this.cryptoForm.get('network')?.value;
+    this.paymentService.getCryptoAddress(network.toLowerCase()).subscribe({
+      next: (res: CryptoAddress) => {
+        this.spinner = false;
+        this.cryptoNetworkData = res.data;
+        this.changeStep(2);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.spinner = false;
+        this.snackBar.open(err?.error?.message || 'Something went wrong', 'close', {
+          duration: 5000,
+          panelClass: ['error-snackbar', 'snackbar-with-progress'],
+          verticalPosition: 'top',
+          horizontalPosition: 'end',
+        });
+      },
+    });
+  }
+
   showFilterForm(): boolean {
     if (
       this.cryptoForm.get('crypto').value == '' ||
@@ -224,20 +290,20 @@ export class Invoice {
   }
 
   goBack() {
+    this.changeStep(1);
     this.cryptoForm.get('crypto').setValue('');
     this.cryptoForm.get('network').setValue('');
     this.cryptoForm.get('companyLogo').setValue('');
     this.imagePreview = '';
-  }
-
-  get cryptoImage(): string {
-    const value = this.cryptoForm.get('crypto')?.value;
-    return value ? `assets/icons/${value}.png` : 'default.png';
+    this.imageFile = null;
   }
 
   changeStep(step: number) {
     this.step = step;
     this.cryptoCurrency = this.cryptoForm.get('crypto').value;
+    if (this.step == 2) {
+      this.storePaymentWalletData();
+    }
   }
 
   copyAddress(address: string) {
@@ -250,10 +316,18 @@ export class Invoice {
         console.error('Failed to copy', err);
       });
   }
+  renderCountry: boolean = true;
 
   onCountryChange(country: any) {
     this.addNewContactForm.get('country').patchValue(country.name);
+    this.selectedPhoneCode = country.dial_code;
     this.selectedCountryCode = country.code;
+    console.log('the country in country setting', this.selectedCountryCode);
+    this.updatePhoneValidator(this.selectedCountryCode.toLowerCase());
+    this.renderCountry = false;
+    setTimeout(() => {
+      this.renderCountry = true;
+    });
   }
 
   //getter function to access all addNewContactForm Controls
@@ -277,14 +351,16 @@ export class Invoice {
   }
 
   closeSearchContact(page: any) {
-    console.log(page);
     this.isaddingNewContact = page;
+    this.filterContact.get('searchTerm').patchValue('');
     if (page == 'invoiceDetails') {
-      this.storeData();
+      this.storeContactDetailsData();
+    } else if (page == 'firstForm') {
+      this.isaddingNewContact = 'initialUi';
+      this.goBack();
+      this.changeStep(1);
     }
   }
-
-
 
   createNewContactType(value: boolean) {
     this.addNewContactType = value;
@@ -496,13 +572,44 @@ export class Invoice {
     };
   }
 
-  storeData() {
-    const data = {
-      mode: this.userData.onboardingMode,
-      depositCrpto: this.selectedCrypto,
-      depositNetwork: this.cryptoForm.get('network').value,
-      depositAddress: 'network address',
+  storeContactDetailsData() {
+    const data: ContactData = {
+      ...this.selectedContact,
     };
-    this.dataService.setData(data);
+    this.dataService.setData('contactDetails', data);
+  }
+
+  storePaymentWalletData() {
+    const data: PaymentWalletData = {
+      mode: this.userData.onboardingMode,
+      depositCrpto: this.cryptoCurrency,
+      depositNetwork: this.cryptoNetworkData.network,
+      depositAddress: this.cryptoNetworkData.address,
+      companyLogo: this.imagePreview,
+      companyLogoFile: this.imageFile,
+      qrImage: this.cryptoNetworkData.qrCode,
+    };
+    this.dataService.setData('paymentWalletDetails', data);
+  }
+
+  convertToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.readAsDataURL(file);
+
+      reader.onload = () => {
+        let result = reader.result as string;
+
+        // Ensure prefix exists
+        if (!result.startsWith('data:image')) {
+          result = `data:${file.type};base64,${result}`;
+        }
+
+        resolve(result);
+      };
+
+      reader.onerror = (error) => reject(error);
+    });
   }
 }

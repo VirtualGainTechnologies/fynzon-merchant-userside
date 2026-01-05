@@ -34,6 +34,7 @@ export interface Item {
   name: string;
   quantity: number;
   price: number;
+  pricePerQuantity?: number;
   priceCurrency?: string;
   price_currency?: string;
 }

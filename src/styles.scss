@@ -130,7 +130,6 @@ input[type='number'] {
   background-color: #28a745 !important;
   color: #fff !important;
   font-weight: 500;
-  z-index: 10000000000 !important;
 }
 
 /* ❌ Error Snackbar */
@@ -138,14 +137,12 @@ input[type='number'] {
   background-color: #dc3545 !important;
   color: #fff !important;
   font-weight: 500;
-  z-index: 10000000000 !important;
 }
 
 .mat-mdc-snack-bar-container.warning-snackbar .mdc-snackbar__surface {
   background-color: #ffa500 !important;
   color: #fff !important;
   font-weight: 500;
-  z-index: 10000000 !important;
 }
 
 /* Common setup for progress animation */
@@ -183,17 +180,17 @@ input[type='number'] {
 }
 
 .modal-backdrop {
-  z-index: 1050 !important;
+  z-index: 950 !important;
 }
 
 /* Modal container */
 .modal {
-  z-index: 1100 !important;
+  z-index: 999 !important;
 }
 
 /* Modal content if needed */
 .modal-dialog {
-  z-index: 1101 !important;
+  z-index: 999 !important;
 }
 
 //-----------green check mark css-----------//
@@ -251,7 +248,18 @@ input[type='number'] {
 }
 
 //font-szie
-
+.fs-10 {
+  font-size: 10px !important;
+}
 .fs-12 {
   font-size: 12px !important;
+}
+.fs-13 {
+  font-size: 13px !important;
+}
+.fs-14 {
+  font-size: 14px !important;
+}
+.fs-15 {
+  font-size: 15px !important;
 }

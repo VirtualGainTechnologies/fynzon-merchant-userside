@@ -1,12 +1,24 @@
 ::ng-deep .ipv_selected-item {
-  border: 1px solid #008cba;
+  border: 1px solid dodgerblue;
   border-radius: 5px;
 }
 
 ::ng-deep .ipv_selected-item:hover {
   -webkit-box-shadow: 2px 2px 3px #888888;
   box-shadow: 2px 2px 3px #888888;
-  border: 2px solid #008cba;
+  border: 2px solid dodgerblue;
+}
+
+::ng-deep .innerText .ipv_selected-item {
+  border: none;
+  background-color: white;
+  margin-top: -2px;
+}
+
+::ng-deep .innerText .ipv_selected-item:hover {
+  box-shadow: none;
+  border: none;
+  background-color: white;
 }
 
 .dropdown-item {
@@ -35,10 +47,6 @@
   color: black;
 }
 
-.bg-aliceblue {
-  background-color: aliceblue;
-}
-
 .h-500 {
   max-height: 500px;
 }
@@ -51,7 +59,7 @@
 .custom-input:focus {
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
-  border: 2px solid #008cba !important;
+  border: 2px solid dodgerblue !important;
 }
 
 .custom-input-error:hover,
@@ -66,7 +74,7 @@
 }
 
 .left-addon input {
-  padding-left: 110px;
+  padding-left: 125px;
 }
 
 .cameraLogo {
@@ -75,3 +83,13 @@
   display: grid;
   place-items: center;
 }
+
+.visibility-hidden {
+  visibility: hidden !important;
+}
+
+
+
+
+
+

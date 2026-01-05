@@ -1,36 +1,61 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { Preview } from '../preview-invoice-data/preview';
 import { DataHandlingService } from '../../services/dataHanling.service';
+import { AmmountDetailsData } from '../../types/amountDetailsData';
+import { PlatformBrowserService } from '../../../../shared/services/platform-browser.service';
+import { UserData } from '../../../../auth/models/userModel';
+import { LocalStorageService } from 'angular-web-storage';
 
 @Component({
   selector: 'app-amount-details',
   standalone: true,
   templateUrl: './amount-details.html',
   styleUrls: ['./amount-details.scss'],
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatTooltipModule, Preview],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatTooltipModule],
 })
 export class AmountDetails {
   @Input() selectedCrypto: string;
   @Input() selectedCurrency: string;
   @Input() currencyAmount: number;
   @Input() cryptoAmount: number;
+  @Output() changeUitoPreviewPage = new EventEmitter<any>();
   amountDetailsForm: FormGroup;
   finalAmount: number;
   isPreview: boolean = false;
   totalItemsValue: number;
   discountPrice: number;
   taxesPrice: number;
+  userData: UserData;
+  builder: boolean = false;
 
   //dependancies
   private formBuilder = inject(FormBuilder);
-  private dataService= inject(DataHandlingService)
+  private dataService = inject(DataHandlingService);
+  private platform = inject(PlatformBrowserService);
+  private localStorageService = inject(LocalStorageService);
 
   ngOnInit(): void {
     this.createAmountDetailsForm();
+    if (this.platform.isBrowser) {
+      this.userData = this.localStorageService.get('userData');
+    }
+    this.getData();
+  }
+
+  getData() {
+    const data = this.dataService.getFormData('amount-details');
+    if (data) {
+      this.amountDetailsForm.get('items').patchValue(data.items);
+      this.amountDetailsForm.get('discount').patchValue(data.discountPercentage);
+      this.amountDetailsForm.get('taxes').patchValue(data.taxPerentage);
+      this.finalAmount = data.totalAmount;
+      this.discountPrice = data.discountPrice;
+      this.taxesPrice = data.taxesPrice;
+      this.totalItemsValue = data.totalItemsValue;
+    }
   }
 
   ngDoCheck() {
@@ -47,7 +72,7 @@ export class AmountDetails {
 
   createItemsForm() {
     return this.formBuilder.group({
-      itemName: ['', Validators.required],
+      name: ['', Validators.required],
       quantity: ['', Validators.required],
       pricePerQuantity: ['', Validators.required],
     });
@@ -75,8 +100,11 @@ export class AmountDetails {
 
       let qty = Number(quantity) || 0;
       let price = Number(pricePerQuantity) || 0;
-
-      return total + qty * price;
+      if (this.builder) {
+        return total + price;
+      } else {
+         return total + qty * price;
+      }
     }, 0);
 
     let discount = Number(this.amountDetailsForm.get('discount')?.value * 0.01) || 0;
@@ -85,17 +113,22 @@ export class AmountDetails {
     this.discountPrice = this.totalItemsValue * discount;
     this.taxesPrice = this.totalItemsValue * taxes;
 
-    this.finalAmount = (this.totalItemsValue - this.discountPrice + this.taxesPrice) * (this.cryptoAmount/this.currencyAmount);
+    this.finalAmount =
+      (this.totalItemsValue - this.discountPrice + this.taxesPrice) *
+      (this.cryptoAmount / this.currencyAmount);
   }
 
   openPreview() {
-    this.isPreview = true;
-    const data = {
+    this.changeUitoPreviewPage.emit('Preview');
+    const data: AmmountDetailsData = {
       items: this.amountDetailsForm.get('items').value,
       discountPercentage: this.amountDetailsForm.get('discount').value,
       taxPerentage: this.amountDetailsForm.get('taxes').value,
-      totalAmount:this.finalAmount
-    }
-    this.dataService.setData(data)
+      totalAmount: this.finalAmount,
+      discountPrice: this.discountPrice,
+      taxesPrice: this.taxesPrice,
+      totalItemsValue: this.totalItemsValue,
+    };
+    this.dataService.setData('amountDetails', data);
   }
 }

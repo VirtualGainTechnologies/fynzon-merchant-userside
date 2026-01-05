@@ -1,0 +1,681 @@
+<div class="container-fluid">
+  <!-- Payment Wallet Details -->
+  <div class="card p-3 my-3">
+    <div class="d-flex justify-content-between">
+      <h6 class="">Payment Wallet Details</h6>
+      @if(invoiceFormData.paymentWalletDetails.companyLogo) {
+      <div class="">
+        <img
+          [src]="invoiceFormData.paymentWalletDetails.companyLogo"
+          width="40"
+          height="40"
+          alt="company_logo"
+        />
+      </div>
+      }
+    </div>
+
+    <div class="d-flex justify-content-between my-4">
+      <div class="text-start">
+        <div class="">Crypto: {{ invoiceFormData.paymentWalletDetails.depositCrpto }}</div>
+        <div class="my-2">
+          Network: {{ invoiceFormData.paymentWalletDetails.depositNetwork | uppercase }}
+        </div>
+        <div>
+          Network Address:
+          <div class="custom-input px-3 py-2 d-flex justify-contant-center align-items-center my-2">
+            <div class="fw-medium">{{ invoiceFormData.paymentWalletDetails.depositAddress }}</div>
+            <i
+              class="bi bi-copy ms-4 cursor-pointer"
+              [matTooltip]="'copy'"
+              [matTooltipPosition]="'above'"
+              (click)="copyAddress(invoiceFormData.paymentWalletDetails.depositAddress)"
+            ></i>
+          </div>
+        </div>
+      </div>
+      <div>
+        <img [src]="invoiceFormData.paymentWalletDetails.qrImage" alt="qr_code" width="120" />
+      </div>
+    </div>
+  </div>
+  <!-- Conatct Details -->
+  <div class="card p-3">
+    <div class="d-flex justify-content-between">
+      <h6 class="">Contact Details</h6>
+    </div>
+    <div class="row row-cols-2 gy-2">
+      <div class="col">Contact Name <span class="text-danger">*</span></div>
+      <div class="col">Contact Type <span class="text-danger">*</span></div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{ invoiceFormData.contactDetails.contactName }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{ invoiceFormData.contactDetails.contactType }}
+        </div>
+      </div>
+      <div class="col">Email <span class="text-danger">*</span></div>
+      <div class="col">Phone</div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{ invoiceFormData.contactDetails.email }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{
+            invoiceFormData.contactDetails?.phone ? invoiceFormData.contactDetails?.phone : 'N/A'
+          }}
+        </div>
+      </div>
+      <div class="col">Company Name</div>
+      <div class="col">Registration / Tax Id</div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{
+            invoiceFormData.contactDetails.companyName
+              ? invoiceFormData.contactDetails?.companyName
+              : 'N/A'
+          }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{
+            invoiceFormData.contactDetails?.taxId ? invoiceFormData.contactDetails?.taxId : 'N/A'
+          }}
+        </div>
+      </div>
+      <div class="col-12 my-2">Address <span class="text-danger">*</span></div>
+      <div class="col-12">
+        <div class="custom-input p-4">
+          {{ invoiceFormData.contactDetails?.address.full_address }}
+        </div>
+      </div>
+      <div class="col">City <span class="text-danger">*</span></div>
+      <div class="col">State</div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{ invoiceFormData.contactDetails?.address.city }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{
+            invoiceFormData.contactDetails?.address.state
+              ? invoiceFormData.contactDetails?.address.state
+              : 'N/A'
+          }}
+        </div>
+      </div>
+      <div class="col">Country <span class="text-danger">*</span></div>
+      <div class="col">Zip Code</div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{ invoiceFormData.contactDetails?.address.country }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{
+            invoiceFormData.contactDetails?.address.zip
+              ? invoiceFormData.contactDetails?.address.zip
+              : 'N/A'
+          }}
+        </div>
+      </div>
+      <div class="col-12 my-2">Note</div>
+      <div class="col-12">
+        <div class="custom-input p-4">
+          {{ invoiceFormData.contactDetails?.note ? invoiceFormData.contactDetails?.note : 'N/A' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoice Details -->
+  <div class="card p-3 my-3">
+    <div class="d-flex justify-content-between">
+      <h6 class="">Invoice Details</h6>
+    </div>
+    <div class="row row-cols-2 gy-2">
+      <div class="col-12">Base Currency <span class="text-danger">*</span></div>
+      <div class="col-12">
+        <div class="custom-input p-2">
+          {{ invoiceFormData.invoiceDetails.baseCurrency }}
+        </div>
+      </div>
+
+      <div class="col">Conversion Rate <span class="text-danger">*</span></div>
+      <div class="col">Invoice Number <span class="text-danger">*</span></div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{ invoiceFormData.invoiceDetails.currencyAmount }}
+          {{ invoiceFormData.invoiceDetails.baseCurrency }} =
+          {{ invoiceFormData.invoiceDetails.cryptoAmount }}
+          {{ invoiceFormData.paymentWalletDetails.depositCrpto }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{ invoiceFormData.invoiceDetails?.invoiceNumber }}
+        </div>
+      </div>
+
+      <div class="col">Issue Date <span class="text-danger">*</span></div>
+      <div class="col">Due Date<span class="text-danger">*</span></div>
+      <div class="col">
+        <div class="custom-input p-2">
+          {{ invoiceFormData.invoiceDetails?.invoiceDate }}
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="custom-input p-2">
+          {{ invoiceFormData.invoiceDetails?.dueDate }}
+        </div>
+      </div>
+      <div class="col-12">Order Description<span class="text-danger">*</span></div>
+      <div class="col-12">
+        <div class="custom-input p-2">
+          {{ invoiceFormData.invoiceDetails?.orderDescription }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amount Details -->
+
+  <div class="card p-3 my-3">
+    <div class="d-flex justify-content-between">
+      <h6 class="">Amount Details</h6>
+    </div>
+    <table class="table-bordered my-3">
+      <tr>
+        <th class="text-start">{{builder? "Project Name" : "Item"}}</th>
+        <th class="text-center">{{builder? "Unit No" : "Quantity"}}</th>
+        <th class="text-center">{{builder? "Price" : "Price Per Quantity"}}</th>
+        <th class="text-center">Total ({{ invoiceFormData.invoiceDetails.baseCurrency }})</th>
+      </tr>
+      @for(item of invoiceFormData.amountDetails.items; track $index) {
+      <tr>
+        <td class="text-start">{{ item.name }}</td>
+        <td class="text-center">{{ item.quantity }}</td>
+        <td class="text-center">{{ item.pricePerQuantity }}</td>
+        <td class="text-center">{{ item.quantity * item.pricePerQuantity }}</td>
+      </tr>
+      }
+    </table>
+
+    <div>
+      <h6>Price Breakup:</h6>
+      <div class="row row-cols-2 gy-1">
+        <div class="col">Total Invoice Amount:</div>
+        <div class="col text-end">
+          {{
+            invoiceFormData.amountDetails.totalItemsValue
+              | number : (invoiceFormData.invoiceDetails.baseCurrency == 'AED' ? '1.3-3' : '1.2-2')
+          }}
+          {{ invoiceFormData.invoiceDetails.baseCurrency }}
+        </div>
+        <div class="col">Tax ({{ invoiceFormData.amountDetails.taxPerentage }}%):</div>
+        <div class="col text-end">
+          {{
+            invoiceFormData.amountDetails.taxesPrice
+              | number : (invoiceFormData.invoiceDetails.baseCurrency == 'AED' ? '1.3-3' : '1.2-2')
+          }}
+          {{ invoiceFormData.invoiceDetails.baseCurrency }}
+        </div>
+        <div class="col">Discount ({{ invoiceFormData.amountDetails.discountPercentage }}%):</div>
+        <div class="col text-end">
+          {{
+            invoiceFormData.amountDetails.discountPrice
+              | number : (invoiceFormData.invoiceDetails.baseCurrency == 'AED' ? '1.3-3' : '1.2-2')
+          }}
+          {{ invoiceFormData.invoiceDetails.baseCurrency }}
+        </div>
+
+        <div class="col fw-medium fs-6">
+          Amount will be paid
+          <i
+            class="bi bi-info-circle text-primary fs-13 cursor-pointer mx-2"
+            matTooltip="{{ invoiceFormData.invoiceDetails.currencyAmount }} {{
+              invoiceFormData.invoiceDetails.baseCurrency
+            }}  = {{ invoiceFormData.invoiceDetails.cryptoAmount }} {{
+              invoiceFormData.paymentWalletDetails.depositCrpto
+            }}"
+            matTooltipPosition="above"
+          ></i
+          >:
+        </div>
+        <div class="col text-end text-primary fw-medium">
+          {{ invoiceFormData.amountDetails.totalAmount | number : '1.6-6' }}
+          {{ invoiceFormData.paymentWalletDetails.depositCrpto }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row row-cols-2 p-3">
+    <div class="col">
+      @if(!loader) {
+      <button class="btn btn-primary w-100" (click)="DownloadInvoice()">Download Pdf</button>
+      }@else{
+      <button class="btn btn-primary w-100 cursor-progress" type="button">
+        <div class="spinner-border spinner-border-sm"></div>
+      </button>
+      }
+    </div>
+    <div class="col">
+      <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#sendInvoice">
+        Create Invoice
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal"
+  id="sendInvoice"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="sendInvoiceLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body px-3">
+        <div class="text-end">
+          <button
+            #closeBtn
+            type="button"
+            class="btn-close fs-6"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <div>
+          <b class="cursor-pointer fs-6 text-primary" (click)="DownloadInvoice()"
+            ><i class="bi bi-download text-success me-3"></i>Download Invoice Pdf
+          </b>
+          @if(loader){
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          }
+        </div>
+
+        <p class="alert alert-warning fs-13 my-3">
+          <i class="bi bi-exclamation-circle-fill"></i>
+          The invoice PDF has been generated successfully. Click the button below to download your
+          invoice.
+        </p>
+        <form class="row" [formGroup]="sendInvoiceForm" (ngSubmit)="sendInvoice()">
+          <div class="formGroup my-3">
+            <label for="toEmail" class="form-label"
+              >To Email <span class="text-danger">*</span></label
+            >
+            <input
+              type="email"
+              id="toEmail"
+              class="form-control custom-input"
+              formControlName="email"
+              placeholder="Enter recipient's email"
+            />
+            @if(sendInvoiceForm.get('email')?.invalid && sendInvoiceForm.get('email')?.touched) {
+            <div class="text-danger fst-italic">Valid email is required!</div>
+            }
+          </div>
+          <div class="formGroup my-3">
+            <div class="d-flex">
+              @if(!pdfFile) {
+              <div
+                class="rounded-circle pdfUploads pdfView cursor-pointer"
+                (click)="fileInput.click()"
+              >
+                <b><i class="bi bi-upload text-primary fs-6"></i></b>
+              </div>
+              }@else {
+              <div class="rounded-circle bg-secondary-subtle pdfView">
+                <i class="bi bi-file-earmark-pdf text-danger fs-3"></i>
+              </div>
+
+              }
+              <div class="ms-4">
+                <label for="invoicePdf" class="form-label"
+                  >Upload Invoice PDF <span class="text-danger">*</span></label
+                >
+                <div class="text-secondary">Supported Formats: only pdf* (max.10MB)</div>
+                <div class="text-primary">{{ getFileName() }}</div>
+              </div>
+            </div>
+
+            <input
+              type="file"
+              hidden
+              accept=".pdf"
+              #fileInput
+              (change)="uploadFile($event)"
+              id="invoicePdf"
+              class="form-control custom-input"
+              formControlName="invoice"
+              placeholder="Enter recipient's email"
+            />
+            @if(sendInvoiceForm.get('invoice')?.invalid && sendInvoiceForm.get('invoice')?.touched)
+            {
+            <div class="text-danger fst-italic">Invoice Pdf is required!</div>
+            }
+          </div>
+          <div class="formGroup text-center my-4">
+            @if(!spinner) {
+            <button class="btn btn-primary btn-sm w-50" type="submit">
+              <i class="bi bi-envelope-arrow-up-fill me-3"></i>Send Email
+            </button>
+            }@else {
+            <button class="btn btn-primary btn-sm w-50 cursor-progress" type="button">
+              <div class="spinner-border spinner-border-sm"></div>
+            </button>
+            }
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- invoice-template -->
+<div
+  #invoiceTemplate
+  style="
+    width: 800px;
+    padding-inline: 30px;
+    padding-block: 10px;
+    background: white;
+    color: black;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+  "
+  class="d-none"
+>
+  <div style="display: flex; justify-content: space-between">
+    <div style="font-size: 32; font-weight: 600">Invoice</div>
+    @if(invoiceFormData.paymentWalletDetails.companyLogo) {
+    <img
+      [src]="invoiceFormData.paymentWalletDetails.companyLogo"
+      alt="company_logo"
+      width="50"
+      height="50"
+    />
+    }
+  </div>
+  <hr />
+  <div
+    style="
+      border: 1px solid grey;
+      padding-inline: 40px;
+      padding-block: 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+      color: black;
+    "
+  >
+    <div style="font-weight: 600; font-size: 16px">Invoice Details</div>
+    <div style="display: flex; justify-content: space-between">
+      <div>
+        <P>Invoice Number: {{ invoiceFormData.invoiceDetails.invoiceNumber }}</P>
+        <P>Issue Date: {{ invoiceFormData.invoiceDetails.invoiceDate }}</P>
+        <P>Due Date: {{ invoiceFormData.invoiceDetails.dueDate }}</P>
+      </div>
+      <div style="max-width: 320px">
+        <P>Base Currency: {{ invoiceFormData.invoiceDetails.baseCurrency }}</P>
+        <P
+          >Conversion Rate:
+
+          {{ invoiceFormData.invoiceDetails.currencyAmount }}
+          {{ invoiceFormData.invoiceDetails.baseCurrency }} =
+          {{ invoiceFormData.invoiceDetails.cryptoAmount }}
+          {{ invoiceFormData.paymentWalletDetails.depositCrpto }}</P
+        >
+        <P
+          >Order Description:
+
+          {{ invoiceFormData.invoiceDetails.orderDescription }}
+        </P>
+      </div>
+    </div>
+  </div>
+
+  <div
+    style="
+      border: 1px solid grey;
+      padding-inline: 40px;
+      padding-block: 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+      color: black;
+    "
+  >
+    <div>
+      <div style="font-weight: 600; font-size: 16px">Amount Details</div>
+    </div>
+    <table
+      style="
+        width: 100%;
+        margin-block: 20px;
+        padding: 0px;
+        border-spacing: 0px;
+        border-bottom: 1px solid grey;
+        font-size: 10px;
+      "
+    >
+      <tr style="padding: 20px; height: 30px; background-color: aliceblue">
+        <th style="text-align: center; border-top: 1px solid grey">{{builder? "Project Name" : "Item"}}</th>
+        <th style="text-align: center; border-top: 1px solid grey">{{builder? "Unit No" : "Quantity"}}</th>
+        <th style="text-align: center; border-top: 1px solid grey">{{builder? "Price" : "Price Per Quantity"}}</th>
+        <th style="text-align: center; border-top: 1px solid grey">
+          Total ({{ invoiceFormData.invoiceDetails.baseCurrency }})
+        </th>
+      </tr>
+      @for(item of invoiceFormData.amountDetails.items; track $index) {
+      <tr style="padding: 20px; height: 30px">
+        <td style="text-align: center; border-top: 1px solid grey">
+          {{ item.name }}
+        </td>
+        <td style="text-align: center; border-top: 1px solid grey">
+          {{ item.quantity }}
+        </td>
+        <td style="text-align: center; border-top: 1px solid grey">
+          {{ item.pricePerQuantity }}
+        </td>
+        <td style="text-align: center; border-top: 1px solid grey">
+          {{ item.quantity * item.pricePerQuantity }}
+        </td>
+      </tr>
+      }
+    </table>
+
+    <div>
+      <h4 style="font-weight: 400">Price Breakup:</h4>
+      <div style="display: flex; justify-content: space-between; margin-block: 10px">
+        <div>Total Invoice Amount:</div>
+        <div text-align="end">
+          {{
+            invoiceFormData.amountDetails.totalItemsValue
+              | number : (invoiceFormData.invoiceDetails.baseCurrency == 'AED' ? '1.3-3' : '1.2-2')
+          }}
+          {{ invoiceFormData.invoiceDetails.baseCurrency }}
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-block: 10px">
+        <div>Tax ({{ invoiceFormData.amountDetails.taxPerentage }}%):</div>
+        <div style="text-align: end">
+          {{
+            invoiceFormData.amountDetails.taxesPrice
+              | number : (invoiceFormData.invoiceDetails.baseCurrency == 'AED' ? '1.3-3' : '1.2-2')
+          }}
+          {{ invoiceFormData.invoiceDetails.baseCurrency }}
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-block: 10px">
+        <div>Discount ({{ invoiceFormData.amountDetails.discountPercentage }}%):</div>
+        <div style="text-align: end">
+          {{
+            invoiceFormData.amountDetails.discountPrice
+              | number : (invoiceFormData.invoiceDetails.baseCurrency == 'AED' ? '1.3-3' : '1.2-2')
+          }}
+          {{ invoiceFormData.invoiceDetails.baseCurrency }}
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-block: 10px">
+        <div style="font-weight: 600">Amount will be paid:</div>
+        <div style="text-align: end; color: dodgerblue; font-weight: 600">
+          {{ invoiceFormData.amountDetails.totalAmount | number : '1.6-6' }}
+          {{ invoiceFormData.paymentWalletDetails.depositCrpto }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    style="
+      border: 1px solid grey;
+      padding-inline: 40px;
+      padding-block: 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+      color: black;
+    "
+  >
+    <div>
+      <div style="font-weight: 600; font-size: 16px">Payment Wallet Details</div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start">
+      <div style="text-align: start; margin-top: 8px">
+        <div>Crypto: {{ invoiceFormData.paymentWalletDetails.depositCrpto }}</div>
+        <div style="margin-block: 8px">
+          Network: {{ invoiceFormData.paymentWalletDetails.depositNetwork | uppercase }}
+        </div>
+        <div>Network Address: {{ invoiceFormData.paymentWalletDetails.depositAddress }}</div>
+      </div>
+      <div style="text-align: start">
+        <img [src]="invoiceFormData.paymentWalletDetails.qrImage" alt="qr_code" width="100" />
+      </div>
+    </div>
+  </div>
+
+  <div
+    style="
+      border: 1px solid grey;
+      padding-inline: 40px;
+      padding-block: 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+
+      color: black;
+    "
+  >
+    <div>
+      <div style="font-weight: 600; font-size: 16px">Received By</div>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-block: 12px">
+      <div>
+        <div style="margin-block: 8px">
+          Contact Name: {{ invoiceFormData.contactDetails.contactName }}
+        </div>
+        <div style="margin-block: 8px">
+          Contact Type: {{ invoiceFormData.contactDetails.contactType }}
+        </div>
+        <div style="margin-block: 8px">Email: {{ invoiceFormData.contactDetails.email }}</div>
+        <div style="margin-block: 8px">
+          Phone:
+          {{
+            invoiceFormData.contactDetails?.phone ? invoiceFormData.contactDetails?.phone : 'N/A'
+          }}
+        </div>
+        <div style="margin-block: 8px">
+          Company Name:
+          {{
+            invoiceFormData.contactDetails?.companyName
+              ? invoiceFormData.contactDetails?.companyName
+              : 'N/A'
+          }}
+        </div>
+        <div style="margin-block: 8px">
+          Registration / Tax Id:
+          {{
+            invoiceFormData.contactDetails?.taxId ? invoiceFormData.contactDetails?.taxId : 'N/A'
+          }}
+        </div>
+      </div>
+      <div style="max-width: 320px; margin-left: 10px">
+        <div style="margin-block: 8px">
+          Address: {{ invoiceFormData.contactDetails?.address.full_address }}
+        </div>
+        <div style="margin-block: 8px">
+          City: {{ invoiceFormData.contactDetails?.address.city }}
+        </div>
+        <div style="margin-block: 8px">
+          State:
+          {{
+            invoiceFormData.contactDetails?.address.state
+              ? invoiceFormData.contactDetails?.address.state
+              : 'N/A'
+          }}
+        </div>
+
+        <div style="margin-block: 8px">
+          Country: {{ invoiceFormData.contactDetails?.address.country }}
+        </div>
+        <div style="margin-block: 8px">
+          Zip Code:
+          {{
+            invoiceFormData.contactDetails?.address.zip
+              ? invoiceFormData.contactDetails?.address.zip
+              : 'N/A'
+          }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    style="
+      border: 1px solid grey;
+      padding-inline: 40px;
+      padding-block: 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+      color: black;
+    "
+  >
+    <div>
+      <div style="font-weight: 600; font-size: 16px">Received From</div>
+    </div>
+    <div style="display: flex; justify-content: space-between">
+      <div>
+        <div style="margin-block: 8px">
+          @if(merchantDetails.merchantType=='INDIVIDUAL') { Full Name:
+          {{ merchantDetails.fullName }} }@else { Company Name: {{ merchantDetails.businessName }}
+          }
+        </div>
+        <div>Email: {{ merchantDetails.email }}</div>
+      </div>
+      <div style="max-width: 320px; margin-left: 10px">
+        <div style="margin-block: 8px">
+          Phone:
+          {{ merchantDetails?.phone ? merchantDetails?.phone : 'N/A' }}
+        </div>
+        <div>
+          Address: @if(merchantDetails.merchantType=='INDIVIDUAL'){
+          {{ kycData.aadhaar.registeredAddress }}
+          }@else {
+          {{ kycData.gst.registeredAddress }}
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

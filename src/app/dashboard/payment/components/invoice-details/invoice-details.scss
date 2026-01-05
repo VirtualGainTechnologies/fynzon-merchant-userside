@@ -1,13 +1,24 @@
-.bg-aliceblue {
-  background-color: aliceblue;
+.bg-white {
+  background-color: white;
+  margin-bottom: 30px;
+}
+.custom-width {
+  width: 99.99% !important;
 }
 
 .customHeight {
-  height: 500px;
+  height: 470px;
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+.previewPage {
+  height: 100%;
+  overflow-x: hiden;
+  overflow-y: hidden;
+  margin-bottom: 20px;
 }
 
 .right-addon .innerText {

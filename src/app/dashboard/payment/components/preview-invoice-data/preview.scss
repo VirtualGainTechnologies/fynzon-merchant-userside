@@ -1,0 +1,25 @@
+table tr:nth-child(odd) {
+  background-color: aliceblue;
+}
+tr {
+  padding: 20px;
+  height: 40px;
+}
+
+th,
+td {
+  padding-left: 10px;
+}
+.pdfView {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+}
+
+.pdfUploads {
+  border: 2px solid dodgerblue;
+  padding: 10px;
+  font-weight: 600;
+}
+

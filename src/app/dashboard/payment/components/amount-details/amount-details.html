@@ -1,38 +1,37 @@
-@if(!isPreview) {
 <form [formGroup]="amountDetailsForm" class="text-dark">
   <div formArrayName="items">
     @for (item of items.controls; track $index) {
     <div [formGroupName]="$index">
       <div class="formGroup">
-        <div class="row my-3">
+        <div class="row mt-3">
           <div class="formGroup col-4">
-            <label for="itemName" class="form-label"
-              >Item Name <span class="text-danger">*</span></label
+            <label for="name" class="form-label"
+              >{{ !builder? "Item Name" : "Project Name" }} <span class="text-danger">*</span></label
             >
             <input
               type="text"
               class="form-control custom-input"
-              formControlName="itemName"
-              placeholder="Item Name"
+              formControlName="name"
+              placeholder="{{ !builder? 'Item Name' : 'Project Name' }}"
               [ngClass]="
-                item.get('itemName')?.invalid && item.get('itemName')?.touched
+                item.get('name')?.invalid && item.get('name')?.touched
                   ? 'is-invalid custom-input-error'
                   : ''
               "
             />
-            @if(item.get('itemName')?.invalid && item.get('itemName').touched) {
-            <div class="text-danger fst-italic">Item Name is required!</div>
+            @if(item.get('name')?.invalid && item.get('name').touched) {
+            <div class="text-danger fst-italic">{{!builder ? 'Item Name' : 'Project Name'}} is required!</div>
             }
           </div>
           <div class="formGroup col-3">
             <label for="quantity" class="form-label"
-              >Quantity <span class="text-danger">*</span></label
+              >{{ builder? "Unit No" : "Quantity" }} <span class="text-danger">*</span></label
             >
             <input
               type="text"
               class="form-control custom-input"
               formControlName="quantity"
-              placeholder="Quantity"
+              placeholder="{{ builder? 'Unit No' : 'Quantity' }}"
               [ngClass]="
                 item.get('quantity')?.invalid && item.get('quantity')?.touched
                   ? 'is-invalid custom-input-error'
@@ -40,12 +39,12 @@
               "
             />
             @if(item.get('quantity')?.invalid && item.get('quantity').touched) {
-            <div class="text-danger fst-italic">Quantity is required!</div>
+            <div class="text-danger fst-italic">{{ builder? "Unit No" : "Quantity" }} is required!</div>
             }
           </div>
           <div class="formGroup col-4">
             <label for="pricePerQuantity" class="form-label"
-              >Price Per Quantity <span class="text-danger">*</span></label
+              > {{ builder? "Price" : "Price Per Quantity" }}  <span class="text-danger">*</span></label
             >
             <div class="inner-addon right-addon">
               <div class="innerText">
@@ -70,14 +69,14 @@
               />
             </div>
             @if(item.get('pricePerQuantity')?.invalid && item.get('pricePerQuantity').touched) {
-            <div class="text-danger fst-italic">Price/Quantity is required!</div>
+            <div class="text-danger fst-italic"> {{ builder? "Price" : "Price/Quantity" }} is required!</div>
             }
           </div>
-          <div class="form-group col-1">
+          <div class="form-group col-1 mt-1 ms-0 ps-0">
             <button
               matTooltip="Remove Item"
               type="button"
-              class="btn mt-4"
+              class="btn mt-4 ms-0 ps-0"
               (click)="removeItem($index)"
             >
               <i class="bi bi-trash text-danger fs-5"></i>
@@ -88,7 +87,7 @@
     </div>
 
     } @if(items.length<5){
-    <button class="btn btn-link text-primary text-decoration-none my-2" (click)="addItem()">
+    <button class="btn btn-link text-primary text-decoration-none" (click)="addItem()">
       + Add Item
     </button>
     }
@@ -144,30 +143,53 @@
   >
     <div class="row row-cols-2">
       <div class="col">Total Invoice Amount</div>
-      <div class="col text-end">{{ totalItemsValue }}</div>
+      <div class="col text-end">
+        {{ totalItemsValue | number : (selectedCurrency == 'AED' ? '1.3-3' : '1.2-2') }}
+        {{ selectedCurrency }}
+      </div>
       <div class="col">Discount</div>
-      <div class="col text-end">{{ discountPrice }}</div>
+      <div class="col text-end">
+        {{ discountPrice | number : (selectedCurrency == 'AED' ? '1.3-3' : '1.2-2') }}
+        {{ selectedCurrency }}
+      </div>
       <div class="col">Tax</div>
-      <div class="col text-end">{{ taxesPrice }}</div>
-      <div class="col fw-bold">Amount will be paid</div>
-      <div class="col fw-bold text-end"><span class="text-primary">{{ finalAmount }}</span>
-      <span class="text-primary mx-2">{{ selectedCrypto }} </span>
-      <img
-        class="rounded-circle"
-        [src]="`assets/icons/${selectedCrypto}.png`"
-        width="20"
-        height="20"
-        alt=""
-      /></div>
+      <div class="col text-end">
+        {{ taxesPrice | number : (selectedCurrency == 'AED' ? '1.3-3' : '1.2-2') }}
+        {{ selectedCurrency }}
+      </div>
+      <div class="col fw-bold">
+        Amount will be paid
+        <i
+          class="bi bi-info-circle text-primary fs-13 cursor-pointer mx-2"
+          matTooltip="{{ currencyAmount }} {{ selectedCurrency }}  = {{ cryptoAmount }} {{
+            selectedCrypto
+          }}"
+          matTooltipPosition="above"
+        ></i>
+      </div>
+      <div class="col fw-medium text-end">
+        <span class="text-primary">{{ finalAmount | number : '1.6-6' }}</span>
+        <span class="text-primary"> {{ selectedCrypto }} </span>
+      </div>
     </div>
   </div>
   <div class="formGroup my-5">
     <div class="row gap-4">
-      <button class="btn btn-secondary col mx-3">Save as Draft</button>
-      <button class="btn btn-primary col mx-3" (click)="openPreview()">Preview</button>
+      <button
+        class="btn btn-secondary col mx-3"
+        type="button"
+        [disabled]="amountDetailsForm.invalid"
+      >
+        Save as Draft
+      </button>
+      <button
+        class="btn btn-primary col mx-3"
+        type="button"
+        [disabled]="amountDetailsForm.invalid"
+        (click)="openPreview()"
+      >
+        Preview
+      </button>
     </div>
   </div>
 </form>
-}@else {
-<app-preview-invoice-data></app-preview-invoice-data>
-}
