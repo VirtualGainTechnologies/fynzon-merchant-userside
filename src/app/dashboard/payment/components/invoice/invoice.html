@@ -608,6 +608,15 @@
             {
             <div class="text-danger fst-italic">Address is required!</div>
             }
+            @else if(NewContactFormControls['address'].hasError('minlength') &&
+            (NewContactFormControls['address'].touched || NewContactFormControls['address'].dirty))
+            {
+            <div class="text-danger fst-italic">Address should be at least 5 characters long!</div>
+            } @else if(NewContactFormControls['address'].hasError('maxlength') &&
+            (NewContactFormControls['address'].touched || NewContactFormControls['address'].dirty))
+            {
+            <div class="text-danger fst-italic">Address should be at most 100 characters long!</div>
+            }
           </div>
 
           <div class="row gap-3 my-3">
@@ -685,6 +694,13 @@
               formControlName="note"
               rows="2"
             ></textarea>
+            @if(NewContactFormControls['note'].hasError('minlength') &&
+            NewContactFormControls['note'].dirty) {
+            <div class="text-danger fst-italic">Note should be at least 5 characters long!</div>
+            } @if(NewContactFormControls['note'].hasError('maxlength') &&
+            NewContactFormControls['note'].dirty) {
+            <div class="text-danger fst-italic">Note should be at most 100 characters long!</div>
+            }
           </div>
 
           <div class="formgroup mt-5 mb-3 row px-3 gap-3">

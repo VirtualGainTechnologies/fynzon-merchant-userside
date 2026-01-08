@@ -29,7 +29,7 @@ export class AmountDetails {
   discountPrice: number;
   taxesPrice: number;
   userData: UserData;
-  builder: boolean = false;
+  builder: boolean = true;
 
   //dependancies
   private formBuilder = inject(FormBuilder);
@@ -46,9 +46,10 @@ export class AmountDetails {
   }
 
   getData() {
-    const data = this.dataService.getFormData('amount-details');
+    const data = this.dataService.getFormData('amountDetails');
     if (data) {
-      this.amountDetailsForm.get('items').patchValue(data.items);
+      this.syncItemsFormArray(data.items);
+      this.items.patchValue(data.items);
       this.amountDetailsForm.get('discount').patchValue(data.discountPercentage);
       this.amountDetailsForm.get('taxes').patchValue(data.taxPerentage);
       this.finalAmount = data.totalAmount;
@@ -72,6 +73,7 @@ export class AmountDetails {
 
   createItemsForm() {
     return this.formBuilder.group({
+      id: crypto.randomUUID(),
       name: ['', Validators.required],
       quantity: ['', Validators.required],
       pricePerQuantity: ['', Validators.required],
@@ -87,11 +89,22 @@ export class AmountDetails {
   removeItem(index: number) {
     if (index !== -1) {
       this.items.removeAt(index);
+       this.items.updateValueAndValidity();
     }
   }
 
   get items(): FormArray {
     return this.amountDetailsForm.get('items') as FormArray;
+  }
+
+  syncItemsFormArray(itemsData: any[]) {
+    while (this.items.length < itemsData.length) {
+      this.items.push(this.createItemsForm());
+    }
+
+    while (this.items.length > itemsData.length) {
+      this.items.removeAt(this.items.length - 1);
+    }
   }
 
   totalAmount() {
@@ -103,7 +116,7 @@ export class AmountDetails {
       if (this.builder) {
         return total + price;
       } else {
-         return total + qty * price;
+        return total + qty * price;
       }
     }, 0);
 

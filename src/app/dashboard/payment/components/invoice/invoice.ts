@@ -188,13 +188,13 @@ export class Invoice {
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
       companyName: [''],
-      address: ['', Validators.required],
+      address: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
       city: ['', Validators.required],
       state: [''],
       zipCode: [''],
       country: ['', Validators.required],
       taxId: [''],
-      note: [''],
+      note: ['',[Validators.minLength(5), Validators.maxLength(100)]],
     });
   }
 
@@ -322,7 +322,6 @@ export class Invoice {
     this.addNewContactForm.get('country').patchValue(country.name);
     this.selectedPhoneCode = country.dial_code;
     this.selectedCountryCode = country.code;
-    console.log('the country in country setting', this.selectedCountryCode);
     this.updatePhoneValidator(this.selectedCountryCode.toLowerCase());
     this.renderCountry = false;
     setTimeout(() => {
@@ -545,7 +544,6 @@ export class Invoice {
       ...event,
       ...this.selectedContact,
     };
-    console.log('the data from all component is...', finalData);
   }
 
   submitInvoiceData() {

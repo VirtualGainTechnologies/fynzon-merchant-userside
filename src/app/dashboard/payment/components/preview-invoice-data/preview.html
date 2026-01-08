@@ -164,24 +164,16 @@
           {{ invoiceFormData.invoiceDetails?.invoiceNumber }}
         </div>
       </div>
-
-      <div class="col">Issue Date <span class="text-danger">*</span></div>
-      <div class="col">Due Date<span class="text-danger">*</span></div>
-      <div class="col">
-        <div class="custom-input p-2">
-          {{ invoiceFormData.invoiceDetails?.invoiceDate }}
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="custom-input p-2">
-          {{ invoiceFormData.invoiceDetails?.dueDate }}
-        </div>
-      </div>
       <div class="col-12">Order Description<span class="text-danger">*</span></div>
       <div class="col-12">
         <div class="custom-input p-2">
           {{ invoiceFormData.invoiceDetails?.orderDescription }}
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="alert alert-warning mt-3 fw-medium fs-12 my-0 py-2" role="alert">
+          <i class="bi bi-exclamation-circle-fill me-2"></i>
+          {{ invoiceFormData.invoiceDetails?.invoiceMessage }}
         </div>
       </div>
     </div>
@@ -195,9 +187,9 @@
     </div>
     <table class="table-bordered my-3">
       <tr>
-        <th class="text-start">{{builder? "Project Name" : "Item"}}</th>
-        <th class="text-center">{{builder? "Unit No" : "Quantity"}}</th>
-        <th class="text-center">{{builder? "Price" : "Price Per Quantity"}}</th>
+        <th class="text-start">{{ builder ? 'Project Name' : 'Item' }}</th>
+        <th class="text-center">{{ builder ? 'Unit No' : 'Quantity' }}</th>
+        <th class="text-center">{{ builder ? 'Price' : 'Price Per Quantity' }}</th>
         <th class="text-center">Total ({{ invoiceFormData.invoiceDetails.baseCurrency }})</th>
       </tr>
       @for(item of invoiceFormData.amountDetails.items; track $index) {
@@ -271,7 +263,7 @@
     </div>
     <div class="col">
       <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#sendInvoice">
-        Create Invoice
+        Send Invoice
       </button>
     </div>
   </div>
@@ -426,8 +418,16 @@
     <div style="display: flex; justify-content: space-between">
       <div>
         <P>Invoice Number: {{ invoiceFormData.invoiceDetails.invoiceNumber }}</P>
+        @if(invoiceFormData.invoiceDetails.invoiceType=='Scheduled') {
         <P>Issue Date: {{ invoiceFormData.invoiceDetails.invoiceDate }}</P>
         <P>Due Date: {{ invoiceFormData.invoiceDetails.dueDate }}</P>
+        }@else {
+        <P
+          >Order Description:
+
+          {{ invoiceFormData.invoiceDetails.orderDescription }}
+        </P>
+        }
       </div>
       <div style="max-width: 320px">
         <P>Base Currency: {{ invoiceFormData.invoiceDetails.baseCurrency }}</P>
@@ -439,11 +439,20 @@
           {{ invoiceFormData.invoiceDetails.cryptoAmount }}
           {{ invoiceFormData.paymentWalletDetails.depositCrpto }}</P
         >
+        @if(invoiceFormData.invoiceDetails.invoiceType==='Scheduled') {
         <P
           >Order Description:
 
           {{ invoiceFormData.invoiceDetails.orderDescription }}
         </P>
+        }
+      </div>
+    </div>
+    <div>
+      <div
+        style="background-color: whitesmoke; padding: 10px; border-radius: 5px; font-weight: 500"
+      >
+        {{ invoiceFormData.invoiceDetails?.invoiceMessage }}
       </div>
     </div>
   </div>
@@ -472,9 +481,15 @@
       "
     >
       <tr style="padding: 20px; height: 30px; background-color: aliceblue">
-        <th style="text-align: center; border-top: 1px solid grey">{{builder? "Project Name" : "Item"}}</th>
-        <th style="text-align: center; border-top: 1px solid grey">{{builder? "Unit No" : "Quantity"}}</th>
-        <th style="text-align: center; border-top: 1px solid grey">{{builder? "Price" : "Price Per Quantity"}}</th>
+        <th style="text-align: center; border-top: 1px solid grey">
+          {{ builder ? 'Project Name' : 'Item' }}
+        </th>
+        <th style="text-align: center; border-top: 1px solid grey">
+          {{ builder ? 'Unit No' : 'Quantity' }}
+        </th>
+        <th style="text-align: center; border-top: 1px solid grey">
+          {{ builder ? 'Price' : 'Price Per Quantity' }}
+        </th>
         <th style="text-align: center; border-top: 1px solid grey">
           Total ({{ invoiceFormData.invoiceDetails.baseCurrency }})
         </th>

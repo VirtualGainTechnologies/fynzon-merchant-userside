@@ -156,8 +156,16 @@ export class Preview {
     this.paymentService.generatePdf(html, fileName).subscribe({
       next: (blob) => {
         this.loader = false;
+        const pdfBlob = new Blob([blob], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
         window.open(url, '_blank');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${fileName}.pdf`; 
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
       },
       error: (err: HttpErrorResponse) => {
         this.loader = false;

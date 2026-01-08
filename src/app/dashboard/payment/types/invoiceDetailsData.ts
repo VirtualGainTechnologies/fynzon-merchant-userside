@@ -6,4 +6,6 @@ export interface InvoiceDetailsData {
   invoiceDate: string;
   dueDate: string;
   orderDescription: string;
+  invoiceMessage: string;
+  invoiceType:string
 }
