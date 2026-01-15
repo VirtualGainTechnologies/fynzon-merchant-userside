@@ -1,10 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  ElementRef,
-  inject,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, inject, ViewChild, ChangeDetectorRef } from '@angular/core';
 
 import {
   AbstractControl,
@@ -15,7 +10,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { IConfig, NgxCountriesDropdownModule } from 'ngx-countries-dropdown';
-import { debounceTime, distinctUntilChanged, map, Observable, startWith, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs';
 import { PaymentService } from '../../services/payment.service';
 import { ContactResponse, ContactType } from '../../models/contactResponse';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -88,7 +83,7 @@ export class Invoice {
   isaddingNewContact: string = 'initialUi';
   addNewContactType: boolean = false;
   selectedContact: ContactData;
-  selectedCountryCode: string = 'in';
+  selectedCountryCode: string = 'IN';
   selectedPhoneCode: string = '+91';
   newContactStaticUi: NewContactObject[] = [
     {
@@ -143,6 +138,7 @@ export class Invoice {
   imagePreview: string;
   cryptoNetworkData: CryptoAddressData;
   invoiceNumber: string = 'INV-001';
+  renderCountry: boolean = true;
 
   //dependancy injection
   private formBuilder = inject(FormBuilder);
@@ -151,6 +147,7 @@ export class Invoice {
   private platform = inject(PlatformBrowserService);
   private localStorageService = inject(LocalStorageService);
   private dataService = inject(DataHandlingService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.createCryptoForm();
@@ -158,9 +155,9 @@ export class Invoice {
     this.createContactFilterForm();
     if (this.platform.isBrowser) {
       this.userData = this.localStorageService.get('userData');
-      if (this.userData.merchantType == "BUSINESS") {
+      if (this.userData.userType == 'ENTITY') {
         this.cryptoForm.get('companyLogo').setValidators([Validators.required]);
-       this.cryptoForm.get('companyLogo')?.updateValueAndValidity();
+        this.cryptoForm.get('companyLogo')?.updateValueAndValidity();
       }
       this.getAllContactTypes();
       this.filterContacts();
@@ -194,7 +191,7 @@ export class Invoice {
       zipCode: [''],
       country: ['', Validators.required],
       taxId: [''],
-      note: ['',[Validators.minLength(5), Validators.maxLength(100)]],
+      note: ['', [Validators.minLength(5), Validators.maxLength(100)]],
     });
   }
 
@@ -258,12 +255,19 @@ export class Invoice {
 
   getCryptoAddress() {
     this.spinner = false;
-    const network: string = this.cryptoForm.get('network')?.value;
-    this.paymentService.getCryptoAddress(network.toLowerCase()).subscribe({
+    const payload: {
+      email: string;
+      network: string;
+    } = {
+      network: this.cryptoForm.get('network')?.value.toLowerCase(),
+      email: this.selectedContact.email,
+    };
+
+    this.paymentService.getCryptoAddress(payload).subscribe({
       next: (res: CryptoAddress) => {
         this.spinner = false;
         this.cryptoNetworkData = res.data;
-        this.changeStep(2);
+        this.changeStep(3);
       },
       error: (err: HttpErrorResponse) => {
         this.spinner = false;
@@ -290,7 +294,7 @@ export class Invoice {
   }
 
   goBack() {
-    this.changeStep(1);
+    this.changeStep(2);
     this.cryptoForm.get('crypto').setValue('');
     this.cryptoForm.get('network').setValue('');
     this.cryptoForm.get('companyLogo').setValue('');
@@ -302,6 +306,9 @@ export class Invoice {
     this.step = step;
     this.cryptoCurrency = this.cryptoForm.get('crypto').value;
     if (this.step == 2) {
+      this.storeContactDetailsData();
+    }
+    if (this.step == 4) {
       this.storePaymentWalletData();
     }
   }
@@ -316,7 +323,6 @@ export class Invoice {
         console.error('Failed to copy', err);
       });
   }
-  renderCountry: boolean = true;
 
   onCountryChange(country: any) {
     this.addNewContactForm.get('country').patchValue(country.name);
@@ -324,9 +330,7 @@ export class Invoice {
     this.selectedCountryCode = country.code;
     this.updatePhoneValidator(this.selectedCountryCode.toLowerCase());
     this.renderCountry = false;
-    setTimeout(() => {
-      this.renderCountry = true;
-    });
+    setTimeout(() => (this.renderCountry = true), 0);
   }
 
   //getter function to access all addNewContactForm Controls
@@ -385,6 +389,7 @@ export class Invoice {
     this.paymentService.sendContactType(payload).subscribe({
       next: (res: ContactResponse) => {
         this.contactTypes = res.data.contactTypes;
+        this.selectContactType(this.selectedContactType);
       },
       error: (err: HttpErrorResponse) => {
         this.snackBar.open(err?.error?.message || 'Something went wrong', 'close', {
@@ -530,6 +535,8 @@ export class Invoice {
 
   updateContactDetails(contact: ContactListData) {
     this.isUpdatingContact = true;
+    this.renderCountry = false;
+    setTimeout(() => (this.renderCountry = true), 0);
     this.addNewContactForm.patchValue(contact);
     this.addNewContactForm.get('city').setValue(contact.address.city);
     this.addNewContactForm.get('state').setValue(contact.address.state);

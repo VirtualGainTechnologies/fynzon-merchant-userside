@@ -1,4 +1,4 @@
-@if(!pageLoader) { @if (userData?.merchantType == "INDIVIDUAL") {
+@if(!pageLoader) { @if (userData?.userType == "INDIVIDUAL") {
 <app-kyc-individual></app-kyc-individual>
 } @else {
 <app-kyc-entity></app-kyc-entity>

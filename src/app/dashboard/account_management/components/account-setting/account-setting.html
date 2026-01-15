@@ -16,16 +16,6 @@
           <div class="fs-6 fw-bold profileDetails">Profile Details</div>
           <div class="mb-2 accSettingSubtitle">These are your personal Details</div>
         </div>
-        <!-- <div class="ps-3 mt-0 business d-flex align-items-center rounded-5">
-              @if (data?.userData?.merchantType === "INDIVIDUAL") {
-                <img src="./icons/business_img.svg" />
-                <span class="ps-2 text-white">Individual Account</span>
-              }
-              @if (data?.userData?.merchantType === "ENTITY") {
-                <img src="./icons/business_img.svg" />
-                <span class="ps-2 text-white">Business Account</span>
-              }
-            </div> -->
       </div>
 
       <!-- Img,Mbno,email,change pwd -->
@@ -72,7 +62,7 @@
                 class="profilePhoto d-flex align-items-center justify-content-center"
                 [ngStyle]="{
                           'background-color': getUserInitials(
-                           userData?.merchantType,
+                           userData?.userType,
                            userData?.fullName ||
                           userData?.businessName
                           ).initialsColor,
@@ -80,7 +70,7 @@
               >
                 {{
                   getUserInitials(
-                    userData?.merchantType,
+                    userData?.userType,
                     userData?.fullName || userData?.businessName
                   ).userInitials
                 }}
@@ -463,7 +453,7 @@
               data-bs-dismiss="modal"
               (click)="clearChangeMobileForm()"
               [routerLink]="
-                userData?.merchantType === 'INDIVIDUAL'
+                userData?.userType === 'INDIVIDUAL'
                   ? '/dashboard/account/kyc'
                   : '/dashboard/account/account-setting'
               "

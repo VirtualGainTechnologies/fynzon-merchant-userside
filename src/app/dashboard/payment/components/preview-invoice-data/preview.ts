@@ -41,7 +41,7 @@ export class Preview {
   spinner: boolean = false;
   loader: boolean = false;
   baseUrl: string = environment.apiUrl;
-  builder: boolean = false;
+  category: string;
 
   //dependancies
   private dataService = inject(DataHandlingService);
@@ -56,6 +56,7 @@ export class Preview {
     this.getInvoiceData();
     this.getKycData();
     this.merchantDetails = this.localStroageService.get('userData');
+    this.category = this.merchantDetails?.businessCategory || this.merchantDetails?.profession;
   }
 
   createInvoiceForm() {
@@ -95,12 +96,9 @@ export class Preview {
 
   uploadFile(event: any) {
     const file = event.target.files[0];
-
     if (!file) return;
-
     const type = file.type;
     const size = Math.round(file.size / 10240);
-
     if (type !== 'application/pdf') {
       this.snackBar.open('File must be in PDF format.', 'close', {
         duration: 5000,
@@ -161,7 +159,7 @@ export class Preview {
         window.open(url, '_blank');
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${fileName}.pdf`; 
+        a.download = `${fileName}.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

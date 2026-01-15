@@ -284,8 +284,8 @@ export class AccountSettingComponnet {
     });
   }
 
-  getUserInitials(merchantType: string, userName: string) {
-    const userInitials = createInititals(merchantType, userName);
+  getUserInitials(userType: string, userName: string) {
+    const userInitials = createInititals(userType, userName);
     const initialsColor = getInitialsColor(userName);
     return {
       userInitials,

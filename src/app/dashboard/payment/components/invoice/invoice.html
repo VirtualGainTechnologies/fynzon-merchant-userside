@@ -5,144 +5,9 @@
       isaddingNewContact == 'addNewContact' || isaddingNewContact == 'initialUi' ? 'p-5' : 'p-0'
     "
   >
-    @if(step==1){
-    <!-- <button class="btn btn-primary" (click)="DownloadInvoice()">Download pdf</button> -->
-
-    <h5 class="text-center">Payment Wallet Details</h5>
-    <form [formGroup]="cryptoForm" class="row my-3 g-3" (ngSubmit)="getCryptoAddress()">
-      <div class="alert alert-warning fs-14 my-3">
-        <div class="d-flex">
-          <div class="me-2">
-            <i class="bi bi-exclamation-circle-fill"></i>
-          </div>
-          <div class="">
-            After selecting the crypto coin and network, User must send the crypto amount only to
-            this address using the same network. Deposits made on a different network may result in
-            permanent loss.
-          </div>
-        </div>
-      </div>
-      <div class="formGroup col">
-        <label for="crypto" class="form-label"
-          >Select Crypto <span class="text-danger">*</span></label
-        >
-        <select class="form-select custom-input" formControlName="crypto">
-          <option value="" [selected]="true" [disabled]="true">---Select Crypto---</option>
-          @for (crypto of cryptoCoins; track $index) {
-          <option [value]="crypto.symbol">{{ crypto.name }}</option>
-          }
-        </select>
-      </div>
-      <div class="formGroup col">
-        <label for="network" class="form-label"
-          >Select Network <span class="text-danger">*</span></label
-        >
-        <select class="form-select custom-input" formControlName="network">
-          <option value="" [selected]="true" [disabled]="true">---Select Network---</option>
-          @for (network of networkList; track $index) {
-          <option [value]="network">{{ network }}</option>
-          }
-        </select>
-      </div>
-      @if(userData.merchantType=="BUSINESS") {
-      <div class="formGroup mt-4">
-        <input
-          type="file"
-          id="imageUpload"
-          accept=".png, .jpg, .jpeg"
-          #fileInput
-          (change)="uploadFile($event)"
-          formControlName="companyLogo"
-          title="upload_image"
-          hidden
-        />
-        <div class="row">
-          <div
-            class="col-2 d-flex justify-content-center align-items-center cursor-pointer"
-            (click)="fileInput.click()"
-          >
-            @if(!imageFile) {
-            <div class="rounded-circle bg-success-subtle cameraLogo">
-              <i class="bi bi-camera text-primary fs-5"></i>
-            </div>
-            }@else {
-            <img [src]="imagePreview" class="rounded-circle cameraLogo" alt="company_logo" />
-            }
-          </div>
-          <div class="col-10">
-            <h6>Upload Company Logo <span class="text-danger">*</span></h6>
-            <div class="text-secondary">Supported Formats: jpeg, jpg, png, (max.10MB)</div>
-            <div class="text-info">{{ imageFile?.name }}</div>
-          </div>
-        </div>
-      </div>
-      }
-      <div class="text-end position-absolute bottom-0 end-0 mb-4 me-4">
-        @if(!spinner){
-        <button type="submit" class="btn btn-primary btn-sm" [disabled]="cryptoForm.invalid">
-          Next<i class="bi bi-arrow-right ms-2"></i>
-        </button>
-        }@else {
-        <button type="button" class="btn btn-primary btn-sm cursor-progress px-4">
-          <div class="spinner-border spinner-border-sm"></div>
-        </button>
-        }
-      </div>
-    </form>
-    }@else if(step==2) {
-    <div class="d-flex justify-content-between">
-      <h5 class="">Payment Wallet Details</h5>
-      @if (imagePreview) {
-      <img [src]="imagePreview" width="40" height="40" alt="company_logo" />
-      }
-    </div>
-
-    <div class="d-flex justify-content-between my-4">
-      <div class="text-start">
-        <div class="">Crypto: {{ cryptoForm.get('crypto')?.value }}</div>
-        <div class="my-2">Network: {{ cryptoNetworkData.network | uppercase }}</div>
-        <div>
-          Network Address:
-          <div class="border d-flex p-2 px-3 my-2 rounded-2">
-            <h6>{{ cryptoNetworkData.address }}</h6>
-            <i
-              class="bi bi-copy ms-4 cursor-pointer"
-              [matTooltip]="'copy'"
-              [matTooltipPosition]="'above'"
-              (click)="copyAddress(cryptoNetworkData.address)"
-            ></i>
-          </div>
-        </div>
-      </div>
-      <div>
-        <img [src]="cryptoNetworkData.qrCode" alt="qr_code" width="120" />
-      </div>
-    </div>
-    <div class="text-start position-absolute top-0 start-0 m-3">
-      <i
-        matTooltip="Back"
-        matTooltipPosition="right"
-        class="bi bi-chevron-left cursor-pointer text-white"
-        (click)="goBack()"
-      ></i>
-    </div>
-    <div class="text-end position-absolute bottom-0 end-0 mb-4 me-4">
-      <button class="btn btn-primary btn-sm" (click)="changeStep(3)">
-        Next<i class="bi bi-arrow-right ms-2"></i>
-      </button>
-    </div>
-    } @else if(step==3) {
-
+    @if(step==1) {
     <div class="row">
       @switch(isaddingNewContact) { @case('initialUi') {
-      <div class="text-start position-absolute top-0 start-0 mx-4 my-3">
-        <i
-          matTooltip="Back"
-          matTooltipPosition="right"
-          class="bi bi-chevron-left cursor-pointer text-white"
-          (click)="changeStep(2)"
-        ></i>
-      </div>
       <h5>Contact Details</h5>
       <div class="col-6">
         <label for="contact" class="form-label">Select Contact</label>
@@ -164,7 +29,9 @@
             (click)="openDropdown()"
             data-bs-toggle="dropdown"
           >
-            {{ selectedContactType ? selectedContactType : '--Select Contact Type--' }}
+            {{
+              selectedContactType ? selectedContactType.toUpperCase() : '--Select Contact Type--'
+            }}
           </button>
           <ul class="dropdown-menu w-100" aria-labelledby="contactTypeDropdown">
             @if(!addNewContactType) {
@@ -192,9 +59,16 @@
             <li>
               <a class="dropdown-item" (click)="selectContactType('ALL')"> ALL </a>
             </li>
-            @for (type of contactTypes; track $index) {
+            @if(contactTypes?.length) { @for (type of contactTypes; track $index) {
             <li>
               <a class="dropdown-item" (click)="selectContactType(type.name)">{{ type.name }}</a>
+            </li>
+            } }@else {
+            <li>
+              <a class="dropdown-item" (click)="selectContactType('CUSTOMER')">CUSTOMER</a>
+            </li>
+            <li>
+              <a class="dropdown-item" (click)="selectContactType('VENDER')">VENDER</a>
             </li>
             }
           </ul>
@@ -368,24 +242,155 @@
         </div>
 
         <div class="text-end">
-          <button
-            class="btn btn-primary btn-sm px-3"
-            (click)="closeSearchContact('invoiceDetails')"
-          >
-            Next
-          </button>
+          <button class="btn btn-primary btn-sm px-3" (click)="changeStep(2)">Next</button>
         </div>
       </div>
 
-      } @case ('invoiceDetails') {
-      <app-invoice-details
-        [selectedCrypto]="cryptoCurrency"
-        (closeUi)="closeSearchContact($event)"
-        (invoiceComponentData)="getInvoiceFormData($event)"
-      ></app-invoice-details>
       } }
     </div>
 
+    }@else if(step==2){
+    <div class="text-start position-absolute top-0 start-0 m-3">
+      <i
+        matTooltip="Back"
+        matTooltipPosition="right"
+        class="bi bi-chevron-left cursor-pointer text-white"
+        (click)="changeStep(1)"
+      ></i>
+    </div>
+    <div class="p-4">
+      <h5 class="text-center">Payment Wallet Details</h5>
+      <form [formGroup]="cryptoForm" class="row my-3 g-3" (ngSubmit)="getCryptoAddress()">
+        <div class="alert alert-warning fs-14 my-3">
+          <div class="d-flex">
+            <div class="me-2">
+              <i class="bi bi-exclamation-circle-fill"></i>
+            </div>
+            <div class="">
+              After selecting the crypto coin and network, User must send the crypto amount only to
+              this address using the same network. Deposits made on a different network may result
+              in permanent loss.
+            </div>
+          </div>
+        </div>
+        <div class="formGroup col">
+          <label for="crypto" class="form-label"
+            >Select Crypto <span class="text-danger">*</span></label
+          >
+          <select class="form-select custom-input" formControlName="crypto">
+            <option value="" [selected]="true" [disabled]="true">---Select Crypto---</option>
+            @for (crypto of cryptoCoins; track $index) {
+            <option [value]="crypto.symbol">{{ crypto.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="formGroup col">
+          <label for="network" class="form-label"
+            >Select Network <span class="text-danger">*</span></label
+          >
+          <select class="form-select custom-input" formControlName="network">
+            <option value="" [selected]="true" [disabled]="true">---Select Network---</option>
+            @for (network of networkList; track $index) {
+            <option [value]="network">{{ network }}</option>
+            }
+          </select>
+        </div>
+        @if(userData.userType=="ENTITY") {
+        <div class="formGroup mt-4">
+          <input
+            type="file"
+            id="imageUpload"
+            accept=".png, .jpg, .jpeg"
+            #fileInput
+            (change)="uploadFile($event)"
+            formControlName="companyLogo"
+            title="upload_image"
+            hidden
+          />
+          <div class="row">
+            <div
+              class="col-2 d-flex justify-content-center align-items-center cursor-pointer"
+              (click)="fileInput.click()"
+            >
+              @if(!imageFile) {
+              <div class="rounded-circle bg-success-subtle cameraLogo">
+                <i class="bi bi-camera text-primary fs-5"></i>
+              </div>
+              }@else {
+              <img [src]="imagePreview" class="rounded-circle cameraLogo" alt="company_logo" />
+              }
+            </div>
+            <div class="col-10">
+              <h6>Upload Company Logo <span class="text-danger">*</span></h6>
+              <div class="text-secondary">Supported Formats: jpeg, jpg, png, (max.10MB)</div>
+              <div class="text-info">{{ imageFile?.name }}</div>
+            </div>
+          </div>
+        </div>
+        }
+        <div class="text-end mt-4">
+          @if(!spinner){
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="cryptoForm.invalid">
+            Next<i class="bi bi-arrow-right ms-2"></i>
+          </button>
+          }@else {
+          <button type="button" class="btn btn-primary btn-sm cursor-progress px-4">
+            <div class="spinner-border spinner-border-sm"></div>
+          </button>
+          }
+        </div>
+      </form>
+    </div>
+    }@else if(step==3) {
+    <div class="p-4">
+      <div class="d-flex justify-content-between mt-4">
+        <h5>Payment Wallet Details</h5>
+        @if (imagePreview) {
+        <img [src]="imagePreview" width="40" height="40" alt="company_logo" />
+        }
+      </div>
+
+      <div class="d-flex justify-content-between my-4">
+        <div class="text-start">
+          <div class="">Crypto: {{ cryptoForm.get('crypto')?.value }}</div>
+          <div class="my-2">Network: {{ cryptoNetworkData.network | uppercase }}</div>
+          <div>
+            Network Address:
+            <div class="border d-flex p-2 px-3 my-2 rounded-2">
+              <h6>{{ cryptoNetworkData.address }}</h6>
+              <i
+                class="bi bi-copy ms-4 cursor-pointer"
+                [matTooltip]="'copy'"
+                [matTooltipPosition]="'above'"
+                (click)="copyAddress(cryptoNetworkData.address)"
+              ></i>
+            </div>
+          </div>
+        </div>
+        <div>
+          <img [src]="cryptoNetworkData.qrCode" alt="qr_code" width="120" />
+        </div>
+      </div>
+      <div class="text-start position-absolute top-0 start-0 m-3">
+        <i
+          matTooltip="Back"
+          matTooltipPosition="right"
+          class="bi bi-chevron-left cursor-pointer text-white"
+          (click)="goBack()"
+        ></i>
+      </div>
+      <div class="text-end">
+        <button class="btn btn-primary btn-sm" (click)="changeStep(4)">
+          Next<i class="bi bi-arrow-right ms-2"></i>
+        </button>
+      </div>
+    </div>
+    }@else if(step==4) {
+    <app-invoice-details
+      [selectedCrypto]="cryptoCurrency"
+      (closeUi)="changeStep($event)"
+      (invoiceComponentData)="getInvoiceFormData($event)"
+    ></app-invoice-details>
     }
   </div>
 </div>
@@ -486,13 +491,20 @@
                     />
                   </li>
 
-                  } @for (type of contactTypes; track $index) {
-                  <li>
-                    <a class="dropdown-item" (click)="selectContactType(type.name)">{{
-                      type.name
-                    }}</a>
-                  </li>
-                  }
+                  }<li>
+            </li>
+            @if(contactTypes?.length) { @for (type of contactTypes; track $index) {
+            <li>
+              <a class="dropdown-item" (click)="selectContactType(type.name)">{{ type.name }}</a>
+            </li>
+            } }@else {
+            <li>
+              <a class="dropdown-item" (click)="selectContactType('CUSTOMER')">CUSTOMER</a>
+            </li>
+            <li>
+              <a class="dropdown-item" (click)="selectContactType('VENDER')">VENDER</a>
+            </li>
+            }
                 </ul>
               </div>
               @if(NewContactFormControls['contactType'].invalid &&
@@ -532,9 +544,8 @@
               <label for="phone" class="form-label"> Phone</label>
               <div class="inner-addon left-addon">
                 <div class="innerText pt-1">
-                  @if(renderCountry) {
+                  @if(renderCountry){
                   <lib-country-list
-                    class=""
                     [selectedCountryConfig]="selectedPhoneConfig"
                     [countryListConfig]="phoneListConfig"
                     [selectedCountryCode]="selectedCountryCode"
@@ -607,8 +618,7 @@
             (NewContactFormControls['address'].touched || NewContactFormControls['address'].dirty))
             {
             <div class="text-danger fst-italic">Address is required!</div>
-            }
-            @else if(NewContactFormControls['address'].hasError('minlength') &&
+            } @else if(NewContactFormControls['address'].hasError('minlength') &&
             (NewContactFormControls['address'].touched || NewContactFormControls['address'].dirty))
             {
             <div class="text-danger fst-italic">Address should be at least 5 characters long!</div>

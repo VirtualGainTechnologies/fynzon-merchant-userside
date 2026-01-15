@@ -5,7 +5,7 @@
       class="bi bi-chevron-left text-secondary fs-5 cursor-pointer"
       matTooltip="back"
       matTooltipPosition="right"
-      (click)="closeOpenedModal('viewContact')"
+      (click)="closeOpenedModal(3)"
     ></i>
     }@else if(detailsForm=="Amount"){
 
@@ -25,10 +25,10 @@
 
     }
 
-    <button class="btn-close btn btn-sm" (click)="closeOpenedModal('initialUi')"></button>
+    <button class="btn-close btn btn-sm" (click)="closeOpenedModal(3)"></button>
   </div>
   @if(detailsForm=="Invoice" || detailsForm=="Amount") {
-  <h5 class="text-primary">{{ detailsForm }} Details</h5>
+  <h5 class="text-primary mt-4">{{ detailsForm }} Details</h5>
   }
 
   <div [ngClass]="detailsForm == 'Preview' ? 'previewPage' : 'customHeight'">
@@ -186,22 +186,23 @@
           class="form-control custom-input"
           formControlName="description"
           [ngClass]="
-            invoiceFormControls['description'].invalid && invoiceFormControls['description'].touched
+            invoiceFormControls['description'].invalid &&
+            (invoiceFormControls['description'].touched || invoiceFormControls['description'].dirty)
               ? 'is-invalid custom-input-error'
               : ''
           "
         >
         </textarea>
         @if(invoiceFormControls['description'].hasError('required') &&
-        invoiceFormControls['description'].touched) {
+        (invoiceFormControls['description'].touched || invoiceFormControls['description'].dirty)) {
         <div class="text-danger fst-italic">Order Description is required!</div>
         } @else if(invoiceFormControls['description'].hasError('minlength') &&
-        invoiceFormControls['description'].touched) {
+        (invoiceFormControls['description'].touched || invoiceFormControls['description'].dirty)) {
         <div class="text-danger fst-italic">
           Order Description should be at least 5 characters long!
         </div>
         }@else if(invoiceFormControls['description'].hasError('maxlength') &&
-        invoiceFormControls['description'].touched) {
+        (invoiceFormControls['description'].touched || invoiceFormControls['description'].dirty) ) {
         <div class="text-danger fst-italic">
           Order Description should not exceed 100 characters!
         </div>
@@ -260,71 +261,82 @@
         }
       </div>
       }@else if(invoiceType=="Recurrent") {
-      <label for="RecurrentInvoice" class="form-label"
-        >Set Recurrent Invoice <span class="text-danger">*</span></label
-      >
-      <div class="d-flex align-items-center">
-        <!-- EVERY -->
-        <span class="">Every:</span>
-
-        <select class="mx-2 custom-input py-2 form-select" title="every" formControlName="every">
-          <option [value]="null" disabled>Select</option>
-          @for (option of everyData; track $index) {
-          <option [value]="option">{{ option }}</option>
-          }
-        </select>
-
-        <!-- MONTH (only in YEAR) -->
-        <span class="" [hidden]="!['Year'].includes(invoiceForm.value.every)"> on </span>
-
-        <select
-          class="mx-2 custom-input py-2 form-select"
-          title="month"
-          formControlName="month"
-          [hidden]="!['Year'].includes(invoiceForm.value.every)"
-          (change)="monthChanges()"
+      <div class="formGroup">
+        <label for="RecurrentInvoice" class="form-label"
+          >Set Recurrent Invoice <span class="text-danger">*</span></label
         >
-          <option [value]="null" disabled>Month</option>
-          @for (m of monthData; track $index) {
-          <option [value]="m?.value">{{ m?.name }}</option>
-          }
-        </select>
+        <div class="d-flex align-items-center py-0 my-0">
+          <!-- EVERY -->
+          <span class="">Every:</span>
 
-        <!-- DAY (for Year & Month) -->
-        <span class="" [hidden]="['Week', 'Day'].includes(invoiceForm.value.every)">
-          {{ invoiceForm.value.every === 'Month' ? 'on' : ':' }}
-        </span>
+          <select class="mx-2 custom-input py-2 form-select" title="every" formControlName="every">
+            <option [value]="null" disabled>Select</option>
+            @for (option of everyData; track $index) {
+            <option [value]="option">{{ option }}</option>
+            }
+          </select>
 
-        <select
-          class="mx-2 custom-input py-2 form-select"
-          title="day"
-          formControlName="day"
-          [hidden]="['Week', 'Day'].includes(invoiceForm.value.every)"
-        >
+          <!-- MONTH (only in YEAR) -->
+          <span class="" [hidden]="!['Year'].includes(invoiceForm.value.every)"> on </span>
+
+          <select
+            class="mx-2 custom-input py-2 form-select"
+            title="month"
+            formControlName="month"
+            [hidden]="!['Year'].includes(invoiceForm.value.every)"
+            (change)="monthChanges()"
+          >
+            <option [value]="null" disabled>Month</option>
+            @for (m of monthData; track $index) {
+            <option [value]="m?.value">{{ m?.name }}</option>
+            }
+          </select>
+
+          <!-- DAY (for Year & Month) -->
+          <span class="" [hidden]="['Week', 'Day'].includes(invoiceForm.value.every)">
+            {{ invoiceForm.value.every === 'Month' ? 'on' : ':' }}
+          </span>
+
+          <select
+            class="mx-2 custom-input py-2 form-select"
+            title="day"
+            formControlName="day"
+            [hidden]="['Week', 'Day'].includes(invoiceForm.value.every)"
+          >
+            <option [value]="null" disabled>Day</option>
+            @for (d of dayData; track $index) {
+            <option [value]="d">{{ d }}</option>
+            }
+          </select>
+
+          <!-- WEEKDAY (only for Week) -->
+          <span class="" [hidden]="invoiceForm.value.every !== 'Week'"> on </span>
+
+          <select
+            class="mx-2 custom-input py-2 form-select"
+            title="week"
+            formControlName="week"
+            [hidden]="invoiceForm.value.every !== 'Week'"
+          >
+            <option [value]="null" disabled>Day</option>
+            @for (w of weekData; track $index) {
+            <option [value]="w?.value">{{ w?.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="formGroup">
+        <label for="dueDays" class="form-label">Due Days <span class="text-danger">*</span></label>
+        <select class="custom-input py-2 form-select" title="day" formControlName="dueDays">
           <option [value]="null" disabled>Day</option>
-          @for (d of dayData; track $index) {
+          @for (d of dueDays; track $index) {
           <option [value]="d">{{ d }}</option>
-          }
-        </select>
-
-        <!-- WEEKDAY (only for Week) -->
-        <span class="" [hidden]="invoiceForm.value.every !== 'Week'"> on </span>
-
-        <select
-          class="mx-2 custom-input py-2 form-select"
-          title="week"
-          formControlName="week"
-          [hidden]="invoiceForm.value.every !== 'Week'"
-        >
-          <option [value]="null" disabled>Day</option>
-          @for (w of weekData; track $index) {
-          <option [value]="w?.value">{{ w?.name }}</option>
           }
         </select>
       </div>
       <div class="formGroup">
         @if(getRecurrentInvoiceText() ) {
-        <div class="alert alert-warning alert-sm mt-3 fs-12 fw-medium mb-0" role="alert">
+        <div class="alert alert-warning alert-sm mt-1 fs-12 fw-medium mb-0" role="alert">
           <i class="bi bi-bi bi-exclamation-circle-fill me-2"></i>
           {{ getRecurrentInvoiceText() }}
         </div>
@@ -336,7 +348,7 @@
         <div class="row row-cols-2 my-3">
           <div class="col">
             <button class="btn btn-primary w-100" (click)="changeInvoiceType('Scheduled')">
-              Scheduled Invoice
+              Schedule Invoice
             </button>
           </div>
           <div class="col">

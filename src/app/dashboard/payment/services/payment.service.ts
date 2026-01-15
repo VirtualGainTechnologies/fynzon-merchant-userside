@@ -56,9 +56,9 @@ export class PaymentService {
     );
   }
 
-  getCryptoAddress(network: string): Observable<CryptoAddress> {
+  getCryptoAddress(payload: {network:string,email:string}): Observable<CryptoAddress> {
     return this.http.get<CryptoAddress>(
-      `${this.baseUrl}/auth/api/v1/merchant/crypto-address/${network}`
+      `${this.baseUrl}/auth/api/v1/merchant/crypto-address`, {params:payload}
     );
   }
 

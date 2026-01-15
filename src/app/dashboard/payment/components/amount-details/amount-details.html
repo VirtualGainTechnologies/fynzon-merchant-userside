@@ -6,35 +6,46 @@
         <div class="row mt-3">
           <div class="formGroup col-4">
             <label for="name" class="form-label"
-              >{{ !builder ? 'Item Name' : 'Project Name' }}
+              >{{ category !== 'Builder' ? 'Item Name' : 'Project Name' }}
               <span class="text-danger">*</span></label
             >
             <input
               type="text"
               class="form-control custom-input"
               formControlName="name"
-              placeholder="{{ !builder ? 'Item Name' : 'Project Name' }}"
+              placeholder="{{ category !== 'Builder' ? 'Item Name' : 'Project Name' }}"
               [ngClass]="
                 item.get('name')?.invalid && item.get('name')?.touched
                   ? 'is-invalid custom-input-error'
                   : ''
               "
             />
-            @if(item.get('name')?.invalid && item.get('name').touched) {
+            @if(item.get('name')?.hasError('required') && item.get('name').touched) {
             <div class="text-danger fst-italic">
-              {{ !builder ? 'Item Name' : 'Project Name' }} is required!
+              {{ category !== 'Builder' ? 'Item Name' : 'Project Name' }} is required!
+            </div>
+            } @if(item.get('name')?.hasError('minlength') && item.get('name').touched) {
+            <div class="text-danger fst-italic">
+              {{ category !== 'Builder' ? 'Item Name' : 'Project Name' }} should be at least 2
+              characters long!
+            </div>
+            } @if(item.get('name')?.hasError('maxlength') && item.get('name').touched) {
+            <div class="text-danger fst-italic">
+              {{ category !== 'Builder' ? 'Item Name' : 'Project Name' }} should should not exceed
+              50 characters!
             </div>
             }
           </div>
           <div class="formGroup col-3">
             <label for="quantity" class="form-label"
-              >{{ builder ? 'Unit No' : 'Quantity' }} <span class="text-danger">*</span></label
+              >{{ category === 'Builder' ? 'Unit No' : 'Quantity' }}
+              <span class="text-danger">*</span></label
             >
             <input
               type="text"
               class="form-control custom-input"
               formControlName="quantity"
-              placeholder="{{ builder ? 'Unit No' : 'Quantity' }}"
+              placeholder="{{ category === 'Builder' ? 'Unit No' : 'Quantity' }}"
               [ngClass]="
                 item.get('quantity')?.invalid && item.get('quantity')?.touched
                   ? 'is-invalid custom-input-error'
@@ -43,13 +54,13 @@
             />
             @if(item.get('quantity')?.invalid && item.get('quantity').touched) {
             <div class="text-danger fst-italic">
-              {{ builder ? 'Unit No' : 'Quantity' }} is required!
+              {{ category === 'Builder' ? 'Unit No' : 'Quantity' }} is required!
             </div>
             }
           </div>
           <div class="formGroup col-4">
             <label for="pricePerQuantity" class="form-label">
-              {{ builder ? 'Price' : 'Price Per Quantity' }}
+              {{ category === 'Builder' ? 'Price' : 'Price Per Quantity' }}
               <span class="text-danger">*</span></label
             >
             <div class="inner-addon right-addon">
@@ -76,7 +87,7 @@
             </div>
             @if(item.get('pricePerQuantity')?.invalid && item.get('pricePerQuantity').touched) {
             <div class="text-danger fst-italic">
-              {{ builder ? 'Price' : 'Price/Quantity' }} is required!
+              {{ category === 'Builder' ? 'Price' : 'Price/Quantity' }} is required!
             </div>
             }
           </div>

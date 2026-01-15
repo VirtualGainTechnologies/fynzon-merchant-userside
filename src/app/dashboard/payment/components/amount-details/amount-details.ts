@@ -29,7 +29,7 @@ export class AmountDetails {
   discountPrice: number;
   taxesPrice: number;
   userData: UserData;
-  builder: boolean = true;
+  category: string;
 
   //dependancies
   private formBuilder = inject(FormBuilder);
@@ -41,6 +41,7 @@ export class AmountDetails {
     this.createAmountDetailsForm();
     if (this.platform.isBrowser) {
       this.userData = this.localStorageService.get('userData');
+      this.category= this.userData?.businessCategory || this.userData?.profession
     }
     this.getData();
   }
@@ -74,7 +75,7 @@ export class AmountDetails {
   createItemsForm() {
     return this.formBuilder.group({
       id: crypto.randomUUID(),
-      name: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       quantity: ['', Validators.required],
       pricePerQuantity: ['', Validators.required],
     });
@@ -113,7 +114,7 @@ export class AmountDetails {
 
       let qty = Number(quantity) || 0;
       let price = Number(pricePerQuantity) || 0;
-      if (this.builder) {
+      if (this.category==='Builder') {
         return total + price;
       } else {
         return total + qty * price;

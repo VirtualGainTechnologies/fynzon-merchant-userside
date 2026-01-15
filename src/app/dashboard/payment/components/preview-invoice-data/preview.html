@@ -3,10 +3,10 @@
   <div class="card p-3 my-3">
     <div class="d-flex justify-content-between">
       <h6 class="">Payment Wallet Details</h6>
-      @if(invoiceFormData.paymentWalletDetails.companyLogo) {
+      @if(invoiceFormData.paymentWalletDetails?.companyLogo) {
       <div class="">
         <img
-          [src]="invoiceFormData.paymentWalletDetails.companyLogo"
+          [src]="invoiceFormData.paymentWalletDetails?.companyLogo"
           width="40"
           height="40"
           alt="company_logo"
@@ -187,9 +187,9 @@
     </div>
     <table class="table-bordered my-3">
       <tr>
-        <th class="text-start">{{ builder ? 'Project Name' : 'Item' }}</th>
-        <th class="text-center">{{ builder ? 'Unit No' : 'Quantity' }}</th>
-        <th class="text-center">{{ builder ? 'Price' : 'Price Per Quantity' }}</th>
+        <th class="text-start">{{ category === 'Builder' ? 'Project Name' : 'Item' }}</th>
+        <th class="text-center">{{ category === 'Builder' ? 'Unit No' : 'Quantity' }}</th>
+        <th class="text-center">{{ category === 'Builder' ? 'Price' : 'Price Per Quantity' }}</th>
         <th class="text-center">Total ({{ invoiceFormData.invoiceDetails.baseCurrency }})</th>
       </tr>
       @for(item of invoiceFormData.amountDetails.items; track $index) {
@@ -251,7 +251,7 @@
     </div>
   </div>
 
-  <div class="row row-cols-2 p-3">
+  <div class="row row-cols-2 p-3 mb-5">
     <div class="col">
       @if(!loader) {
       <button class="btn btn-primary w-100" (click)="DownloadInvoice()">Download Pdf</button>
@@ -263,7 +263,7 @@
     </div>
     <div class="col">
       <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#sendInvoice">
-        Send Invoice
+        Generate Invoice
       </button>
     </div>
   </div>
@@ -482,13 +482,13 @@
     >
       <tr style="padding: 20px; height: 30px; background-color: aliceblue">
         <th style="text-align: center; border-top: 1px solid grey">
-          {{ builder ? 'Project Name' : 'Item' }}
+          {{ category === 'Builder' ? 'Project Name' : 'Item' }}
         </th>
         <th style="text-align: center; border-top: 1px solid grey">
-          {{ builder ? 'Unit No' : 'Quantity' }}
+          {{ category === 'Builder' ? 'Unit No' : 'Quantity' }}
         </th>
         <th style="text-align: center; border-top: 1px solid grey">
-          {{ builder ? 'Price' : 'Price Per Quantity' }}
+          {{ category === 'Builder' ? 'Price' : 'Price Per Quantity' }}
         </th>
         <th style="text-align: center; border-top: 1px solid grey">
           Total ({{ invoiceFormData.invoiceDetails.baseCurrency }})
@@ -672,7 +672,7 @@
     <div style="display: flex; justify-content: space-between">
       <div>
         <div style="margin-block: 8px">
-          @if(merchantDetails.merchantType=='INDIVIDUAL') { Full Name:
+          @if(merchantDetails.userType=='INDIVIDUAL') { Full Name:
           {{ merchantDetails.fullName }} }@else { Company Name: {{ merchantDetails.businessName }}
           }
         </div>
@@ -684,10 +684,10 @@
           {{ merchantDetails?.phone ? merchantDetails?.phone : 'N/A' }}
         </div>
         <div>
-          Address: @if(merchantDetails.merchantType=='INDIVIDUAL'){
-          {{ kycData.aadhaar.registeredAddress }}
+          Address: @if(merchantDetails.userType=='INDIVIDUAL'){
+          {{ kycData?.aadhaar?.registeredAddress }}
           }@else {
-          {{ kycData.gst.registeredAddress }}
+          {{ kycData?.gst?.registeredAddress }}
           }
         </div>
       </div>

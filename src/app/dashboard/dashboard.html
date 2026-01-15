@@ -14,7 +14,7 @@
       </div>
 
       <div class="p-2 business d-flex mt-2">
-        @if (userData?.merchantType === "INDIVIDUAL") {
+        @if (userData?.userType === "INDIVIDUAL") {
         <img [src]="business_img" alt="individual_img" />
         <div class="text-decoration-none text-white ms-3">Individual Account</div>
         } @else {

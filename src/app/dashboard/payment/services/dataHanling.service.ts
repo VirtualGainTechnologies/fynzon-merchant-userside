@@ -23,6 +23,6 @@ export class DataHandlingService {
   }
 
   getFormData(formName: string): any {
-    return this.data.getValue()[formName];
+    return this.data?.getValue()?.[formName];
   }
 }

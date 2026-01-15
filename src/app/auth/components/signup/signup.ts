@@ -69,8 +69,8 @@ export class SignupComponent {
       value: 'INDIVIDUAL',
     },
   ];
-  Professions: string[] = ['Teacher', 'Graphic Designer', 'Freelancer Drummer', 'Artist', 'Tutor'];
-  BusinessCategory: string[] = ['Pvt. Ltd.', 'LLP', 'NGO', 'Partnership', 'Proprietorship'];
+  Professions: string[] = ['Teacher', 'Graphic Designer', 'Freelancer Drummer', 'Artist', 'Tutor','Builder'];
+  BusinessCategory: string[] = ['Pvt. Ltd.', 'LLP', 'NGO', 'Partnership', 'Proprietorship','Builder'];
 
   selectedCountryConfig: IConfig = {
     hideCode: true,

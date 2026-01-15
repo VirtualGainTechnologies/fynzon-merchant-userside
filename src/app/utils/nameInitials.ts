@@ -1,4 +1,4 @@
-export const createInititals = (merchantType: string, name: string) => {
+export const createInititals = (userType: string, name: string) => {
   let initials = '';
   let firstName = '';
   let lastName = '';
@@ -9,7 +9,7 @@ export const createInititals = (merchantType: string, name: string) => {
     firstName = nameArray[0].toUpperCase();
   }
 
-  if (merchantType === 'INDIVIDUAL' && nameArray[nameArray.length - 1]) {
+  if (userType === 'INDIVIDUAL' && nameArray[nameArray.length - 1]) {
     lastName = nameArray[nameArray.length - 1]?.toUpperCase();
   } else {
     lastName = nameArray[1]?.toUpperCase();

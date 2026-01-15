@@ -1,5 +1,5 @@
 export interface UserData {
-  merchantType: string;
+  userType: string;
   businessName: string;
   businessCategory: string;
   fullName: string;

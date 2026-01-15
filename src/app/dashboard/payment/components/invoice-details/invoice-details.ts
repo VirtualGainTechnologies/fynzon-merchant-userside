@@ -34,6 +34,7 @@ export class InvoiceDetails {
   invoiceForm: FormGroup;
   everyData: string[] = ['Week', 'Month', 'Year'];
   dayData: number[] = Array.from({ length: 28 }, (_, i) => i + 1);
+  dueDays: number[] = Array.from({ length: 6 }, (_, i) => i + 1);
   weekData: {
     name: string;
     value: number;
@@ -154,9 +155,10 @@ export class InvoiceDetails {
       dueDate: [''],
       description: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
       every: [null],
-      day: [null],
+      day: [{ value: null }],
       week: [null],
       month: [null],
+      dueDays: [null, Validators.required],
     });
   }
 
@@ -171,39 +173,56 @@ export class InvoiceDetails {
         },
         { emitEvent: false }
       );
-
+      this.changeDueDays();
       this.recurrentInvoiceValidator(every);
     });
+  }
+
+  changeDueDays() {
+    const everyValue = this.invoiceForm.get('every').value;
+    if (everyValue == 'Week') {
+      this.dueDays = Array.from({ length: 6 }, (_, i) => i + 1);
+    } else {
+      this.dueDays = Array.from({ length: 15 }, (_, i) => i + 1);
+    }
   }
 
   recurrentInvoiceValidator(every: string) {
     const day = this.invoiceForm.get('day');
     const week = this.invoiceForm.get('week');
     const month = this.invoiceForm.get('month');
+    const dueDays = this.invoiceForm.get('dueDays');
 
-    // CLEAN RESET (only validators + state)
     const resetState = (control: AbstractControl | null) => {
       control?.clearValidators();
+      control?.disable();
+      control?.reset();
       control?.markAsPristine();
       control?.markAsUntouched();
     };
+
     resetState(day);
     resetState(week);
     resetState(month);
+    resetState(dueDays);
 
     switch (every) {
       case 'Week':
-        week?.setValidators([Validators.required]);
-        week?.setValidators([this.requiredAllowZero]);
+        week?.enable();
+        dueDays?.enable();
+        week?.setValidators([Validators.required, this.requiredAllowZero]);
         break;
 
       case 'Month':
+        day?.enable();
+        dueDays?.enable();
         day?.setValidators([Validators.required]);
         break;
 
       case 'Year':
+        month?.enable();
+        dueDays?.enable();
         month?.setValidators([Validators.required]);
-        day?.setValidators([Validators.required]);
         break;
     }
 
@@ -214,6 +233,7 @@ export class InvoiceDetails {
 
   monthChanges() {
     const month = this.invoiceForm.get('month')?.value;
+    const day = this.invoiceForm.get('day');
 
     const daysInMonth = {
       1: 31,
@@ -231,6 +251,7 @@ export class InvoiceDetails {
     };
     const numberOfDays = daysInMonth[month] || 31;
     this.dayData = Array.from({ length: numberOfDays }, (_, i) => i + 1);
+    day.enable();
   }
 
   requiredAllowZero(control: AbstractControl) {
@@ -257,7 +278,7 @@ export class InvoiceDetails {
     control?.updateValueAndValidity();
   }
 
-  closeOpenedModal(page: string) {
+  closeOpenedModal(page: number) {
     this.storeData();
     this.closeUi.emit(page);
   }
@@ -285,7 +306,7 @@ export class InvoiceDetails {
   }
 
   updateForm() {
-    this.closeUi.emit('firstForm');
+    this.closeUi.emit(1);
   }
 
   storeData() {
@@ -337,7 +358,7 @@ export class InvoiceDetails {
     switch (f.every) {
       case 'Week':
         if (this.invoiceForm.get('week')?.dirty) {
-          msg = `You have set recurrent payout for every week on ${weekName}.`;
+          msg = `Please note that the invoice will be issued every week on ${weekName}.`;
         }
         break;
 
@@ -361,8 +382,13 @@ export class InvoiceDetails {
   }
 
   getScheduledInvoiceMessage(): string {
-    const formattedDate = formatDate(this.invoiceForm.value.dueDate, 'dd MMM yyyy', 'en-US');
-    this.scheduledInvoiceMessage = `Your invoice has been scheduled on ${formattedDate}`;
+    const formattedIssueDate = formatDate(
+      this.invoiceForm.value.invoiceDate,
+      'dd MMM yyyy',
+      'en-US'
+    );
+    const formattedDueDate = formatDate(this.invoiceForm.value.dueDate, 'dd MMM yyyy', 'en-US');
+    this.scheduledInvoiceMessage = `Please note that the invoice will be issued on ${formattedIssueDate} and will be valid until ${formattedDueDate}`;
     return this.scheduledInvoiceMessage;
   }
 
